@@ -22,19 +22,7 @@
         <!--<setting name="defaultExecutorType" value="BATCH" />执行器类型-->
     </settings>
     <!--<typeAliases>-->
-        <!--<package name="com.rener.portal.model.vo" />-->
+    <!--<package name="com.rener.portal.model.vo" />-->
     <!--</typeAliases>-->
 
-
-    <typeHandlers>
-        <typeHandler handler="com.rener.portal.model.utils.PhotoListTypeHandler"/>
-    </typeHandlers>
-    <!--<typeAliases>-->
-    <!--<package name="com.rener.portal.model"></package>-->
-    <!--</typeAliases>-->
-
-
-    <!--<typeAliases>-->
-        <!--<package name="com.rener.portal.model.vo"></package>-->
-    <!--</typeAliases>-->
 </configuration>

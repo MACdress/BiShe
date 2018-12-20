@@ -10,7 +10,7 @@
        http://www.springframework.org/schema/mvc
        http://www.springframework.org/schema/mvc/spring-mvc.xsd">
     <!--扫描注解-->
-    <context:component-scan base-package="com.BiShe.web.action"/>
+    <context:component-scan base-package="com.bishe.web.controller"/>
     <!--解析器及映射器-->
     <mvc:annotation-driven/>
     <mvc:default-servlet-handler/>
