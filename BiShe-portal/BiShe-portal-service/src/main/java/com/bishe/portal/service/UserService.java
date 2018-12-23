@@ -1,7 +1,6 @@
 package com.bishe.portal.service;
 
 
-import com.bishe.portal.model.mo.TbUsers;
 import com.bishe.portal.model.po.TbUsersPo;
 
 /**
@@ -11,11 +10,11 @@ public interface UserService {
     /**
      * 登陆
      *
-     * @param userTel
+     * @param userName
      * @param userPwd
      * @return
      */
-    TbUsersPo login(String userTel, String userPwd);
+    boolean login(String userName, String userPwd);
 
     /**
      * 注册

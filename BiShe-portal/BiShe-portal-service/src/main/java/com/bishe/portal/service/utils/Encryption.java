@@ -11,7 +11,7 @@ import java.util.UUID;
  * @Version 1.0
  **/
 public class Encryption {
-    private static int length = 32;
+    private static int length =48;
     /**
      * 获取盐值
      * @return
@@ -26,15 +26,19 @@ public class Encryption {
      * @return
      */
     public static String getPwd(String sale,String pwd){
-        String password = md5Hex(pwd + sale);
-        char[] cs = new char[length];
-        for (int i = 0; i < length; i += 3) {
-            cs[i] = password.charAt(i / 3 * 2);
-            char c = sale.charAt(i / 3);
-            cs[i + 1] = c;
-            cs[i + 2] = password.charAt(i / 3 * 2 + 1);
+        if ((pwd != null) && (sale != null)) {
+            String password = md5Hex(pwd + sale);
+            char[] cs = new char[length];
+            for (int i = 0; i < length; i += 3) {
+                cs[i] = password.charAt(i / 3 * 2);
+                char c = sale.charAt(i / 3);
+                cs[i + 1] = c;
+                cs[i + 2] = password.charAt(i / 3 * 2 + 1);
+            }
+            return String.valueOf(cs);
+        } else {
+            return "";
         }
-        return String.valueOf(cs);
 
     }
     @SuppressWarnings("unused")

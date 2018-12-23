@@ -20,7 +20,7 @@ public class TbUsersPo {
     private Integer permission;
     private String tel;
     private String userPhoto;
-    private String birth;
+    private String birthDay;
     private String education;
     /**
      * 0代表女，1代表男
