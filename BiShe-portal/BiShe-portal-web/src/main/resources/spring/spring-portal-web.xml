@@ -33,7 +33,7 @@
         <property name="prefix" value="/"/>
         <property name="suffix" value=".jsp"/>
     </bean>
-    <bean id="jacksonObectMapper" class="utils.CustomMapper"/>
+    <bean id="jacksonObectMapper" class="com.bishe.portal.web.utils.CustomMapper"/>
 
    <!--// 全局拦截器-->
     <!--<mvc:interceptors>-->

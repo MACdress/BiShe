@@ -9,45 +9,43 @@
     <param-name>contextConfigLocation</param-name>
     <param-value>classpath:spring/spring-portal-service.xml,classpath:spring/spring-portal-dao.xml</param-value>
   </context-param>
-  <listener>
-    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-  </listener>
+  <!--<listener>-->
+    <!--<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>-->
+  <!--</listener>-->
 
-  <!-- 配置DispatchServlet -->
-  <servlet>
-    <servlet-name>BiShe-portal-dispatcher</servlet-name>
-    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-    <!-- 配置SpringMVC需要加载的文件 -->
-    <!-- spring-util.xml, spring-util.xml, spring-executor.xml -->
-    <!-- MyBatis -> spring -> springMVC -->
-    <!-- 告诉SpringMVC，Spring有哪些配置文件 -->
-    <init-param>
-      <param-name>contextConfigLocation</param-name>
-      <param-value>classpath:spring/spring-portal-web.xml</param-value>
-    </init-param>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
+  <!--&lt;!&ndash; 配置DispatchServlet &ndash;&gt;-->
+  <!--<servlet>-->
+    <!--<servlet-name>BiShe-portal-dispatcher</servlet-name>-->
+    <!--<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>-->
+    <!--&lt;!&ndash; 配置SpringMVC需要加载的文件 &ndash;&gt;-->
+    <!--&lt;!&ndash; spring-util.xml, spring-util.xml, spring-executor.xml &ndash;&gt;-->
+    <!--&lt;!&ndash; MyBatis -> spring -> springMVC &ndash;&gt;-->
+    <!--&lt;!&ndash; 告诉SpringMVC，Spring有哪些配置文件 &ndash;&gt;-->
+    <!--<init-param>-->
+      <!--<param-name>contextConfigLocation</param-name>-->
+      <!--<param-value>classpath:spring/spring-portal-web.xml</param-value>-->
+    <!--</init-param>-->
+    <!--<load-on-startup>1</load-on-startup>-->
 
-  <servlet-mapping>
-    <servlet-name>BiShe-portal-dispatcher</servlet-name>
-    <!-- 默认匹配所有的请求 -->
-    <url-pattern>/</url-pattern>
-  </servlet-mapping>
-
-
-  <!--解决中文乱码问题-->
-  <filter>
-    <filter-name>CharacterEncodingFilter</filter-name>
-    <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
-    <init-param>
-      <param-name>encoding</param-name>
-      <param-value>utf-8</param-value>
-    </init-param>
-  </filter>
-  <filter-mapping>
-    <filter-name>CharacterEncodingFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
+  <!--<servlet-mapping>-->
+    <!--<servlet-name>BiShe-portal-dispatcher</servlet-name>-->
+    <!--&lt;!&ndash; 默认匹配所有的请求 &ndash;&gt;-->
+    <!--<url-pattern>/</url-pattern>-->
+  <!--</servlet-mapping>-->
 
 
+  <!--&lt;!&ndash; shiro过滤器 &ndash;&gt;-->
+  <!--<filter>-->
+    <!--<filter-name>shiroFilter</filter-name>-->
+    <!--<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>-->
+    <!--<init-param>-->
+      <!--<param-name>targetFilterLifecycle</param-name>-->
+      <!--<param-value>true</param-value>-->
+    <!--</init-param>-->
+  <!--</filter>-->
+  <!--<filter-mapping>-->
+    <!--<filter-name>shiroFilter</filter-name>-->
+    <!--<url-pattern>/*</url-pattern>-->
+  <!--</filter-mapping>-->
+  <!---->
 </web-app>
