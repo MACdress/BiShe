@@ -10,9 +10,10 @@ import lombok.NonNull;
 @Data
 @NoArgsConstructor
 public class TbUsers {
-    @NonNull
-    private long userId;
+    private int id;
+    private int userId;
     private String pwd;
+    private String accountNumber;
     private String email;
     private String name;
     /**

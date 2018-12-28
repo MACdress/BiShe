@@ -1,4 +1,4 @@
-package com.bishe.web.controller;
+package com.bishe.portal.web.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;

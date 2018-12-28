@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class TbUsersPo {
+    private Integer userId;
+    private String  accountNumber;
     private String pwd;
     private String email;
     private String name;

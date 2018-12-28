@@ -55,6 +55,7 @@ public class UserServiceImpl implements UserService {
 
     private TbUsers getTbUsers(TbUsersPo tbUsersPo) {
         TbUsers tbUsers = new TbUsers();
+        tbUsers.setAccountNumber(tbUsersPo.getAccountNumber()==null?"":tbUsersPo.getAccountNumber());
         tbUsers.setBirthDay(tbUsersPo.getBirthDay()==null?"":tbUsersPo.getBirthDay());
         tbUsers.setEducation(tbUsersPo.getEducation() == null ? "" : tbUsersPo.getEducation());
         tbUsers.setEmail(tbUsersPo.getEmail() == null ? "" : tbUsersPo.getEmail());

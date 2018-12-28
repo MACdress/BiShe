@@ -3,6 +3,8 @@
 <mapper namespace="com.bishe.portal.dao.TbUsersDao">
     <resultMap id="TbUsersMap" type="TbUsers">
         <id column="Id" property="id"/>
+        <result column="UserId" property="userId"/>
+        <result column="AccountNumber" property="accountNumber"/>
         <result column="Name" property="name"/>
         <result column="Pwd" property="pwd"/>
         <result column="Email" property="email"/>
@@ -15,7 +17,9 @@
         <result column="Sale" property="sale"/>
     </resultMap>
     <insert id="insert">
-        INSERT INTO tb_users (Name,
+        INSERT INTO tb_users (UserId,
+                              AccountNumber,
+                              Name,
                               Pwd,
                               Email,
                               Permission,
@@ -27,7 +31,9 @@
                               Sale,
                               CreateTime,
                               UpdateTime)
-        VALUES (#{tbUsers.name},
+        VALUES (#{tbUsers.userId},
+                #{tbUsers.accountNumber},
+                #{tbUsers.name},
                 #{tbUsers.pwd},
                 #{tbUsers.email},
                 #{tbUsers.permission},
@@ -53,7 +59,8 @@
                Sex,
                Sale
         FROM tb_users
-        WHERE Name = #{name} LIMIT 1;
+        WHERE Name = #{name}
+        LIMIT 1;
     </select>
 
 </mapper>
