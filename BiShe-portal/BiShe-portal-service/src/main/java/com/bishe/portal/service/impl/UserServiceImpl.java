@@ -22,12 +22,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean login(String userName, String userPwd) {
         //表示用户名为空
-        if(userName == null){
+        if (userName == null) {
             return false;
         }
         TbUsers tbUsers = tbUsersDao.selectUserInfo(userName);
         //表示用户不存在
-        if(tbUsers == null){
+        if (tbUsers == null) {
             return false;
         }
         String newPwd = Encryption.getPwd(tbUsers.getSale(), userPwd);
@@ -55,8 +55,8 @@ public class UserServiceImpl implements UserService {
 
     private TbUsers getTbUsers(TbUsersPo tbUsersPo) {
         TbUsers tbUsers = new TbUsers();
-        tbUsers.setAccountNumber(tbUsersPo.getAccountNumber()==null?"":tbUsersPo.getAccountNumber());
-        tbUsers.setBirthDay(tbUsersPo.getBirthDay()==null?"":tbUsersPo.getBirthDay());
+        tbUsers.setAccountNumber(tbUsersPo.getAccountNumber() == null ? "" : tbUsersPo.getAccountNumber());
+        tbUsers.setBirthDay(tbUsersPo.getBirthDay() == null ? "" : tbUsersPo.getBirthDay());
         tbUsers.setEducation(tbUsersPo.getEducation() == null ? "" : tbUsersPo.getEducation());
         tbUsers.setEmail(tbUsersPo.getEmail() == null ? "" : tbUsersPo.getEmail());
         tbUsers.setName(tbUsersPo.getName() == null ? "" : tbUsersPo.getName());

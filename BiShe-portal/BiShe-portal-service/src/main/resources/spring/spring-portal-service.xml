@@ -2,7 +2,7 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:aop="http://www.springframework.org/schema/c"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context
@@ -19,6 +19,28 @@
         <!-- 注入数据库连接池 -->
         <property name="dataSource" ref="dataSource"/>
     </bean>
+
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="do*" propagation="REQUIRED" />
+            <tx:method name="delete*" propagation="REQUIRED" />
+            <tx:method name="merge*" propagation="REQUIRED" />
+            <tx:method name="add*" propagation="REQUIRED" />
+            <tx:method name="save*" propagation="REQUIRED" />
+            <tx:method name="create*" propagation="REQUIRED" />
+            <tx:method name="insert*" propagation="REQUIRED" />
+            <tx:method name="update*" propagation="REQUIRED" />
+            <tx:method name="enable*" propagation="REQUIRED" />
+            <tx:method name="disable*" propagation="REQUIRED" />
+            <tx:method name="generate*" propagation="REQUIRED" />
+            <tx:method name="*" read-only="true"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <aop:config >
+        <aop:pointcut expression="execution (* com.bishe.portal.service.*.*(..))"  id="services" />
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="services" />
+    </aop:config>
 
     <!-- 配置基于注解的声明式事务管理 -->
     <!-- 默认使用注解来管理事务行为 -->
