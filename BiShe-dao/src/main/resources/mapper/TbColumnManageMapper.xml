@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bishe.portal.dao.TbColumnManageDao">
+    <resultMap id="TbColumnManageMap" type="com.bishe.portal.model.mo.TbColumnManage">
+        <id column="id" property="id"/>
+        <result column="column_id" property="columnId"/>
+        <result column="column_name" property="columnName"/>
+        <result column="is_review" property="isReview"/>
+        <result column="parent" property="parent"/>
+        <result column="column_status" property="columnStatus"/>
+        <result column="column_img" property="columnImg"/>
+        <result column="column_text" property="columnText"/>
+        <result column="review_user" property="reviewUser"/>
+        <result column="create_user" property="createUser"/>
+    </resultMap>
+    <resultMap id="TbColumnMangePoMap" type="com.bishe.portal.model.po.TbColumnManagePo">
+        <result column="column_id" property="columnId"/>
+        <result column="column_name" property="columnName"/>
+        <result column="is_review" property="isReview"/>
+        <result column="parent" property="parent"/>
+        <result column="column_status" property="columnStatus"/>
+        <result column="column_img" property="columnImg"/>
+        <result column="column_text" property="columnText"/>
+        <result column="review_user" property="reviewUser"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_at" property="createAt"/>
+    </resultMap>
+    <sql id="TableName">
+        tb_manage_column
+    </sql>
+    <sql id="Fields">
+        column_id,column_name,is_review,parent,column_status, column_img, column_text,review_user, create_user
+    </sql>
+    <sql id="FieldsPo">
+        column_id,column_name,is_review,parent,column_status, column_img, column_text,review_user, create_user,create_at
+    </sql>
+    <insert id="insertColumnMange">
+        INSERT INTO <include refid="TableName"/> (
+                              <include refid="Fields"/>,
+                              create_at,
+                              update_at)
+        VALUES (#{tbColumnManage.columnId}
+                #{tbColumnManage.columnName},
+                #{tbColumnManage.isReview},
+                #{tbColumnManage.parent},
+                #{tbColumnManage.columnStatus},
+                #{tbColumnManage.columnImg},
+                #{tbColumnManage.columnText},
+                #{tbColumnManage.reviewUser},
+                #{tbColumnManage.createUser},
+                NOW(),
+                NOW());
+    </insert>
+
+    <update id="updateColumnMange">
+        UPDATE <include refid="TableName"/>
+        <set>
+            <if test="tbColumnManage.columnName != nll">
+              column_name = #{tbColumnManage.columnName},
+            </if>
+            <if test="tbColumnManage.isReview != nll">
+              is_review = #{tbColumnManage.isReview},
+            </if>
+            <if test="tbColumnManage.parent != nll">
+                parent = #{tbColumnManage.parent},
+            </if>
+            <if test="tbColumnManage.columnStatus != nll">
+              column_status = #{tbColumnManage.columnStatus},
+            </if>
+            <if test="tbColumnManage.columnImg != nll">
+              column_img =  #{tbColumnManage.columnImg},
+            </if>
+            <if test="tbColumnManage.columnText !=nll">
+              column_text =  #{tbColumnManage.columnText},
+            </if>
+            <if test="tbColumnManage.reviewUser !=nll ">
+              review_user = #{tbColumnManage.reviewUser},
+            </if>
+            <if test="tbColumnManage.createUser != null">
+              create_user = #{tbColumnManage.createUser},
+            </if>
+            <if test="1">
+              update_at = NOW(),
+            </if>
+        </set>
+         where  column_id = #{tbColumnManage.columnId} AND is_deleate = 1
+    </update>
+
+    <select id="getColumnNumByAffiliation" resultType="Long">
+        select count(*) from <include refid="TableName"/> where parent = #{parent} and is_deleate = 1;
+    </select>
+
+    <select id="getColumnInfoByParentId" resultMap="TbColumnManageMap">
+        select  column_id,column_name,is_review,parent,column_status,column_img,column_text,review_user,create_user from <include refid="TableName"/> where affiliation = #{parentId}
+        and is_deleate = 1;
+    </select>
+
+    <select id="getColumnInfoById" resultMap="TbColumnManageMap">
+        select  <include refid="Fields"/> from <include refid="TableName"/> where column_id = #{column_id}
+        and is_deleate = 1;
+    </select>
+
+    <select id="getColumnInfoByList" resultMap="TbColumnMangePoMap">
+        select <include refid="FieldsPo"/> from <include refid="TableName"/>
+        <where>
+            <if test="columnName != null ">
+                column_name = #{columnName} and id_deleate = 1
+            </if>
+            <if test="columnName == null">
+                parent = 0 and id_deleate = 1
+            </if>
+        </where>
+    </select>
+
+    <select id="getColumnInfoByListByParentId" resultMap="TbColumnMangePoMap">
+        select <include refid="FieldsPo"/> from <include refid="TableName"/> where parent = #{parent}
+    </select>
+
+    <update id="deleteColumnInfo">
+        update <include refid="TableName"/>
+        set id_deleate = 0 and delete_at = NOW()
+        where column_id = #{column_id} and id_deleate = 1;
+    </update>
+
+</mapper>

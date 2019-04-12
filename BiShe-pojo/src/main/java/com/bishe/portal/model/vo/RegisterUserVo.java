@@ -1,9 +1,14 @@
-package com.bishe.portal.web.vo;
+package com.bishe.portal.model.vo;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
+/**
+ * @author gaopan31
+ */
 @Data
-public class RegisterUserVo {
+public class RegisterUserVo implements Serializable {
     private String password;
     private Integer permission;
     private String email;

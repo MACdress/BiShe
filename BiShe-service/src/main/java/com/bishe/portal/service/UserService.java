@@ -1,7 +1,11 @@
 package com.bishe.portal.service;
 
 
+import com.bishe.portal.model.po.SimpleUserInfo;
 import com.bishe.portal.model.po.TbUsersPo;
+
+import java.beans.SimpleBeanInfo;
+import java.util.List;
 
 /**
  * @author 熊猫
@@ -10,11 +14,10 @@ public interface UserService {
     /**
      * 登陆
      *
-     * @param userName
-     * @param userPwd
+     * @param user
      * @return
      */
-    boolean login(String userName, String userPwd,int permission);
+    boolean login(TbUsersPo user);
 
     /**
      * 注册
@@ -25,4 +28,6 @@ public interface UserService {
 
 
     TbUsersPo getByUserTel(String tel);
+
+    List<SimpleUserInfo> getAllAdminUserInfo();
 }

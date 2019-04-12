@@ -78,10 +78,6 @@
         <property name="basePackage" value="com.bishe.portal.dao"/>
         <!-- applicationcontext中beanfactory初始化需要 -->
     </bean>
-    <!--<bean id="tbGoodsMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">-->
-    <!--<property name="sqlSessionFactory" value="sqlSessionFactory" />-->
-    <!--<property name="mapperInterface" value="com.rener.portal.dao.TbGoodsMapper"></property>-->
-    <!--</bean>-->
 
     <context:component-scan base-package="com.bishe.portal.dao"/>
 

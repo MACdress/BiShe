@@ -10,9 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TbUsers {
     private int id;
-    private int userId;
     private String pwd;
-    private String accountNumber;
     private String email;
     private String name;
     /**
@@ -22,12 +20,10 @@ public class TbUsers {
     private String tel;
     private String userPhoto;
     private String birthDay;
-    private String education;
     /**
      * 0代表女，1代表男
      */
     private int sex;
-
     private String sale;
 
 }

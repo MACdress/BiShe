@@ -1,84 +1,95 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bishe.portal.dao.TbUsersDao">
-    <resultMap id="TbUsersMap" type="TbUsers">
-        <id column="Id" property="id"/>
-        <result column="UserId" property="userId"/>
-        <result column="AccountNumber" property="accountNumber"/>
-        <result column="Name" property="name"/>
-        <result column="Pwd" property="pwd"/>
-        <result column="Email" property="email"/>
-        <result column="Permission" property="permission"/>
-        <result column="Tel" property="tel"/>
-        <result column="UserPhoto" property="userPhoto"/>
-        <result column="BirthDay" property="birthDay"/>
-        <result column="Education" property="education"/>
-        <result column="Sex" property="sex"/>
-        <result column="Sale" property="sale"/>
+    <resultMap id="TbUsersMap" type="com.bishe.portal.model.mo.TbUsers">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="pwd" property="pwd"/>
+        <result column="email" property="email"/>
+        <result column="permission" property="permission"/>
+        <result column="tel" property="tel"/>
+        <result column="user_photo" property="userPhoto"/>
+        <result column="birthday" property="birthDay"/>
+        <result column="sex" property="sex"/>
+        <result column="sale" property="sale"/>
+        <result column="create_user" property="createUser"/>
+    </resultMap>
+    <resultMap id="SimpleTbUsersMap" type="com.bishe.portal.model.po.SimpleUserInfo">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="permission" property="permission"/>
     </resultMap>
     <insert id="insert">
-        INSERT INTO tb_users (UserId,
-                              AccountNumber,
-                              Name,
-                              Pwd,
-                              Email,
-                              Permission,
-                              Tel,
-                              UserPhoto,
-                              BirthDay,
-                              Education,
-                              Sex,
-                              Sale,
-                              CreateTime,
-                              UpdateTime)
-        VALUES (#{tbUsers.userId},
-                #{tbUsers.accountNumber},
-                #{tbUsers.name},
+        INSERT INTO tb_user (name,
+                              pwd,
+                              email,
+                              permission,
+                              tel,
+                              user_photo,
+                              birth_day,
+                              sex,
+                              sale,
+                              create_user,
+                              creare_at,
+                              update_at)
+        VALUES (#{tbUsers.name},
                 #{tbUsers.pwd},
                 #{tbUsers.email},
                 #{tbUsers.permission},
                 #{tbUsers.tel},
                 #{tbUsers.userPhoto},
                 #{tbUsers.birthDay},
-                #{tbUsers.education},
                 #{tbUsers.sex},
                 #{tbUsers.sale},
+                #{tbUsers.createUser},
                 NOW(),
                 NOW());
     </insert>
 
     <select id="selectUserInfo" resultMap="TbUsersMap">
-        SELECT Name,
-               Pwd,
-               Email,
-               Permission,
-               Tel,
-               UserPhoto,
-               BirthDay,
-               Education,
-               Sex,
-               Sale
-        FROM tb_users
-        WHERE Tel = #{tel} AND permission = #{permission}
+        SELECT name,
+               pwd,
+               email,
+               permission,
+               tel,
+               user_photo,
+               birth_day,
+               education,
+               sex,
+               sale
+        FROM tb_user
+        WHERE tel = #{tel} and is_deleate = 1
         LIMIT 1;
     </select>
 
-    <select id="getUserInfoByName" resultMap="TbUsersMap">
-        SELECT Name,
-               Pwd,
-               Email,
-               Permission,
-               Tel,
-               UserPhoto,
-               BirthDay,
-               Education,
-               Sex,
-               Sale
-        FROM tb_users
-        WHERE Tel = #{tel}
+    <select id="getAllAdminUserInfo" resultMap="SimpleTbUsersMap">
+        SELECT tb_user.id,tb_user.name FROM tb_user,tb_user_role,tb_role WHERE tb_user.id = tb_user_role.u_id and tb_user_role.r_id = tb_role.id and tb_role.id = 2;
+    </select>
+
+    <select id="selectUserInfoById" resultMap="TbUsersMap">
+        SELECT
+               id,
+               name,
+               pwd,
+               email,
+               permission,
+               tel,
+               user_photo,
+               birth_day,
+               education,
+               sex,
+               sale
+        FROM tb_user
+        WHERE id = #{id} and is_deleate = 1
         LIMIT 1;
     </select>
 
+    <select id="getAdminUserInfoByIds" resultMap="SimpleTbUsersMap">
+        SELECT tb_user.id,tb_user.name FROM tb_user,tb_user_role,tb_role WHERE id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+              #{id}
+        </foreach>
+    </select>
 </mapper>
 
 

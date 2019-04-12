@@ -28,7 +28,7 @@ public class UserCenterServiceImpl implements UserCenterService {
 
     @Override
     public int getUserInfo(String tel, int permission) {
-        tbUsersDao.selectUserInfo(tel,permission);
+        tbUsersDao.selectUserInfo(tel);
         return 0;
     }
 }

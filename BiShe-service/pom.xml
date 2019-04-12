@@ -3,25 +3,25 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>BiShe-portal</artifactId>
+        <artifactId>BiShe</artifactId>
         <groupId>com.BiShe</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>BiShe-portal-service</artifactId>
+    <artifactId>BiShe-service</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
             <groupId>com.BiShe</groupId>
-            <artifactId>BiShe-portal-dao</artifactId>
+            <artifactId>BiShe-dao</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.BiShe</groupId>
-            <artifactId>BiShe-portal-pojo</artifactId>
+            <artifactId>BiShe-pojo</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
@@ -93,16 +93,10 @@
             <groupId>org.apache.shiro</groupId>
             <artifactId>shiro-core</artifactId>
             <version>1.2.3</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shiro</groupId>
-            <artifactId>shiro-core</artifactId>
-            <version>1.2.3</version>
         </dependency>
         <dependency>
             <groupId>com.BiShe</groupId>
-            <artifactId>BiShe-portal-web</artifactId>
+            <artifactId>BiShe-web</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>

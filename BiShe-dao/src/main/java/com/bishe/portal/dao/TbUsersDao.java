@@ -1,8 +1,11 @@
 package com.bishe.portal.dao;
 
 import com.bishe.portal.model.mo.TbUsers;
+import com.bishe.portal.model.po.SimpleUserInfo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * @Author:GaoPan
@@ -22,10 +25,9 @@ public interface TbUsersDao {
     /**
      *
      * @param tel
-     * @param permission
      * @return
      */
-    TbUsers selectUserInfo(@Param("tel") String tel,@Param("permission") int permission);
+    TbUsers selectUserInfo(@Param("tel") String tel);
 
     /**
      *
@@ -33,4 +35,22 @@ public interface TbUsersDao {
      * @return
      */
     TbUsers getUserInfoByTel(@Param("tel") String tel);
+
+    /**
+     *
+     * @return
+     */
+    List<SimpleUserInfo> getAllAdminUserInfo();
+
+    /**
+     * @param ids
+     * @return
+     */
+    List<SimpleUserInfo> selectUserInfoById (@Param("ids") List<Integer>ids);
+
+    /**
+     * @param userId
+     * @return
+     */
+    TbUsers getUserInfoById(@Param("id") int userId);
 }

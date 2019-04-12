@@ -3,12 +3,18 @@ package com.bishe.portal.service.impl;
 import com.alibaba.druid.util.StringUtils;
 import com.bishe.portal.dao.TbUsersDao;
 import com.bishe.portal.model.mo.TbUsers;
+import com.bishe.portal.model.po.SimpleUserInfo;
 import com.bishe.portal.model.po.TbUsersPo;
 import com.bishe.portal.service.UserService;
 import com.bishe.portal.service.utils.Encryption;
+import javafx.stage.StageStyle;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @Author:GaoPan
@@ -21,18 +27,20 @@ public class UserServiceImpl implements UserService {
     TbUsersDao tbUsersDao;
 
     @Override
-    public boolean login(String userName, String userPwd,int permission) {
-        //表示用户名为空
-        if (userName == null) {
+    public boolean login(TbUsersPo user) {
+        Subject subject = SecurityUtils.getSubject();
+        System.out.println("subject:" + subject.toString());
+//        创建用户名/密码身份证验证Token
+        UsernamePasswordToken token = new UsernamePasswordToken(user.getTel(), user.getPwd());
+        System.out.println("token" + token);
+        try {
+            subject.login(token);
+            System.out.println("登录成功");
+            return true;
+        } catch (Exception e) {
+            System.out.println("登录失败" + e);
             return false;
         }
-        TbUsers tbUsers = tbUsersDao.selectUserInfo(userName,permission);
-        //表示用户不存在
-        if (tbUsers == null) {
-            return false;
-        }
-        String newPwd = Encryption.getPwd(tbUsers.getSale(), userPwd);
-        return newPwd.equals(tbUsers.getPwd());
     }
 
     @Override
@@ -65,26 +73,28 @@ public class UserServiceImpl implements UserService {
         return getTbUserPo(userInfo);
     }
 
+    @Override
+    public List<SimpleUserInfo> getAllAdminUserInfo() {
+        return tbUsersDao.getAllAdminUserInfo();
+    }
+
     private TbUsersPo getTbUserPo (TbUsers tbUsers){
         TbUsersPo tbUserPo = new TbUsersPo();
-        tbUserPo.setAccountNumber(StringUtils.isEmpty(tbUsers.getAccountNumber()) ? "" : tbUsers.getAccountNumber());
         tbUserPo.setBirthDay(StringUtils.isEmpty(tbUsers.getBirthDay()) ? "" : tbUsers.getBirthDay());
-        tbUserPo.setEducation(StringUtils.isEmpty(tbUsers.getEducation()) ? "" : tbUsers.getEducation());
-        tbUserPo.setEmail(StringUtils.isEmpty(tbUsers.getEmail()) ? "" : tbUsers.getEmail());
-        tbUserPo.setName(StringUtils.isEmpty(tbUsers.getName()) ? "" : tbUsers.getName());
         tbUserPo.setPwd(StringUtils.isEmpty(tbUsers.getPwd()) ? "" : tbUsers.getPwd());
         tbUserPo.setSale(StringUtils.isEmpty(tbUsers.getSale()) ? "" : tbUsers.getSale());
         tbUserPo.setUserPhoto(StringUtils.isEmpty(tbUsers.getUserPhoto()) ? "" : tbUsers.getUserPhoto());
         tbUserPo.setSex(tbUsers.getSex());
         tbUserPo.setTel(StringUtils.isEmpty(tbUsers.getTel()) ? "" : tbUsers.getTel());
         tbUserPo.setPermission(tbUsers.getPermission());
+        tbUserPo.setId(tbUsers.getId());
+        tbUserPo.setName(StringUtils.isEmpty(tbUsers.getName()) ? "" : tbUsers.getName());
+        tbUserPo.setEmail(StringUtils.isEmpty(tbUsers.getEmail()) ? "" : tbUsers.getEmail());
         return tbUserPo;
     }
     private TbUsers getTbUsers(TbUsersPo tbUsersPo) {
         TbUsers tbUsers = new TbUsers();
-        tbUsers.setAccountNumber(tbUsersPo.getAccountNumber() == null ? "" : tbUsersPo.getAccountNumber());
         tbUsers.setBirthDay(tbUsersPo.getBirthDay() == null ? "" : tbUsersPo.getBirthDay());
-        tbUsers.setEducation(tbUsersPo.getEducation() == null ? "" : tbUsersPo.getEducation());
         tbUsers.setEmail(tbUsersPo.getEmail() == null ? "" : tbUsersPo.getEmail());
         tbUsers.setName(tbUsersPo.getName() == null ? "" : tbUsersPo.getName());
         tbUsers.setPwd(tbUsersPo.getPwd() == null ? "" : tbUsersPo.getPwd());
