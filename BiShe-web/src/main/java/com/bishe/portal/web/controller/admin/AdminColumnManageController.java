@@ -82,7 +82,7 @@ public class AdminColumnManageController {
 
     /**
      * 通过父级栏目ID获取栏目集合
-     * @param columnId 父级栏目ID
+     * @param  columnId 父级栏目ID
      * @return 返回响应
      */
     @RequestMapping(value = "/get_all_parent_column", method = RequestMethod.GET)

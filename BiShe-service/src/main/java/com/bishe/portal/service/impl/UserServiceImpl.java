@@ -78,6 +78,15 @@ public class UserServiceImpl implements UserService {
         return tbUsersDao.getAllAdminUserInfo();
     }
 
+    @Override
+    public boolean isLogin() {
+        Subject currentUser = SecurityUtils.getSubject();
+        if (null != currentUser && null != currentUser.getPrincipal()){
+            return true;
+        }
+        return false;
+    }
+
     private TbUsersPo getTbUserPo (TbUsers tbUsers){
         TbUsersPo tbUserPo = new TbUsersPo();
         tbUserPo.setBirthDay(StringUtils.isEmpty(tbUsers.getBirthDay()) ? "" : tbUsers.getBirthDay());

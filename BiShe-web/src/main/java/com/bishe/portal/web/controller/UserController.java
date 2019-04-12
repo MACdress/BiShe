@@ -3,10 +3,9 @@ package com.bishe.portal.web.controller;
 import com.alibaba.druid.util.StringUtils;
 import com.bishe.portal.model.po.SimpleUserInfo;
 import com.bishe.portal.model.po.TbUsersPo;
-import com.bishe.portal.service.UserService;
-import com.bishe.portal.service.utils.SessionContext;
-import com.bishe.portal.web.utils.JsonView;
 import com.bishe.portal.model.vo.RegisterUserVo;
+import com.bishe.portal.service.UserService;
+import com.bishe.portal.web.utils.JsonView;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,12 +38,12 @@ public class UserController {
 
     /**
      * 注册
-     * @return
+     * @return 返回响应
      */
     @RequestMapping(value = "/register")
     @ResponseBody
     public String register(RegisterUserVo registerUserVo){
-        if(SessionContext.isLogin()){
+        if(userService.isLogin()){
             return JsonView.render(301,"已经登陆过");
         }
         TbUsersPo tbUsersPo = userService.getByUserTel(registerUserVo.getTel());
@@ -64,7 +63,7 @@ public class UserController {
         tbUserPo.setBirthDay(StringUtils.isEmpty(registerUserVo.getBirthDay()) ? "" : registerUserVo.getBirthDay());
         tbUserPo.setEmail(StringUtils.isEmpty(registerUserVo.getEmail()) ? "" : registerUserVo.getEmail());
         tbUserPo.setName(StringUtils.isEmpty(registerUserVo.getName()) ? "" : registerUserVo.getName());
-        tbUserPo.setSex(registerUserVo.getSex().intValue());
+        tbUserPo.setSex(registerUserVo.getSex());
         tbUserPo.setPwd(StringUtils.isEmpty(registerUserVo.getPassword())?"":registerUserVo.getPassword());
         tbUserPo.setTel(StringUtils.isEmpty(registerUserVo.getTel()) ? "" : registerUserVo.getTel());
         tbUserPo.setPermission(registerUserVo.getPermission());

@@ -4,7 +4,6 @@ package com.bishe.portal.service;
 import com.bishe.portal.model.po.SimpleUserInfo;
 import com.bishe.portal.model.po.TbUsersPo;
 
-import java.beans.SimpleBeanInfo;
 import java.util.List;
 
 /**
@@ -30,4 +29,6 @@ public interface UserService {
     TbUsersPo getByUserTel(String tel);
 
     List<SimpleUserInfo> getAllAdminUserInfo();
+
+    boolean isLogin();
 }
