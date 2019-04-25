@@ -2,11 +2,13 @@ package com.bishe.portal.model.vo;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @author gaopan31
  */
 @Data
-public class ManageInformationParamVo {
+public class ManageInformationParamVo implements Serializable {
     private String tittle;
     private String author;
     private String edit;

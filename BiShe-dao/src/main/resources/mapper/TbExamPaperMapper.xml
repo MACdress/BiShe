@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bishe.portal.dao.TbExamPaperDao">
+    <resultMap id="TbExamPaperMap" type="com.bishe.portal.model.mo.TbExamPaper">
+        <id column="id" property="id"/>
+        <result column="exam_paper_name" property="examPaperName"/>
+        <result column="exam_paper_type" property="examPaperType"/>
+        <result column="invalidTime" property="invalidTime"/>
+        <result column="createUnit" property="createUnit"/>
+        <result column="responsible" property="responsible"/>
+        <result column="status" property="status"/>
+    </resultMap>
+    <sql id="TableName">
+        tb_exam_paper
+    </sql>
+    <sql id="Fields">
+        exam_paper_name,exam_paper_type,invalidTime,createUnit,responsible,status
+    </sql>
+
+    <insert id="insertExamPaper">
+        insert INTO <include refid="TableName"/> (
+        <include refid="Fields"/>,
+        create_at,
+        update_at)
+        values(
+        #{examPaper.examPaperName},
+        #{examPaper.examPaperType},
+        #{examPaper.invalidTime},
+        #{examPaper.createUnit},
+        #{examPaper.responsible}
+        #{examPaper.status}
+        NOW(),
+        NOW()
+        )
+        create_at,
+        update_at
+    </insert>
+    <update id="updateExamPaper">
+        UPDATE <include refid="TableName"/>
+        <set>
+            <if test="examPaper.columnName != nll">
+                exam_paper_name = #{examPaper.examPaperName},
+            </if>
+            <if test="examPaper.isReview != nll">
+                exam_paper_type = #{examPaper.examPaperType},
+            </if>
+            <if test="examPaper.parent != nll">
+                invalidTime = #{examPaper.invalidTime},
+            </if>
+            <if test="examPaper.columnStatus != nll">
+                createUnit = #{examPaper.createUnit},
+            </if>
+            <if test="examPaper.columnImg != nll">
+                responsible =  #{examPaper.responsible},
+            </if>
+            <if test="examPaper">
+                status = #{examPaper.status}
+            </if>
+            <if test="1">
+                update_at = NOW(),
+            </if>
+        </set>
+        where  id = #{examPaper.id}
+    </update>
+</mapper>

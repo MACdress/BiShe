@@ -2,11 +2,13 @@ package com.bishe.portal.model.vo;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @author gaopan31
  */
 @Data
-public class ManageColumnParamVo {
+public class ManageColumnParamVo implements Serializable {
     private String columnName;
     private String tittle;
     private String createTime1;
