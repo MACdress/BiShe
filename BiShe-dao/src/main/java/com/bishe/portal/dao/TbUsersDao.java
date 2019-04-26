@@ -30,11 +30,11 @@ public interface TbUsersDao {
     TbUsers selectUserInfo(@Param("tel") String tel);
 
     /**
-     *
-     * @param tel
-     * @return
+     *根据账号查询用户信息
+     * @param account
+     * @return 返回用户信息
      */
-    TbUsers getUserInfoByTel(@Param("tel") String tel);
+    TbUsers getUserInfoByAccount(@Param("account") String account);
 
     /**
      *

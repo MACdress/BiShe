@@ -7,10 +7,7 @@ import com.bishe.portal.model.po.SimpleUserInfo;
 import com.bishe.portal.model.po.TbUsersPo;
 import com.bishe.portal.service.UserService;
 import com.bishe.portal.service.utils.Encryption;
-import javafx.stage.StageStyle;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.subject.Subject;
+import com.bishe.portal.service.utils.ReturnInfo;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -27,20 +24,26 @@ public class UserServiceImpl implements UserService {
     TbUsersDao tbUsersDao;
 
     @Override
-    public boolean login(TbUsersPo user) {
-        Subject subject = SecurityUtils.getSubject();
-        System.out.println("subject:" + subject.toString());
-//        创建用户名/密码身份证验证Token
-        UsernamePasswordToken token = new UsernamePasswordToken(user.getTel(), user.getPwd());
-        System.out.println("token" + token);
-        try {
-            subject.login(token);
-            System.out.println("登录成功");
-            return true;
-        } catch (Exception e) {
-            System.out.println("登录失败" + e);
-            return false;
+    public ReturnInfo login(TbUsersPo user) {
+        ReturnInfo returnInfo = new ReturnInfo();
+        TbUsers userInfo = tbUsersDao.getUserInfoByAccount(user.getAccount());
+        if (userInfo != null) {
+            String newPwd = Encryption.getPwd(userInfo.getSale(), user.getPwd());
+            if (newPwd.equals(userInfo.getPwd())) {
+                System.out.println("登录成功");
+                returnInfo.setSuccess(true);
+                returnInfo.setMessage("登录成功");
+            } else {
+                System.out.println("密码错误");
+                returnInfo.setSuccess(false);
+                returnInfo.setMessage("密码错误");
+            }
+        } else {
+            System.out.println("账号不存在");
+            returnInfo.setSuccess(false);
+            returnInfo.setMessage("账号不存在");
         }
+        return returnInfo;
     }
 
     @Override
@@ -68,8 +71,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public TbUsersPo getByUserTel(String tel) {
-        TbUsers userInfo = tbUsersDao.getUserInfoByTel(tel);
+    public TbUsersPo getByUserAccount(String account) {
+        TbUsers userInfo = tbUsersDao.getUserInfoByAccount(account);
         return getTbUserPo(userInfo);
     }
 
@@ -78,21 +81,11 @@ public class UserServiceImpl implements UserService {
         return tbUsersDao.getAllAdminUserInfo();
     }
 
-    @Override
-    public boolean isLogin() {
-        Subject currentUser = SecurityUtils.getSubject();
-        if (null != currentUser && null != currentUser.getPrincipal()){
-            return true;
-        }
-        return false;
-    }
-
     private TbUsersPo getTbUserPo (TbUsers tbUsers){
         TbUsersPo tbUserPo = new TbUsersPo();
         tbUserPo.setBirthDay(StringUtils.isEmpty(tbUsers.getBirthDay()) ? "" : tbUsers.getBirthDay());
         tbUserPo.setPwd(StringUtils.isEmpty(tbUsers.getPwd()) ? "" : tbUsers.getPwd());
         tbUserPo.setSale(StringUtils.isEmpty(tbUsers.getSale()) ? "" : tbUsers.getSale());
-        tbUserPo.setUserPhoto(StringUtils.isEmpty(tbUsers.getUserPhoto()) ? "" : tbUsers.getUserPhoto());
         tbUserPo.setSex(tbUsers.getSex());
         tbUserPo.setTel(StringUtils.isEmpty(tbUsers.getTel()) ? "" : tbUsers.getTel());
         tbUserPo.setPermission(tbUsers.getPermission());
@@ -108,7 +101,6 @@ public class UserServiceImpl implements UserService {
         tbUsers.setName(tbUsersPo.getName() == null ? "" : tbUsersPo.getName());
         tbUsers.setPwd(tbUsersPo.getPwd() == null ? "" : tbUsersPo.getPwd());
         tbUsers.setSale(tbUsersPo.getSale() == null ? "" : tbUsersPo.getSale());
-        tbUsers.setUserPhoto(tbUsersPo.getUserPhoto() == null ? "" : tbUsersPo.getUserPhoto());
         tbUsers.setSex(tbUsersPo.getSex() == null ? 1 : tbUsersPo.getSex());
         tbUsers.setTel(tbUsersPo.getTel() == null ? "" : tbUsersPo.getTel());
         tbUsers.setPermission(tbUsersPo.getPermission() == null ? 0 : tbUsersPo.getPermission());

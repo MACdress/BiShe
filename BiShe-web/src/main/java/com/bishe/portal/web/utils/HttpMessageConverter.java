@@ -23,10 +23,6 @@ public class  HttpMessageConverter extends AbstractHttpMessageConverter<String> 
 	private final List<Charset> availableCharsets;
 	private boolean writeAcceptCharset;
 
-	public HttpMessageConverter() {
-		this(DEFAULT_CHARSET);
-	}
-
 	public HttpMessageConverter(Charset defaultCharset) {
 		super(new MediaType[] { new MediaType("text", "plain", defaultCharset),MediaType.ALL });
 		this.writeAcceptCharset = true;
@@ -73,8 +69,8 @@ public class  HttpMessageConverter extends AbstractHttpMessageConverter<String> 
 	}
 
 	private Charset getContentTypeCharset(MediaType contentType) {
-		if ((contentType != null) && (contentType.getCharSet() != null)) {
-			return contentType.getCharSet();
+		if ((contentType != null) && (contentType.getCharset() != null)) {
+			return contentType.getCharset();
 		}
 		return this.defaultCharset;
 	}

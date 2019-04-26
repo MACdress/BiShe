@@ -5,14 +5,16 @@
         <id column="id" property="id"/>
         <result column="exam_paper_name" property="examPaperName"/>
         <result column="exam_paper_type" property="examPaperType"/>
-        <result column="invalidTime" property="invalidTime"/>
-        <result column="createUnit" property="createUnit"/>
+        <result column="invalid_time" property="invalidTime"/>
+        <result column="create_unit" property="createUnit"/>
         <result column="responsible" property="responsible"/>
         <result column="status" property="status"/>
     </resultMap>
+
     <sql id="TableName">
         tb_exam_paper
     </sql>
+
     <sql id="Fields">
         exam_paper_name,exam_paper_type,invalidTime,createUnit,responsible,status
     </sql>
@@ -35,6 +37,7 @@
         create_at,
         update_at
     </insert>
+
     <update id="updateExamPaper">
         UPDATE <include refid="TableName"/>
         <set>
@@ -62,4 +65,32 @@
         </set>
         where  id = #{examPaper.id}
     </update>
+
+    <delete id="deleteExamPaper" parameterType="int">
+        DELETE from <include refid="TableName"/>  where id = #{id}
+    </delete>
+
+    <select id="selectExamPaper" resultMap="TbExamPaperMap">
+        select <include refid="Fields"/> from <include refid="TableName"/>
+        <where>
+            <if test="examPaper.examPaperName != null ">
+                exam_paper_name = #{examPaper.examPaperName}
+            </if>
+            <if test="examPaper.invalidBeginTime == null">
+                invalid_time &gt; #{examPaper.invalidBeginTime}
+            </if>
+            <if test="examPaper.invalidEndTime != null ">
+                invalid_time &lt; #{examPaper.invalidEndTime}
+            </if>
+            <if test="examPaper.createUnit != null ">
+                create_unit = #{examPaper.createUnit}
+            </if>
+            <if test="examPaper.responsible != null ">
+                responsible = #{examPaper.responsible}
+            </if>
+            <if test="examPaper.status != null ">
+                status = #{examPaper.status}
+            </if>
+        </where>
+    </select>
 </mapper>

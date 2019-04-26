@@ -1,6 +1,9 @@
 package com.bishe.portal.service;
 
 import com.bishe.portal.model.vo.ExamPaperVo;
+import com.bishe.portal.model.vo.FindExamPaperVo;
+
+import java.util.List;
 
 /**
  * @author 73515
@@ -15,4 +18,6 @@ public interface ExamPaperService {
     void updateExamPaper(ExamPaperVo examPaperVo);
 
     void deleteExamPaper(int examPaperId);
+
+    List<ExamPaperVo> findExamPaperList(FindExamPaperVo findExamPaperVo);
 }

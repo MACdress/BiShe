@@ -6,6 +6,7 @@ package com.bishe.portal.web.controller.admin;
 
 import com.bishe.portal.model.po.ParamColumnInfoPo;
 import com.bishe.portal.model.vo.ExamPaperVo;
+import com.bishe.portal.model.vo.FindExamPaperVo;
 import com.bishe.portal.service.ExamPaperService;
 import com.bishe.portal.web.utils.JsonView;
 import org.apache.shiro.SecurityUtils;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @Controller
 @CrossOrigin
@@ -36,6 +38,12 @@ public class AdminExamPaperController {
     @RequestMapping(value = "/delete_examPaper",method = RequestMethod.GET)
     public String deleteExamPaper(@RequestParam("examPaperId") int examPaperId){
         examPaperService.deleteExamPaper(examPaperId);
-        return JsonView.render(200,"更新成功");
+        return JsonView.render(200,"删除成功");
+    }
+
+    @RequestMapping(value = "/find_examPaper",method = RequestMethod.GET)
+    public String findExamPaperInfo(@RequestBody FindExamPaperVo findExamPaperVo){
+        List<ExamPaperVo> result = examPaperService.findExamPaperList(findExamPaperVo);
+        return JsonView.render(200,"查询成功",result);
     }
 }

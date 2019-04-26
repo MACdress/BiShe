@@ -2,6 +2,7 @@ package com.bishe.portal.web.controller.admin;
 
 import com.bishe.portal.model.vo.ManageInformationParamVo;
 import com.bishe.portal.service.InformationManageService;
+import com.bishe.portal.web.utils.JsonView;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,6 +28,6 @@ public class AdminColumnInformationController {
     public String addInformationInfo (@RequestBody ManageInformationParamVo manageInformationParamVo){
 
         informationManageService.addInformationInfo(manageInformationParamVo);
-
+        return JsonView.render(200,"新增成功");
     }
 }

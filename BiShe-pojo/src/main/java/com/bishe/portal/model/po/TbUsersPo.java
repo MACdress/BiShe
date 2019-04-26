@@ -12,18 +12,26 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TbUsersPo {
     private Integer id;
-    private String  accountNumber;
+    private String  account;
     private String pwd;
     private String email;
     private String name;
+    private String idCard;
+    private Integer identity;
     /**
      * 用戶權限：0代表普通用戶，1代表管理者
      */
     private Integer permission;
     private String tel;
-    private String userPhoto;
     private String birthDay;
     private String education;
+    private String nationality;
+    private String branch;
+    private String fixedTel;
+    private String address;
+    private String job;
+    private String joinPartyDate;
+    private String turnPositiveDate;
     /**
      * 0代表女，1代表男
      */

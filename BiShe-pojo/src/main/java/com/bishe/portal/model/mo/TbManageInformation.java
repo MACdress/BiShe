@@ -22,5 +22,4 @@ public class TbManageInformation {
     private String commentEndTime;
     private String summary;
     private String text;
-    private int createUser;
 }

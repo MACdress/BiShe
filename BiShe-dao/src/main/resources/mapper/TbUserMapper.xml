@@ -66,7 +66,7 @@
         SELECT tb_user.id,tb_user.name FROM tb_user,tb_user_role,tb_role WHERE tb_user.id = tb_user_role.u_id and tb_user_role.r_id = tb_role.id and tb_role.id = 2;
     </select>
 
-    <select id="selectUserInfoById" resultMap="TbUsersMap">
+    <select id="getUserInfoByAccount" resultMap="TbUsersMap">
         SELECT
                id,
                name,
@@ -80,7 +80,7 @@
                sex,
                sale
         FROM tb_user
-        WHERE id = #{id} and is_deleate = 1
+        WHERE account = #{account} and is_deleate = 1
         LIMIT 1;
     </select>
 

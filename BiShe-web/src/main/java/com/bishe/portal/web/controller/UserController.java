@@ -5,11 +5,13 @@ import com.bishe.portal.model.po.SimpleUserInfo;
 import com.bishe.portal.model.po.TbUsersPo;
 import com.bishe.portal.model.vo.RegisterUserVo;
 import com.bishe.portal.service.UserService;
+import com.bishe.portal.service.utils.ReturnInfo;
 import com.bishe.portal.web.utils.JsonView;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 /**
@@ -24,29 +26,31 @@ public class UserController {
     /**
      * 登录
      */
-    @RequestMapping(value = "/login",method = RequestMethod.POST)
+    @RequestMapping(value = "login",method = RequestMethod.POST)
     @ResponseBody
-    public String login(@RequestParam("tel")String tel,@RequestParam("password")String password){
+    public String login(@RequestParam("account")String account, @RequestParam("password")String password, HttpSession httpSession){
         TbUsersPo user = new TbUsersPo();
-        user.setTel(tel);
+        user.setAccount(account);
         user.setPwd(password);
-        if (userService.login(user)) {
-            return JsonView.render(200,"登录成功");
+        ReturnInfo retuenInfo = userService.login(user);
+        if ( retuenInfo.isSuccess()) {
+           httpSession.setAttribute("user",user);
         }
-        return JsonView.render(401,"登录失败");
+        return JsonView.render(401,retuenInfo.getMessage());
     }
 
     /**
      * 注册
      * @return 返回响应
      */
-    @RequestMapping(value = "/register")
+    @RequestMapping(value = "register",method = RequestMethod.POST)
     @ResponseBody
-    public String register(RegisterUserVo registerUserVo){
-        if(userService.isLogin()){
+    public String register(@RequestBody RegisterUserVo registerUserVo,HttpSession httpSession){
+        System.out.println("开始注册");
+        if(httpSession.getAttribute("user")!=null){
             return JsonView.render(301,"已经登陆过");
         }
-        TbUsersPo tbUsersPo = userService.getByUserTel(registerUserVo.getTel());
+        TbUsersPo tbUsersPo = userService.getByUserAccount(registerUserVo.getAccount());
         if(tbUsersPo != null){
             return JsonView.render(201,"已经注册过");
         }else{
@@ -70,10 +74,18 @@ public class UserController {
         return tbUserPo;
     }
 
-    @RequestMapping(value = "/adminUserInfo")
+
+    @RequestMapping(value = "adminUserInfo")
     @ResponseBody
     public String getAllAdminName (){
         List<SimpleUserInfo> userInfoList =  userService.getAllAdminUserInfo();
         return JsonView.render(200,"成功",userInfoList);
     }
+
+    @RequestMapping(value = "test",method = RequestMethod.GET)
+    @ResponseBody
+    public String getTest (){
+        return JsonView.render(200,"成功");
+    }
+
 }

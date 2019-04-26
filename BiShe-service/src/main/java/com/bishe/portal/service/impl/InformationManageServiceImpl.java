@@ -18,19 +18,18 @@ public class InformationManageServiceImpl implements InformationManageService {
     TbManageInfomationDao tbManageInfomationDao;
 
     @Override
-    public void addInformationInfo(ManageInformationParamVo manageInformationParamVo,int userId) {
-        TbManageInformation tbManageInformation = getTbManageInformation(manageInformationParamVo,userId);
+    public void addInformationInfo(ManageInformationParamVo manageInformationParamVo) {
+        TbManageInformation tbManageInformation = getTbManageInformation(manageInformationParamVo);
         tbManageInfomationDao.insertInformationInfo(tbManageInformation);
     }
 
-    private TbManageInformation getTbManageInformation(ManageInformationParamVo manageInformationParamVo,int userId) {
+    private TbManageInformation getTbManageInformation(ManageInformationParamVo manageInformationParamVo) {
         TbManageInformation tbManageInformation = new TbManageInformation();
         tbManageInformation.setAuthor(manageInformationParamVo.getAuthor());
         tbManageInformation.setBelongColumn(manageInformationParamVo.getBelongColumn());
         tbManageInformation.setCommentBeginTime(tbManageInformation.getCommentBeginTime());
         tbManageInformation.setCommentEndTime(manageInformationParamVo.getCommentEndTime());
         tbManageInformation.setDownTime(manageInformationParamVo.getDownTime());
-        tbManageInformation.setCreateUser(userId);
         return tbManageInformation;
     }
 }
