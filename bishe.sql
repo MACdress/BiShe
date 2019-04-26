@@ -11,7 +11,7 @@
  Target Server Version : 50725
  File Encoding         : 65001
 
- Date: 25/04/2019 22:44:15
+ Date: 27/04/2019 06:53:47
 */
 
 SET NAMES utf8mb4;
@@ -93,9 +93,12 @@ CREATE TABLE `tb_role`  (
 DROP TABLE IF EXISTS `tb_user`;
 CREATE TABLE `tb_user`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `id_card` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '身份证',
+  `identity` tinyint(1) NOT NULL DEFAULT 0 COMMENT '人员类别:1表示正式党员，0代表预备党员',
+  `account` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '账号',
   `name` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '用户名',
   `pwd` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '密码',
-  `tel` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '电话号码',
+  `tel` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '电话号码',
   `email` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '邮箱',
   `birthday` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '生日',
   `sex` tinyint(1) UNSIGNED NOT NULL DEFAULT 1 COMMENT '性别:1代表男性，0代表女性',
@@ -105,8 +108,15 @@ CREATE TABLE `tb_user`  (
   `is_delete` tinyint(1) UNSIGNED NOT NULL DEFAULT 1 COMMENT '是否可用：1代表可用，0代表已删除',
   `permission` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '角色',
   `sale` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '盐值',
-  `user_photo` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '用户头像',
-  PRIMARY KEY (`id`) USING BTREE
+  `nationality` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '民族',
+  `branch` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '所在党支部',
+  `fixed_tel` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '固定电话',
+  `address` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '家庭住址',
+  `job` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '工作岗位',
+  `join_party_date` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '入党日期',
+  `turn_positive_date` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '转正日期',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `tx_account`(`account`) USING BTREE COMMENT '账号'
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
