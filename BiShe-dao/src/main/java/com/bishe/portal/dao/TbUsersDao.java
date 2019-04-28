@@ -53,4 +53,6 @@ public interface TbUsersDao {
      * @return
      */
     TbUsers getUserInfoById(@Param("id") int userId);
+
+    TbUsers getUserInfoByTel(@Param("tel") String tel);
 }

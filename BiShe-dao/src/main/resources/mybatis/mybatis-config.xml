@@ -21,8 +21,5 @@
 
         <!--<setting name="defaultExecutorType" value="BATCH" />执行器类型-->
     </settings>
-    <!--<typeAliases>-->
-    <!--<package name="com.rener.portal.model.vo" />-->
-    <!--</typeAliases>-->
 
 </configuration>

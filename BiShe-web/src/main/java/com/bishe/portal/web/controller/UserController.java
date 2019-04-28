@@ -28,15 +28,15 @@ public class UserController {
      */
     @RequestMapping(value = "login",method = RequestMethod.POST)
     @ResponseBody
-    public String login(@RequestParam("account")String account, @RequestParam("password")String password, HttpSession httpSession){
+    public String login(@RequestBody RegisterUserVo registerUserVo, HttpSession httpSession){
         TbUsersPo user = new TbUsersPo();
-        user.setAccount(account);
-        user.setPwd(password);
+        user.setAccount(registerUserVo.getAccount());
+        user.setPwd(registerUserVo.getPassword());
         ReturnInfo retuenInfo = userService.login(user);
         if ( retuenInfo.isSuccess()) {
            httpSession.setAttribute("user",user);
         }
-        return JsonView.render(401,retuenInfo.getMessage());
+        return JsonView.render(200,retuenInfo.getMessage());
     }
 
     /**
@@ -47,19 +47,20 @@ public class UserController {
     @ResponseBody
     public String register(@RequestBody RegisterUserVo registerUserVo,HttpSession httpSession){
         System.out.println("开始注册");
+        TbUsersPo tbUsersPo1;
         if(httpSession.getAttribute("user")!=null){
-            return JsonView.render(301,"已经登陆过");
+            return JsonView.render(301,"is login");
         }
-        TbUsersPo tbUsersPo = userService.getByUserAccount(registerUserVo.getAccount());
+        TbUsersPo tbUsersPo = userService.getByUserTel(registerUserVo.getTel());
         if(tbUsersPo != null){
-            return JsonView.render(201,"已经注册过");
+            return JsonView.render(201,"is register");
         }else{
-            boolean enroll = userService.enroll(getUserPo(registerUserVo));
-            if (!enroll){
-                return JsonView.render(404,"注册失败");
+            tbUsersPo1 = userService.enroll(getUserPo(registerUserVo));
+            if (tbUsersPo1 == null){
+                return JsonView.render(404,"register error");
             }
         }
-        return JsonView.render(200,"注册成功");
+        return JsonView.render(200,"register success",tbUsersPo1);
     }
 
     private TbUsersPo getUserPo(RegisterUserVo registerUserVo) {
@@ -85,7 +86,7 @@ public class UserController {
     @RequestMapping(value = "test",method = RequestMethod.GET)
     @ResponseBody
     public String getTest (){
-        return JsonView.render(200,"成功");
+        return JsonView.render(200,"success");
     }
 
 }

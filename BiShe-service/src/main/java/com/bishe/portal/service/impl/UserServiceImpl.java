@@ -8,6 +8,7 @@ import com.bishe.portal.model.po.TbUsersPo;
 import com.bishe.portal.service.UserService;
 import com.bishe.portal.service.utils.Encryption;
 import com.bishe.portal.service.utils.ReturnInfo;
+import com.bishe.portal.service.utils.UUIDUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -30,24 +31,24 @@ public class UserServiceImpl implements UserService {
         if (userInfo != null) {
             String newPwd = Encryption.getPwd(userInfo.getSale(), user.getPwd());
             if (newPwd.equals(userInfo.getPwd())) {
-                System.out.println("登录成功");
+                System.out.println("login success");
                 returnInfo.setSuccess(true);
-                returnInfo.setMessage("登录成功");
+                returnInfo.setMessage("login success");
             } else {
-                System.out.println("密码错误");
+                System.out.println("password error");
                 returnInfo.setSuccess(false);
-                returnInfo.setMessage("密码错误");
+                returnInfo.setMessage("password error");
             }
         } else {
-            System.out.println("账号不存在");
+            System.out.println("account not exist");
             returnInfo.setSuccess(false);
-            returnInfo.setMessage("账号不存在");
+            returnInfo.setMessage("account not exist");
         }
         return returnInfo;
     }
 
     @Override
-    public boolean enroll(TbUsersPo tbUsersPo) {
+    public TbUsersPo enroll(TbUsersPo tbUsersPo) {
         boolean registerSuccess = true;
         String newPwd = "";
         String sale = "";
@@ -59,15 +60,8 @@ public class UserServiceImpl implements UserService {
         tbUsersPo.setPwd(newPwd);
         tbUsersPo.setSale(sale);
         TbUsers tbUsers = getTbUsers(tbUsersPo);
-        try {
-            if(tbUsersDao.insert(tbUsers)==0){
-                registerSuccess = false;
-            }
-        } catch (Exception e) {
-            registerSuccess = false;
-            e.printStackTrace();
-        }
-        return registerSuccess;
+        tbUsersDao.insert(tbUsers);
+        return getTbUserPo(tbUsersDao.getUserInfoByAccount(tbUsers.getAccount()));
     }
 
     @Override
@@ -77,12 +71,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public TbUsersPo getByUserTel(String tel) {
+        TbUsers userInfo = tbUsersDao.getUserInfoByTel(tel);
+        return null;
+    }
+
+    @Override
     public List<SimpleUserInfo> getAllAdminUserInfo() {
         return tbUsersDao.getAllAdminUserInfo();
     }
 
     private TbUsersPo getTbUserPo (TbUsers tbUsers){
         TbUsersPo tbUserPo = new TbUsersPo();
+        if (tbUsers == null){
+            return tbUserPo;
+        }
         tbUserPo.setBirthDay(StringUtils.isEmpty(tbUsers.getBirthDay()) ? "" : tbUsers.getBirthDay());
         tbUserPo.setPwd(StringUtils.isEmpty(tbUsers.getPwd()) ? "" : tbUsers.getPwd());
         tbUserPo.setSale(StringUtils.isEmpty(tbUsers.getSale()) ? "" : tbUsers.getSale());
@@ -104,6 +107,7 @@ public class UserServiceImpl implements UserService {
         tbUsers.setSex(tbUsersPo.getSex() == null ? 1 : tbUsersPo.getSex());
         tbUsers.setTel(tbUsersPo.getTel() == null ? "" : tbUsersPo.getTel());
         tbUsers.setPermission(tbUsersPo.getPermission() == null ? 0 : tbUsersPo.getPermission());
+        tbUsers.setAccount(UUIDUtils.getUUID(8));
         return tbUsers;
     }
 }

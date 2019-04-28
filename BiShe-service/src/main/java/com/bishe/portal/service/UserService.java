@@ -1,6 +1,7 @@
 package com.bishe.portal.service;
 
 
+import com.bishe.portal.model.mo.TbUsers;
 import com.bishe.portal.model.po.SimpleUserInfo;
 import com.bishe.portal.model.po.TbUsersPo;
 import com.bishe.portal.service.utils.ReturnInfo;
@@ -24,10 +25,12 @@ public interface UserService {
      *
      * @param tbUsers
      */
-    boolean enroll(TbUsersPo tbUsers);
+    TbUsersPo enroll(TbUsersPo tbUsers);
 
 
     TbUsersPo getByUserAccount(String account);
+
+    TbUsersPo getByUserTel(String tel);
 
     List<SimpleUserInfo> getAllAdminUserInfo();
 }

@@ -8,7 +8,6 @@
         <result column="email" property="email"/>
         <result column="permission" property="permission"/>
         <result column="tel" property="tel"/>
-        <result column="user_photo" property="userPhoto"/>
         <result column="birthday" property="birthDay"/>
         <result column="sex" property="sex"/>
         <result column="sale" property="sale"/>
@@ -25,23 +24,21 @@
                               email,
                               permission,
                               tel,
-                              user_photo,
-                              birth_day,
+                              birthday,
                               sex,
                               sale,
-                              create_user,
-                              creare_at,
+                              account,
+                              create_at,
                               update_at)
         VALUES (#{tbUsers.name},
                 #{tbUsers.pwd},
                 #{tbUsers.email},
                 #{tbUsers.permission},
                 #{tbUsers.tel},
-                #{tbUsers.userPhoto},
                 #{tbUsers.birthDay},
                 #{tbUsers.sex},
                 #{tbUsers.sale},
-                #{tbUsers.createUser},
+                #{tbUsers.account},
                 NOW(),
                 NOW());
     </insert>
@@ -52,10 +49,9 @@
                email,
                permission,
                tel,
-               user_photo,
-               birth_day,
-               education,
+               birthday,
                sex,
+               account,
                sale
         FROM tb_user
         WHERE tel = #{tel} and is_deleate = 1
@@ -74,13 +70,28 @@
                email,
                permission,
                tel,
-               user_photo,
-               birth_day,
-               education,
+               birthday,
                sex,
+               account,
                sale
         FROM tb_user
         WHERE account = #{account} and is_deleate = 1
+        LIMIT 1;
+    </select>
+    <select id="getUserInfoByTel" resultMap="TbUsersMap">
+        SELECT
+               id,
+               name,
+               pwd,
+               email,
+               permission,
+               tel,
+               birthday,
+               sex,
+               account,
+               sale
+        FROM tb_user
+        WHERE account = #{tel} and is_deleate = 1
         LIMIT 1;
     </select>
 
