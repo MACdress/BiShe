@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.annotation.Resource;
 
@@ -25,6 +26,7 @@ public class AdminColumnInformationController {
      * 新增一个咨讯信息
      * @return 返回响应
      */
+    @RequestMapping(value = "addInformation",method = RequestMethod.POST)
     public String addInformationInfo (@RequestBody ManageInformationParamVo manageInformationParamVo){
 
         informationManageService.addInformationInfo(manageInformationParamVo);

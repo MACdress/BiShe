@@ -9,15 +9,16 @@ import java.util.Date;
  */
 @Data
 public class TbColumnManagePo {
-    private String columnId;
+    private int id;
+    private String  parentId;
     private String columnName;
     private int isReview;
-    private String parentId;
+    private String parent;
     private int columnStatus;
     private String columnImg;
     private String columnText;
-    private int reviewUserId;
-    private int createUserId;
+    private String reviewUserId;
+    private String  createUserId;
     private String createUser;
     private String reviewUser;
     private String parentName;

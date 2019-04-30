@@ -2,10 +2,12 @@ package com.bishe.portal.dao;
 
 import com.bishe.portal.model.mo.TbManageInformation;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 /**
  * @author gaopan31
  */
+@Repository
 public interface TbManageInfomationDao {
 
     /**

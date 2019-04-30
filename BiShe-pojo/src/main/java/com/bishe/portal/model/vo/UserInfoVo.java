@@ -1,16 +1,12 @@
-package com.bishe.portal.model.mo;
+package com.bishe.portal.model.vo;
+
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-/**
- * @author 熊猫
- */
+import java.io.Serializable;
+
 @Data
-@NoArgsConstructor
-public class TbUsers {
-    private int id;
-    private String pwd;
+public class UserInfoVo implements Serializable {
     private String email;
     private String name;
     /**
@@ -18,13 +14,13 @@ public class TbUsers {
      */
     private String idCard;
     /**
-     * 人员类别:1代表预备党员，2代表正式党员
+     * 人员类别:O代表预备党员，1代表正式党员
      */
-    private int identity;
+    private Integer identity;
     /**
      * 用戶權限：0代表普通用戶，1代表管理者
      */
-    private int permission;
+    private Integer permission;
     /**
      * 账号
      */
@@ -34,11 +30,7 @@ public class TbUsers {
     /**
      * 0代表女，1代表男
      */
-    private int sex;
-    /**
-     * 盐值
-     */
-    private String sale;
+    private Integer sex;
     /**
      * 民族
      */
@@ -61,7 +53,7 @@ public class TbUsers {
      */
     private String joinPartyDate;
     /**
-/      * 转正日期
+     /      * 转正日期
      */
     private String turnPositiveDate;
 }

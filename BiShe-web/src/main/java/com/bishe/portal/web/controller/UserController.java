@@ -4,6 +4,8 @@ import com.alibaba.druid.util.StringUtils;
 import com.bishe.portal.model.po.SimpleUserInfo;
 import com.bishe.portal.model.po.TbUsersPo;
 import com.bishe.portal.model.vo.RegisterUserVo;
+import com.bishe.portal.model.vo.SelectUserParamVo;
+import com.bishe.portal.model.vo.UserInfoVo;
 import com.bishe.portal.service.UserService;
 import com.bishe.portal.service.utils.ReturnInfo;
 import com.bishe.portal.web.utils.JsonView;
@@ -34,9 +36,9 @@ public class UserController {
         user.setPwd(registerUserVo.getPassword());
         ReturnInfo retuenInfo = userService.login(user);
         if ( retuenInfo.isSuccess()) {
-           httpSession.setAttribute("user",user);
+           httpSession.setAttribute("user",retuenInfo.getData());
         }
-        return JsonView.render(200,retuenInfo.getMessage());
+        return JsonView.render(200,retuenInfo.getMessage(),retuenInfo.getData());
     }
 
     /**
@@ -47,11 +49,12 @@ public class UserController {
     @ResponseBody
     public String register(@RequestBody RegisterUserVo registerUserVo,HttpSession httpSession){
         System.out.println("开始注册");
-        TbUsersPo tbUsersPo1;
-        if(httpSession.getAttribute("user")!=null){
+        UserInfoVo tbUsersPo1;
+        UserInfoVo tbUsersPo  = (UserInfoVo) httpSession.getAttribute("user");
+        if((tbUsersPo!=null)&&(tbUsersPo.getTel().equals(registerUserVo.getTel()))){
             return JsonView.render(301,"is login");
         }
-        TbUsersPo tbUsersPo = userService.getByUserTel(registerUserVo.getTel());
+        tbUsersPo = userService.getByUserTel(registerUserVo.getTel());
         if(tbUsersPo != null){
             return JsonView.render(201,"is register");
         }else{
@@ -76,10 +79,10 @@ public class UserController {
     }
 
 
-    @RequestMapping(value = "adminUserInfo")
+    @RequestMapping(value = "allUserInfo",method = RequestMethod.POST)
     @ResponseBody
-    public String getAllAdminName (){
-        List<SimpleUserInfo> userInfoList =  userService.getAllAdminUserInfo();
+    public String getAllUserInfo (@RequestBody SelectUserParamVo param){
+        List<UserInfoVo> userInfoList =  userService.getAllUserInfo(param);
         return JsonView.render(200,"成功",userInfoList);
     }
 

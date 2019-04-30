@@ -47,4 +47,6 @@ public interface ColumnManageService{
      * @return 返回符合条件的栏目信息
      */
     List<ColumnInfoVo> getAllParentColumnList(String columnId);
+
+    List<ColumnInfoVo> getAllParentColumn();
 }

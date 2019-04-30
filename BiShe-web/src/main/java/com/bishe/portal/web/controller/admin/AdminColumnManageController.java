@@ -2,14 +2,15 @@ package com.bishe.portal.web.controller.admin;
 
 import com.bishe.portal.model.po.ParamColumnInfoPo;
 import com.bishe.portal.model.vo.ColumnInfoVo;
+import com.bishe.portal.model.vo.UserInfoVo;
 import com.bishe.portal.service.ColumnManageService;
 import com.bishe.portal.web.utils.JsonView;
 import com.google.gson.JsonObject;
-import org.apache.shiro.SecurityUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 /**
@@ -26,11 +27,15 @@ public class AdminColumnManageController {
      * @param paramColumnInfoPo 接收新增栏目的参数
      * @return 返回响应
      */
-    @RequestMapping(value = "/add_column_info",method = RequestMethod.POST)
-    public String addColumn(@RequestBody  ParamColumnInfoPo paramColumnInfoPo){
-        paramColumnInfoPo.setCreateUserId((Integer) SecurityUtils.getSubject().getSession().getAttribute("userInfoId"));
+    @RequestMapping(value = "addColumnInfo",method = RequestMethod.POST)
+    public String addColumn(@RequestBody  ParamColumnInfoPo paramColumnInfoPo, HttpSession httpSession){
+        UserInfoVo userInfoVo = (UserInfoVo)httpSession.getAttribute("user");
+        if ((userInfoVo == null)||(userInfoVo.getPermission()!=1)){
+            return JsonView.render(404,"user is not admin");
+        }
+        paramColumnInfoPo.setCreateUserId(userInfoVo.getAccount());
         columnManageService.addColumnManage(paramColumnInfoPo);
-        return JsonView.render(200,"插入成功");
+        return JsonView.render(200,"insert success");
     }
 
 
@@ -38,12 +43,16 @@ public class AdminColumnManageController {
      * 新增时的页面信息
      * @return 返回响应
      */
-    @RequestMapping("/show_add_column")
-    public String addColumnPage(){
+    @RequestMapping(value = "showAddColumn",method = RequestMethod.GET)
+    public String addColumnPage(HttpSession httpSession){
+        UserInfoVo userInfoVo = (UserInfoVo)httpSession.getAttribute("user");
+        if ((userInfoVo == null)||(userInfoVo.getPermission()!=1)){
+            return JsonView.render(404,"user is not admin");
+        }
         String columnId = columnManageService.getColumnId();
         JsonObject result = new JsonObject();
         result.addProperty("column_id",columnId);
-        return JsonView.render(200,"成功",result);
+        return JsonView.render(200,"success",result);
     }
 
     /**
@@ -51,11 +60,15 @@ public class AdminColumnManageController {
      * @param paramColumnInfoPo 接收更新栏目的参数
      * @return 返回响应
      */
-    @RequestMapping(value = "/modify",method = RequestMethod.POST)
-    public String modifyColumn(ParamColumnInfoPo paramColumnInfoPo){
-        paramColumnInfoPo.setCreateUserId((Integer) SecurityUtils.getSubject().getSession().getAttribute("userInfoId"));
+    @RequestMapping(value = "modify",method = RequestMethod.POST)
+    public String modifyColumn(ParamColumnInfoPo paramColumnInfoPo,HttpSession httpSession){
+        UserInfoVo userInfoVo = (UserInfoVo)httpSession.getAttribute("user");
+        if ((userInfoVo == null)||(userInfoVo.getPermission()!=1)){
+            return JsonView.render(404,"user is not admin");
+        }
+        paramColumnInfoPo.setCreateUserId(userInfoVo.getAccount());
         columnManageService.updateColumnManage(paramColumnInfoPo);
-        return JsonView.render(200,"更新成功");
+        return JsonView.render(200,"update success");
     }
 
     /**
@@ -63,10 +76,14 @@ public class AdminColumnManageController {
      * @param id 栏目ID
      * @return 返回响应
      */
-    @RequestMapping(value = "/delete_column",method = RequestMethod.POST)
-    public String deleteColumn(@RequestParam("column_id") int id){
+    @RequestMapping(value = "deleteColumn",method = RequestMethod.POST)
+    public String deleteColumn(@RequestParam("id") int id,HttpSession httpSession){
+        UserInfoVo userInfoVo = (UserInfoVo)httpSession.getAttribute("user");
+        if ((userInfoVo == null)||(userInfoVo.getPermission()!=1)){
+            return JsonView.render(404,"user is not admin");
+        }
         columnManageService.deleteColumnInfo(id);
-        return JsonView.render(200,"删除成功");
+        return JsonView.render(200,"delete success");
     }
 
     /**
@@ -74,10 +91,14 @@ public class AdminColumnManageController {
      * @param columnName 栏目名称
      * @return 返回响应
      */
-    @RequestMapping(value = "/get_parent_info_by_name",method = RequestMethod.GET)
-    public String getParentNameByColumnName(@RequestParam("columnName")String columnName){
+    @RequestMapping(value = "getParentInfoByName",method = RequestMethod.GET)
+    public String getParentNameByColumnName(String columnName,HttpSession httpSession){
+        UserInfoVo userInfoVo = (UserInfoVo)httpSession.getAttribute("user");
+        if ((userInfoVo == null)||(userInfoVo.getPermission()!=1)){
+            return JsonView.render(404,"user is not admin");
+        }
         List<ColumnInfoVo> rs = columnManageService.getColumnInfoByName(columnName);
-        return  JsonView.render(200,"成功",rs);
+        return  JsonView.render(200,"success",rs);
     }
 
     /**
@@ -85,9 +106,27 @@ public class AdminColumnManageController {
      * @param  columnId 父级栏目ID
      * @return 返回响应
      */
-    @RequestMapping(value = "/get_all_parent_column", method = RequestMethod.GET)
-    public String getAllParentColumn(@RequestParam("column_id")String columnId){
+    @RequestMapping(value = "getColumnByParent", method = RequestMethod.GET)
+    public String getAllParentColumn(String columnId,HttpSession httpSession){
+        UserInfoVo userInfoVo = (UserInfoVo)httpSession.getAttribute("user");
+        if ((userInfoVo == null)||(userInfoVo.getPermission()!=1)){
+            return JsonView.render(404,"user is not admin");
+        }
         List<ColumnInfoVo> rs = columnManageService.getAllParentColumnList(columnId);
-        return  JsonView.render(200,"成功",rs);
+        return  JsonView.render(200,"success",rs);
+    }
+
+    /**
+     * 获取所有的父级栏目
+     * @return 返回响应
+     */
+    @RequestMapping(value = "getAllParentColumn", method = RequestMethod.GET)
+    public String getAllParentColumn(HttpSession httpSession){
+        UserInfoVo userInfoVo = (UserInfoVo)httpSession.getAttribute("user");
+        if ((userInfoVo == null)||(userInfoVo.getPermission()!=1)){
+            return JsonView.render(404,"user is not admin");
+        }
+        List<ColumnInfoVo> result  = columnManageService.getAllParentColumn();
+        return  JsonView.render(200,"success",result);
     }
 }

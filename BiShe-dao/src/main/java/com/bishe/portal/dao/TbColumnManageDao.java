@@ -3,12 +3,14 @@ package com.bishe.portal.dao;
 import com.bishe.portal.model.mo.TbColumnManage;
 import com.bishe.portal.model.po.TbColumnManagePo;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 /**
  * @author gaopan31
  */
+@Repository
 public interface TbColumnManageDao {
 
     /**
@@ -28,13 +30,13 @@ public interface TbColumnManageDao {
      * @param id 栏目ID
      * @return 栏目信息
      */
-    TbColumnManage getColumnInfoById (@Param("column_id")String id);
+    TbColumnManage getColumnInfoById (@Param("id")String id);
 
     /**
      * 删除一个栏目
      * @param id  栏目ID
      */
-    void deleteColumnInfo(@Param("column_id")int id);
+    void deleteColumnInfo(@Param("id")int id);
 
     /**
      * 获取栏目列表(可以用过栏目名称)
@@ -48,5 +50,5 @@ public interface TbColumnManageDao {
      * @param columnId 父栏目ID
      * @return 栏目集合
      */
-    List<TbColumnManagePo> getColumnInfoByListByParentId(@Param("parent") String columnId);
+    List<TbColumnManagePo> getColumnInfoByListByParentId(@Param("parent") int columnId);
 }

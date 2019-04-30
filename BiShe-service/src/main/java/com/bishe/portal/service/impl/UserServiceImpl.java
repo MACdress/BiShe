@@ -5,6 +5,8 @@ import com.bishe.portal.dao.TbUsersDao;
 import com.bishe.portal.model.mo.TbUsers;
 import com.bishe.portal.model.po.SimpleUserInfo;
 import com.bishe.portal.model.po.TbUsersPo;
+import com.bishe.portal.model.vo.SelectUserParamVo;
+import com.bishe.portal.model.vo.UserInfoVo;
 import com.bishe.portal.service.UserService;
 import com.bishe.portal.service.utils.Encryption;
 import com.bishe.portal.service.utils.ReturnInfo;
@@ -12,6 +14,9 @@ import com.bishe.portal.service.utils.UUIDUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -34,6 +39,8 @@ public class UserServiceImpl implements UserService {
                 System.out.println("login success");
                 returnInfo.setSuccess(true);
                 returnInfo.setMessage("login success");
+                userInfo.setSale("");
+                returnInfo.setData(getUserInfoVo(userInfo));
             } else {
                 System.out.println("password error");
                 returnInfo.setSuccess(false);
@@ -48,8 +55,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public TbUsersPo enroll(TbUsersPo tbUsersPo) {
-        boolean registerSuccess = true;
+    public UserInfoVo enroll(TbUsersPo tbUsersPo) {
         String newPwd = "";
         String sale = "";
         String pwd = tbUsersPo.getPwd();
@@ -61,24 +67,29 @@ public class UserServiceImpl implements UserService {
         tbUsersPo.setSale(sale);
         TbUsers tbUsers = getTbUsers(tbUsersPo);
         tbUsersDao.insert(tbUsers);
-        return getTbUserPo(tbUsersDao.getUserInfoByAccount(tbUsers.getAccount()));
+        return getUserInfoVo(tbUsersDao.getUserInfoByAccount(tbUsers.getAccount()));
     }
 
     @Override
-    public TbUsersPo getByUserAccount(String account) {
+    public UserInfoVo getByUserAccount(String account) {
         TbUsers userInfo = tbUsersDao.getUserInfoByAccount(account);
-        return getTbUserPo(userInfo);
+        return getUserInfoVo(userInfo);
     }
 
     @Override
-    public TbUsersPo getByUserTel(String tel) {
+    public UserInfoVo getByUserTel(String tel) {
         TbUsers userInfo = tbUsersDao.getUserInfoByTel(tel);
-        return null;
+        return getUserInfoVo(userInfo);
     }
 
     @Override
-    public List<SimpleUserInfo> getAllAdminUserInfo() {
-        return tbUsersDao.getAllAdminUserInfo();
+    public List<UserInfoVo> getAllUserInfo(SelectUserParamVo paramVo) {
+        List<TbUsers> userInfo = tbUsersDao.getAllUserInfo(paramVo);
+        List<UserInfoVo> result  = new ArrayList<>();
+        for (TbUsers tbUsers:userInfo){
+            result.add(getUserInfoVo(tbUsers));
+        }
+        return result;
     }
 
     private TbUsersPo getTbUserPo (TbUsers tbUsers){
@@ -87,27 +98,68 @@ public class UserServiceImpl implements UserService {
             return tbUserPo;
         }
         tbUserPo.setBirthDay(StringUtils.isEmpty(tbUsers.getBirthDay()) ? "" : tbUsers.getBirthDay());
-        tbUserPo.setPwd(StringUtils.isEmpty(tbUsers.getPwd()) ? "" : tbUsers.getPwd());
-        tbUserPo.setSale(StringUtils.isEmpty(tbUsers.getSale()) ? "" : tbUsers.getSale());
+        tbUserPo.setIdCard(StringUtils.isEmpty(tbUsers.getIdCard()) ? "" : tbUsers.getIdCard());
         tbUserPo.setSex(tbUsers.getSex());
         tbUserPo.setTel(StringUtils.isEmpty(tbUsers.getTel()) ? "" : tbUsers.getTel());
         tbUserPo.setPermission(tbUsers.getPermission());
-        tbUserPo.setId(tbUsers.getId());
-        tbUserPo.setName(StringUtils.isEmpty(tbUsers.getName()) ? "" : tbUsers.getName());
         tbUserPo.setEmail(StringUtils.isEmpty(tbUsers.getEmail()) ? "" : tbUsers.getEmail());
+        tbUserPo.setAccount(tbUsers.getAccount());
+        tbUserPo.setJob(StringUtils.isEmpty(tbUsers.getJob()) ? "" : tbUsers.getJob());
+        tbUserPo.setFixedTel(StringUtils.isEmpty(tbUsers.getFixedTel()) ? "" : tbUsers.getFixedTel());
+        tbUserPo.setName(StringUtils.isEmpty(tbUsers.getName()) ? "" : tbUsers.getName());
+        tbUserPo.setIdentity(tbUsers.getIdentity());
+        tbUserPo.setTurnPositiveDate(StringUtils.isEmpty(tbUsers.getTurnPositiveDate()) ? "" : tbUsers.getTurnPositiveDate());
+        tbUserPo.setNationality(StringUtils.isEmpty(tbUsers.getNationality()) ? "" : tbUsers.getNationality());
+        tbUserPo.setBranch(StringUtils.isEmpty(tbUsers.getBranch()) ? "" : tbUsers.getBranch());
+        tbUserPo.setJoinPartyDate(StringUtils.isEmpty(tbUsers.getJoinPartyDate()) ? "" : tbUsers.getJoinPartyDate());
+        tbUserPo.setAddress(StringUtils.isEmpty(tbUsers.getAddress()) ? "" : tbUsers.getAddress());
         return tbUserPo;
     }
     private TbUsers getTbUsers(TbUsersPo tbUsersPo) {
         TbUsers tbUsers = new TbUsers();
-        tbUsers.setBirthDay(tbUsersPo.getBirthDay() == null ? "" : tbUsersPo.getBirthDay());
-        tbUsers.setEmail(tbUsersPo.getEmail() == null ? "" : tbUsersPo.getEmail());
-        tbUsers.setName(tbUsersPo.getName() == null ? "" : tbUsersPo.getName());
-        tbUsers.setPwd(tbUsersPo.getPwd() == null ? "" : tbUsersPo.getPwd());
-        tbUsers.setSale(tbUsersPo.getSale() == null ? "" : tbUsersPo.getSale());
-        tbUsers.setSex(tbUsersPo.getSex() == null ? 1 : tbUsersPo.getSex());
-        tbUsers.setTel(tbUsersPo.getTel() == null ? "" : tbUsersPo.getTel());
-        tbUsers.setPermission(tbUsersPo.getPermission() == null ? 0 : tbUsersPo.getPermission());
+        if (tbUsersPo == null){
+            return tbUsers;
+        }
+        tbUsers.setBirthDay(StringUtils.isEmpty(tbUsersPo.getBirthDay()) ? "" : tbUsersPo.getBirthDay());
+        tbUsers.setIdCard(StringUtils.isEmpty(tbUsersPo.getIdCard()) ? "" : tbUsersPo.getIdCard());
+        tbUsers.setSex(tbUsersPo.getSex());
+        tbUsers.setTel(StringUtils.isEmpty(tbUsersPo.getTel()) ? "" : tbUsersPo.getTel());
+        tbUsers.setPermission(tbUsersPo.getPermission());
+        tbUsers.setEmail(StringUtils.isEmpty(tbUsersPo.getEmail()) ? "" : tbUsersPo.getEmail());
         tbUsers.setAccount(UUIDUtils.getUUID(8));
+        tbUsers.setJob(StringUtils.isEmpty(tbUsersPo.getJob()) ? "" : tbUsersPo.getJob());
+        tbUsers.setFixedTel(StringUtils.isEmpty(tbUsersPo.getFixedTel()) ? "" : tbUsersPo.getFixedTel());
+        tbUsers.setName(StringUtils.isEmpty(tbUsersPo.getName()) ? "" : tbUsersPo.getName());
+        tbUsers.setIdentity(tbUsersPo.getIdentity());
+        tbUsers.setTurnPositiveDate(StringUtils.isEmpty(tbUsersPo.getTurnPositiveDate()) ? "" : tbUsersPo.getTurnPositiveDate());
+        tbUsers.setNationality(StringUtils.isEmpty(tbUsersPo.getNationality()) ? "" : tbUsersPo.getNationality());
+        tbUsers.setBranch(StringUtils.isEmpty(tbUsersPo.getBranch()) ? "" : tbUsersPo.getBranch());
+        tbUsers.setJoinPartyDate(StringUtils.isEmpty(tbUsersPo.getJoinPartyDate()) ? "" : tbUsersPo.getJoinPartyDate());
+        tbUsers.setAddress(StringUtils.isEmpty(tbUsersPo.getAddress()) ? "" : tbUsersPo.getAddress());
         return tbUsers;
+    }
+
+    private UserInfoVo getUserInfoVo (TbUsers tbUsers){
+        UserInfoVo result = new UserInfoVo();
+        if(tbUsers == null){
+            return result;
+        }
+        result.setBirthDay(StringUtils.isEmpty(tbUsers.getBirthDay()) ? "" : tbUsers.getBirthDay());
+        result.setSex(tbUsers.getSex());
+        result.setTel(StringUtils.isEmpty(tbUsers.getTel()) ? "" : tbUsers.getTel());
+        result.setPermission(tbUsers.getPermission());
+        result.setEmail(StringUtils.isEmpty(tbUsers.getEmail()) ? "" : tbUsers.getEmail());
+        result.setAccount(StringUtils.isEmpty(tbUsers.getAccount()) ? "" : tbUsers.getAccount());
+        result.setName(StringUtils.isEmpty(tbUsers.getName()) ? "" : tbUsers.getName());
+        result.setIdCard(StringUtils.isEmpty(tbUsers.getIdCard()) ? "" : tbUsers.getIdCard());
+        result.setIdentity(tbUsers.getIdentity());
+        result.setNationality(StringUtils.isEmpty(tbUsers.getNationality()) ? "" : tbUsers.getNationality());
+        result.setBranch(StringUtils.isEmpty(tbUsers.getBranch()) ? "" : tbUsers.getBranch());
+        result.setFixedTel(StringUtils.isEmpty(tbUsers.getFixedTel()) ? "" : tbUsers.getFixedTel());
+        result.setAddress(StringUtils.isEmpty(tbUsers.getAddress()) ? "" : tbUsers.getAddress());
+        result.setJob(StringUtils.isEmpty(tbUsers.getJob()) ? "" : tbUsers.getJob());
+        result.setJoinPartyDate(StringUtils.isEmpty(tbUsers.getJoinPartyDate()) ? "" : tbUsers.getJoinPartyDate());
+        result.setTurnPositiveDate(StringUtils.isEmpty(tbUsers.getTurnPositiveDate()) ? "" : tbUsers.getTurnPositiveDate());
+        return result;
     }
 }

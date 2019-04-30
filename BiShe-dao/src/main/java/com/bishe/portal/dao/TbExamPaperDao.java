@@ -3,12 +3,14 @@ package com.bishe.portal.dao;
 import com.bishe.portal.model.mo.TbExamPaper;
 import com.bishe.portal.model.po.FindExamPaperPo;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 /**
  * @author 73515
  */
+@Repository
 public interface TbExamPaperDao {
     /**
      * 新增一张试卷

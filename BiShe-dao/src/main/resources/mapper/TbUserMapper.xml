@@ -11,95 +11,103 @@
         <result column="birthday" property="birthDay"/>
         <result column="sex" property="sex"/>
         <result column="sale" property="sale"/>
-        <result column="create_user" property="createUser"/>
+        <result column="identity" property="identity"/>
+        <result column="nationality" property="nationality"/>
+        <result column="branch" property="branch"/>
+        <result column="fixed_tel" property="fixedTel"/>
+        <result column="address" property="address"/>
+        <result column="job" property="job"/>
+        <result column="join_party_date" property="joinPartyDate"/>
+        <result column="turn_positive_date" property="turnPositiveDate"/>
+        <result column="id_card" property="idCard"/>
     </resultMap>
     <resultMap id="SimpleTbUsersMap" type="com.bishe.portal.model.po.SimpleUserInfo">
         <id column="id" property="id"/>
         <result column="name" property="name"/>
         <result column="permission" property="permission"/>
     </resultMap>
+    <sql id="TableName">
+        tb_user
+    </sql>
+    <sql id="Fields">
+        name,pwd,email,permission,tel,birthday,sex,sale,account,identity,nationality,
+        branch,fixed_tel,address,job,join_party_date,turn_positive_date,id_card
+    </sql>
     <insert id="insert">
-        INSERT INTO tb_user (name,
-                              pwd,
-                              email,
-                              permission,
-                              tel,
-                              birthday,
-                              sex,
-                              sale,
-                              account,
-                              create_at,
-                              update_at)
+        INSERT INTO <include refid="TableName"/> (
+                <include refid="Fields"/>,
+                create_at,
+                update_at)
         VALUES (#{tbUsers.name},
                 #{tbUsers.pwd},
                 #{tbUsers.email},
                 #{tbUsers.permission},
                 #{tbUsers.tel},
-                #{tbUsers.birthDay},
+                #{tbUsers.birthday},
                 #{tbUsers.sex},
                 #{tbUsers.sale},
                 #{tbUsers.account},
+                #{tbUsers.identity},
+                #{tbUsers.nationality},
+                #{tbUsers.branch},
+                #{tbUsers.fixedTel},
+                #{tbUsers.address},
+                #{tbUsers.job},
+                #{tbUsers.joinPartyDate},
+                #{tbUsers.turnPositiveDate},
+                #{tbUsers.idCard},
                 NOW(),
                 NOW());
     </insert>
 
-    <select id="selectUserInfo" resultMap="TbUsersMap">
-        SELECT name,
-               pwd,
-               email,
-               permission,
-               tel,
-               birthday,
-               sex,
-               account,
-               sale
-        FROM tb_user
-        WHERE tel = #{tel} and is_deleate = 1
-        LIMIT 1;
-    </select>
-
     <select id="getAllAdminUserInfo" resultMap="SimpleTbUsersMap">
-        SELECT tb_user.id,tb_user.name FROM tb_user,tb_user_role,tb_role WHERE tb_user.id = tb_user_role.u_id and tb_user_role.r_id = tb_role.id and tb_role.id = 2;
+        SELECT tb_user.id,tb_user.name FROM tb_user WHERE tb_user.id = tb_user_role.u_id and tb_user_role.r_id = tb_role.id and tb_role.id = 2;
     </select>
 
     <select id="getUserInfoByAccount" resultMap="TbUsersMap">
         SELECT
-               id,
-               name,
-               pwd,
-               email,
-               permission,
-               tel,
-               birthday,
-               sex,
-               account,
-               sale
-        FROM tb_user
+            <include refid="Fields"/>
+        FROM <include refid="TableName"/>
         WHERE account = #{account} and is_deleate = 1
         LIMIT 1;
     </select>
+
     <select id="getUserInfoByTel" resultMap="TbUsersMap">
         SELECT
-               id,
-               name,
-               pwd,
-               email,
-               permission,
-               tel,
-               birthday,
-               sex,
-               account,
-               sale
-        FROM tb_user
+            <include refid="Fields"/>
+        FROM <include refid="TableName"/>
         WHERE account = #{tel} and is_deleate = 1
         LIMIT 1;
     </select>
 
-    <select id="getAdminUserInfoByIds" resultMap="SimpleTbUsersMap">
-        SELECT tb_user.id,tb_user.name FROM tb_user,tb_user_role,tb_role WHERE id in
-        <foreach collection="ids" item="id" open="(" close=")" separator=",">
-              #{id}
-        </foreach>
+    <select id="getAllUserInfo" resultMap="TbUsersMap">
+        select
+            <include refid="Fields"/>
+        from <include refid="TableName"/>
+        <where>
+            <if test="selectParam.identity != null ">
+                identity = #{selectParam.identity}
+            </if>
+            <if test="selectParam.name != null">
+                name =  #{selectParam.name}
+            </if>
+            <if test="selectParam.sex != null">
+                sex = #{selectParam.sex}
+            </if>
+            <if test="selectParam.idCard != null">
+                idCard = #{selectParam.idCard}
+            </if>
+            <if test="selectParam.joinPartyDate != null">
+                join_party_date = #{selectParam.joinPartyDate}
+            </if>
+            <if test="selectParam.branch != null">
+                branch = #{selectParam.branch}
+            </if>
+            <if test="1 == 1">
+                is_deleate = 1
+            </if>
+        </where>
+        order by id desc LIMIT (#{selectParam.page}-1)*#{selectParam.pageSize},#{selectParam.pageSize
     </select>
 </mapper>
 

@@ -12,11 +12,11 @@ public class ColumnInfoVo implements Serializable {
     private String  columnName;
     private String parentId;
     private String parentName;
-    private Integer createUserId;
+    private String createUserId;
     private String createUserName;
     private String createTime;
     private String columnId;
-    private Integer reviewUserId;
+    private String reviewUserId;
     private String reviewUserName;
     /**
      * 表示是否审核

@@ -8,10 +8,9 @@ import lombok.Data;
 @Data
 public class ParamColumnInfoPo {
     private Integer parentId;
-    private Integer createUserId;
-    private String columnId;
+    private String  createUserId;
     private String columnName;
-    private Integer reviewUserId;
+    private String reviewUserId;
     /**
      * 表示是否审核
      * 1：审核

@@ -56,8 +56,14 @@ public class ColumnManageServiceImpl implements ColumnManageService {
 
     @Override
     public List<ColumnInfoVo> getAllParentColumnList(String columnId) {
-        List<TbColumnManagePo> tbColumnManages = tbColumnManageDao.getColumnInfoByListByParentId(columnId);
+        List<TbColumnManagePo> tbColumnManages = tbColumnManageDao.getColumnInfoByListByParentId(Integer.valueOf(columnId));
         return getColumnInfoList(tbColumnManages);
+    }
+
+    @Override
+    public List<ColumnInfoVo> getAllParentColumn() {
+        List<TbColumnManagePo> tbColumnManagePos = tbColumnManageDao.getColumnInfoByListByParentId(0);
+        return getColumnInfoList(tbColumnManagePos);
     }
 
     private  List<ColumnInfoVo> getColumnInfoList(List<TbColumnManagePo> tbColumnManages){
@@ -72,8 +78,7 @@ public class ColumnManageServiceImpl implements ColumnManageService {
     private ColumnInfoVo getColumnInfoVo (TbColumnManagePo tbColumnManagePo){
             ColumnInfoVo columnInfoVo = new ColumnInfoVo();
             columnInfoVo.setCreateUserId(tbColumnManagePo.getCreateUserId());
-            columnInfoVo.setCreateUserName(tbUsersDao.getUserInfoById(tbColumnManagePo.getCreateUserId()).getName());
-            columnInfoVo.setColumnId(tbColumnManagePo.getColumnId());
+            columnInfoVo.setCreateUserName(tbUsersDao.getUserInfoByAccount(tbColumnManagePo.getCreateUser()).getName());
             columnInfoVo.setColumnName(tbColumnManagePo.getColumnName());
             columnInfoVo.setParentId(tbColumnManagePo.getParentId());
             columnInfoVo.setParentName(tbColumnManageDao.getColumnInfoById(tbColumnManagePo.getParentId()).getColumnName());
@@ -81,13 +86,14 @@ public class ColumnManageServiceImpl implements ColumnManageService {
             columnInfoVo.setColumnStatus(tbColumnManagePo.getColumnStatus());
             columnInfoVo.setIsReview(tbColumnManagePo.getIsReview());
             columnInfoVo.setReviewUserId(tbColumnManagePo.getReviewUserId());
-            columnInfoVo.setReviewUserName(tbUsersDao.getUserInfoById(tbColumnManagePo.getReviewUserId()).getName());
+            columnInfoVo.setReviewUserName(tbUsersDao.getUserInfoByAccount(tbColumnManagePo.getReviewUserId()).getName());
             columnInfoVo.setColumnText(tbColumnManagePo.getColumnText());
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             columnInfoVo.setCreateTime(simpleDateFormat.format(tbColumnManagePo.getCreateAt()).trim());
             /*
                  新闻总数待开发
              */
+            ""
             columnInfoVo.setTotal(0);
             return columnInfoVo;
      }
@@ -102,7 +108,6 @@ public class ColumnManageServiceImpl implements ColumnManageService {
         tbColumnManage.setReviewUser(paramColumnInfoPo.getReviewUserId());
         tbColumnManage.setColumnText(paramColumnInfoPo.getColumnText());
         tbColumnManage.setCreateUser(paramColumnInfoPo.getCreateUserId());
-        tbColumnManage.setColumnId(paramColumnInfoPo.getColumnId());
         return tbColumnManage;
     }
 }

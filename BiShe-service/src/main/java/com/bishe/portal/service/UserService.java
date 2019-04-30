@@ -4,6 +4,8 @@ package com.bishe.portal.service;
 import com.bishe.portal.model.mo.TbUsers;
 import com.bishe.portal.model.po.SimpleUserInfo;
 import com.bishe.portal.model.po.TbUsersPo;
+import com.bishe.portal.model.vo.SelectUserParamVo;
+import com.bishe.portal.model.vo.UserInfoVo;
 import com.bishe.portal.service.utils.ReturnInfo;
 
 import java.util.List;
@@ -25,12 +27,13 @@ public interface UserService {
      *
      * @param tbUsers
      */
-    TbUsersPo enroll(TbUsersPo tbUsers);
+    UserInfoVo enroll(TbUsersPo tbUsers);
 
 
-    TbUsersPo getByUserAccount(String account);
+    UserInfoVo getByUserAccount(String account);
 
-    TbUsersPo getByUserTel(String tel);
+    UserInfoVo getByUserTel(String tel);
 
-    List<SimpleUserInfo> getAllAdminUserInfo();
+
+    List<UserInfoVo> getAllUserInfo(SelectUserParamVo paramVo);
 }
