@@ -5,7 +5,6 @@ import com.bishe.portal.model.vo.ColumnInfoVo;
 import com.bishe.portal.model.vo.UserInfoVo;
 import com.bishe.portal.service.ColumnManageService;
 import com.bishe.portal.web.utils.JsonView;
-import com.google.gson.JsonObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +27,7 @@ public class AdminColumnManageController {
      * @return 返回响应
      */
     @RequestMapping(value = "addColumnInfo",method = RequestMethod.POST)
+    @ResponseBody
     public String addColumn(@RequestBody  ParamColumnInfoPo paramColumnInfoPo, HttpSession httpSession){
         UserInfoVo userInfoVo = (UserInfoVo)httpSession.getAttribute("user");
         if ((userInfoVo == null)||(userInfoVo.getPermission()!=1)){
@@ -39,21 +39,22 @@ public class AdminColumnManageController {
     }
 
 
-    /**
-     * 新增时的页面信息
-     * @return 返回响应
-     */
-    @RequestMapping(value = "showAddColumn",method = RequestMethod.GET)
-    public String addColumnPage(HttpSession httpSession){
-        UserInfoVo userInfoVo = (UserInfoVo)httpSession.getAttribute("user");
-        if ((userInfoVo == null)||(userInfoVo.getPermission()!=1)){
-            return JsonView.render(404,"user is not admin");
-        }
-        String columnId = columnManageService.getColumnId();
-        JsonObject result = new JsonObject();
-        result.addProperty("column_id",columnId);
-        return JsonView.render(200,"success",result);
-    }
+//    /**
+//     * 新增时的页面信息
+//     * @return 返回响应
+//     */
+//    @RequestMapping(value = "showAddColumn",method = RequestMethod.GET)
+//    @ResponseBody
+//    public String addColumnPage(HttpSession httpSession){
+//        UserInfoVo userInfoVo = (UserInfoVo)httpSession.getAttribute("user");
+//        if ((userInfoVo == null)||(userInfoVo.getPermission()!=1)){
+//            return JsonView.render(404,"user is not admin");
+//        }
+//        String columnId = columnManageService.getColumnId();
+//        JsonObject result = new JsonObject();
+//        result.addProperty("column_id",columnId);
+//        return JsonView.render(200,"success",result);
+//    }
 
     /**
      * 更新栏目信息
@@ -61,6 +62,7 @@ public class AdminColumnManageController {
      * @return 返回响应
      */
     @RequestMapping(value = "modify",method = RequestMethod.POST)
+    @ResponseBody
     public String modifyColumn(ParamColumnInfoPo paramColumnInfoPo,HttpSession httpSession){
         UserInfoVo userInfoVo = (UserInfoVo)httpSession.getAttribute("user");
         if ((userInfoVo == null)||(userInfoVo.getPermission()!=1)){
@@ -77,6 +79,7 @@ public class AdminColumnManageController {
      * @return 返回响应
      */
     @RequestMapping(value = "deleteColumn",method = RequestMethod.POST)
+    @ResponseBody
     public String deleteColumn(@RequestParam("id") int id,HttpSession httpSession){
         UserInfoVo userInfoVo = (UserInfoVo)httpSession.getAttribute("user");
         if ((userInfoVo == null)||(userInfoVo.getPermission()!=1)){
@@ -92,6 +95,7 @@ public class AdminColumnManageController {
      * @return 返回响应
      */
     @RequestMapping(value = "getParentInfoByName",method = RequestMethod.GET)
+    @ResponseBody
     public String getParentNameByColumnName(String columnName,HttpSession httpSession){
         UserInfoVo userInfoVo = (UserInfoVo)httpSession.getAttribute("user");
         if ((userInfoVo == null)||(userInfoVo.getPermission()!=1)){
@@ -107,6 +111,7 @@ public class AdminColumnManageController {
      * @return 返回响应
      */
     @RequestMapping(value = "getColumnByParent", method = RequestMethod.GET)
+    @ResponseBody
     public String getAllParentColumn(String columnId,HttpSession httpSession){
         UserInfoVo userInfoVo = (UserInfoVo)httpSession.getAttribute("user");
         if ((userInfoVo == null)||(userInfoVo.getPermission()!=1)){
@@ -121,6 +126,7 @@ public class AdminColumnManageController {
      * @return 返回响应
      */
     @RequestMapping(value = "getAllParentColumn", method = RequestMethod.GET)
+    @ResponseBody
     public String getAllParentColumn(HttpSession httpSession){
         UserInfoVo userInfoVo = (UserInfoVo)httpSession.getAttribute("user");
         if ((userInfoVo == null)||(userInfoVo.getPermission()!=1)){

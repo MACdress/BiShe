@@ -3,6 +3,7 @@ package com.bishe.portal.service.impl;
 import com.bishe.portal.dao.TbColumnManageDao;
 import com.bishe.portal.dao.TbUsersDao;
 import com.bishe.portal.model.mo.TbColumnManage;
+import com.bishe.portal.model.mo.TbUsers;
 import com.bishe.portal.model.po.ParamColumnInfoPo;
 import com.bishe.portal.model.po.TbColumnManagePo;
 import com.bishe.portal.model.vo.ColumnInfoVo;
@@ -78,22 +79,24 @@ public class ColumnManageServiceImpl implements ColumnManageService {
     private ColumnInfoVo getColumnInfoVo (TbColumnManagePo tbColumnManagePo){
             ColumnInfoVo columnInfoVo = new ColumnInfoVo();
             columnInfoVo.setCreateUserId(tbColumnManagePo.getCreateUserId());
-            columnInfoVo.setCreateUserName(tbUsersDao.getUserInfoByAccount(tbColumnManagePo.getCreateUser()).getName());
+            TbUsers userInfoByAccount1 = tbUsersDao.getUserInfoByAccount(tbColumnManagePo.getCreateUserId());
+            columnInfoVo.setCreateUserName(userInfoByAccount1 == null ?"":tbUsersDao.getUserInfoByAccount(tbColumnManagePo.getCreateUserId()).getName());
             columnInfoVo.setColumnName(tbColumnManagePo.getColumnName());
             columnInfoVo.setParentId(tbColumnManagePo.getParentId());
-            columnInfoVo.setParentName(tbColumnManageDao.getColumnInfoById(tbColumnManagePo.getParentId()).getColumnName());
+            TbColumnManage tbColumnManage = tbColumnManageDao.getColumnInfoById(tbColumnManagePo.getParentId());
+            columnInfoVo.setParentName(tbColumnManage== null?"":tbColumnManage.getColumnName());
             columnInfoVo.setColumnImg(tbColumnManagePo.getColumnImg());
             columnInfoVo.setColumnStatus(tbColumnManagePo.getColumnStatus());
             columnInfoVo.setIsReview(tbColumnManagePo.getIsReview());
             columnInfoVo.setReviewUserId(tbColumnManagePo.getReviewUserId());
-            columnInfoVo.setReviewUserName(tbUsersDao.getUserInfoByAccount(tbColumnManagePo.getReviewUserId()).getName());
+            TbUsers userInfoByAccount = tbUsersDao.getUserInfoByAccount(tbColumnManagePo.getReviewUserId());
+            columnInfoVo.setReviewUserName(userInfoByAccount == null ? "" : userInfoByAccount.getName());
             columnInfoVo.setColumnText(tbColumnManagePo.getColumnText());
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             columnInfoVo.setCreateTime(simpleDateFormat.format(tbColumnManagePo.getCreateAt()).trim());
             /*
                  新闻总数待开发
              */
-            ""
             columnInfoVo.setTotal(0);
             return columnInfoVo;
      }

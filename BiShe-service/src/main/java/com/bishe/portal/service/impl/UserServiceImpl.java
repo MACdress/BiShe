@@ -9,9 +9,11 @@ import com.bishe.portal.model.vo.SelectUserParamVo;
 import com.bishe.portal.model.vo.UserInfoVo;
 import com.bishe.portal.service.UserService;
 import com.bishe.portal.service.utils.Encryption;
+import com.bishe.portal.service.utils.ExcelUtils;
 import com.bishe.portal.service.utils.ReturnInfo;
 import com.bishe.portal.service.utils.UUIDUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
@@ -90,6 +92,22 @@ public class UserServiceImpl implements UserService {
             result.add(getUserInfoVo(tbUsers));
         }
         return result;
+    }
+
+    @Override
+    public String readExcelFile(MultipartFile file) {
+        ExcelUtils excelUtils = new ExcelUtils();
+        List <TbUsers> insertParam = new ArrayList<>();
+        try {
+            insertParam = excelUtils.getExcelInfo(file);
+        }catch (Exception e){
+            System.out.println("导入Excel文件出现错误");
+            return  "导入失败";
+        }
+        for (TbUsers tbUsers : insertParam){
+            tbUsersDao.insert(tbUsers);
+        }
+        return "导入成功";
     }
 
     private TbUsersPo getTbUserPo (TbUsers tbUsers){

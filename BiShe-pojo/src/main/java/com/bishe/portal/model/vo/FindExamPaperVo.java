@@ -15,4 +15,6 @@ public class FindExamPaperVo implements Serializable {
     private String createUnit;
     private String responsible;
     private Integer status;
+    private Integer page;
+    private Integer pageSize;
 }

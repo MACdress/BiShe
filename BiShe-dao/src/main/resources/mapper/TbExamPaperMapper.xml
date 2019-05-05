@@ -9,6 +9,12 @@
         <result column="create_unit" property="createUnit"/>
         <result column="responsible" property="responsible"/>
         <result column="status" property="status"/>
+        <result column="update_at" property="updateAt"/>
+        <result column="exam_paper_num" property="examPaperNum"/>
+        <result column="exam_judge_score" property="examJudgeScore"/>
+        <result column="exam_select_score" property="examSelectScore"/>
+        <result column="exam_paper_count" property="examPaperCount"/>
+        <result column="exam_time" property="examTime"/>
     </resultMap>
 
     <sql id="TableName">
@@ -16,7 +22,7 @@
     </sql>
 
     <sql id="Fields">
-        exam_paper_name,exam_paper_type,invalidTime,createUnit,responsible,status
+        exam_paper_name,exam_paper_type,invalidTime,createUnit,responsible,status,exam_paper_num,exam_judge_score,exam_select_score,exam_paper_count,exam_time
     </sql>
 
     <insert id="insertExamPaper">
@@ -29,8 +35,13 @@
         #{examPaper.examPaperType},
         #{examPaper.invalidTime},
         #{examPaper.createUnit},
-        #{examPaper.responsible}
-        #{examPaper.status}
+        #{examPaper.responsible},
+        #{examPaper.status},
+        #{examPaper.examPaperNum},
+        #{examPaper.examJudgeScore},
+        #{examPaper.examSelectScore},
+        #{examPaper.examPaperCount},
+        #{examPaper.examTime},
         NOW(),
         NOW()
         )
@@ -41,37 +52,49 @@
     <update id="updateExamPaper">
         UPDATE <include refid="TableName"/>
         <set>
-            <if test="examPaper.columnName != nll">
+            <if test="examPaper.examPaperName != nll">
                 exam_paper_name = #{examPaper.examPaperName},
             </if>
-            <if test="examPaper.isReview != nll">
+            <if test="examPaper.examPaperType != nll">
                 exam_paper_type = #{examPaper.examPaperType},
             </if>
-            <if test="examPaper.parent != nll">
-                invalidTime = #{examPaper.invalidTime},
+            <if test="examPaper.invalidTime != nll">
+                invalid_time = #{examPaper.invalidTime},
             </if>
-            <if test="examPaper.columnStatus != nll">
-                createUnit = #{examPaper.createUnit},
+            <if test="examPaper.createUnit != nll">
+                create_unit = #{examPaper.createUnit},
             </if>
-            <if test="examPaper.columnImg != nll">
+            <if test="examPaper.responsible != nll">
                 responsible =  #{examPaper.responsible},
             </if>
-            <if test="examPaper">
+            <if test="examPaper.status">
                 status = #{examPaper.status}
+            </if>
+            <if test="examPaper.examPaperNum">
+                exam_paper_num = #{examPaper.examPaperNum}
+            </if>
+            <if test="examPaper.examJudgeGrade">
+                exam_judge_grade = #{examPaper.examJudgeScore}
+            </if>
+            <if test="examPaper.examSelectGrade">
+                exam_select_grade = #{examPaper.examSelectScore}
+            </if>
+            <if test="examPaper.examPaperCount">
+                exam_paper_count = #{examPaper.examPaperCount}
             </if>
             <if test="1">
                 update_at = NOW(),
             </if>
         </set>
-        where  id = #{examPaper.id}
+        where  exam_paper_num = #{examPaper.examPaperNum}
     </update>
 
     <delete id="deleteExamPaper" parameterType="int">
-        DELETE from <include refid="TableName"/>  where id = #{id}
+        DELETE from <include refid="TableName"/>  where exam_paper_num = #{examPaperNum}
     </delete>
 
     <select id="selectExamPaper" resultMap="TbExamPaperMap">
-        select <include refid="Fields"/> from <include refid="TableName"/>
+        select <include refid="Fields"/>,update_at from <include refid="TableName"/>
         <where>
             <if test="examPaper.examPaperName != null ">
                 exam_paper_name = #{examPaper.examPaperName}
@@ -91,6 +114,29 @@
             <if test="examPaper.status != null ">
                 status = #{examPaper.status}
             </if>
+            <if test="examPaper.examPaperNum != null">
+                exam_paper_num = #{examPaper.examPaperNum}
+            </if>
         </where>
+        <if test="examPaper.page != null and examPaper.pageSize!=null">
+            LIMIT #{examPaper.page-1}*#{examPaper.pageSize},#{examPaper.pageSize}
+        </if>
+    </select>
+
+    <select id="getExamPaperByNumber" resultMap="TbExamPaperMap">
+        select <include refid="Fields"/> from <include refid="TableName"/>
+        where exam_paper_num = #{examPaperNum}
+    </select>
+
+    <update id="updateExamStatus">
+        update <include refid="TableName"/>
+        set status = 2
+        where exam_paper_num = #{examPaperNum}
+    </update>
+
+    <select id="getReleaseExamPaper" resultMap="TbExamPaperMap">
+        select <include refid="Fields"/>
+        from <include refid="TableName"/>
+        where status = 1
     </select>
 </mapper>

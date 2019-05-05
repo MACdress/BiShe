@@ -31,12 +31,12 @@ public class JsonView {
 
     public static String render(Integer errcode, String message){
         JsonView tmp = new JsonView(errcode, message);
-        return JSONObject.toJSONString(tmp).toString();
+        return JSONObject.toJSONString(tmp);
     }
 
     public static String render(Integer errcode, String message, Object data){
         JsonView tmp = new JsonView(errcode, message, data);
-        return JSONObject.toJSONString(tmp).toString();
+        return JSONObject.toJSONString(tmp);
     }
 
     public JsonView(Integer errcode, String message, Object data) {

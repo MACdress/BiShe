@@ -6,10 +6,16 @@ import com.bishe.portal.model.po.FindExamPaperPo;
 import com.bishe.portal.model.vo.ExamPaperVo;
 import com.bishe.portal.model.vo.FindExamPaperVo;
 import com.bishe.portal.service.ExamPaperService;
+import com.bishe.portal.service.utils.Encryption;
+import com.bishe.portal.service.utils.UUIDUtils;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -21,6 +27,8 @@ public class ExamPaperServiceImpl implements ExamPaperService {
     TbExamPaperDao tbExamPaperDao;
     @Override
     public void addExamPaper(ExamPaperVo examPaperVo) {
+        TbExamPaper examPaper = getExamPaper(examPaperVo);
+        examPaper.setExamPaperNum(UUIDUtils.getUUID(8));
         tbExamPaperDao.insertExamPaper(getExamPaper(examPaperVo));
     }
 
@@ -30,8 +38,8 @@ public class ExamPaperServiceImpl implements ExamPaperService {
     }
 
     @Override
-    public void deleteExamPaper(int examPaperId) {
-        tbExamPaperDao.deleteExamPaper(examPaperId);
+    public void deleteExamPaper(String examPaperNum) {
+        tbExamPaperDao.deleteExamPaper(examPaperNum);
     }
 
     @Override
@@ -41,6 +49,29 @@ public class ExamPaperServiceImpl implements ExamPaperService {
         for (TbExamPaper examPaper:examPapers){
             ExamPaperVo examPaperVo = getExamPaperVo(examPaper);
             result.add(examPaperVo);
+        }
+        return result;
+    }
+
+    @Override
+    public List<ExamPaperVo> getReleaseExamPaper() {
+        List<ExamPaperVo> result = new ArrayList<>();
+        List<TbExamPaper> examPapers = tbExamPaperDao.getReleaseExamPaper();
+        if (examPapers.size() > 0) {
+            for (TbExamPaper tbExamPaper : examPapers) {
+                String invalidTime = tbExamPaper.getInvalidTime();
+                Integer examTime = tbExamPaper.getExamTime();
+                /* 验证是否可移除 */
+                if (validateExamPaperBeOverdue(invalidTime,examTime)) {
+                    /*
+                      如果失效了，将已发布的考试变为未发布
+                     */
+                    tbExamPaperDao.updateExamStatus(tbExamPaper.getExamPaperNum());
+                }else{
+                    ExamPaperVo examPaperVo = getExamPaperVo(tbExamPaper);
+                    result.add(examPaperVo);
+                }
+            }
         }
         return result;
     }
@@ -74,6 +105,53 @@ public class ExamPaperServiceImpl implements ExamPaperService {
         result.setInvalidTime(examPaperVo.getInvalidTime());
         result.setResponsible(examPaperVo.getResponsible());
         result.setStatus(examPaperVo.getStatus());
+        result.setExamTime(examPaperVo.getExamTime());
         return result;
     }
+
+    /**
+     * 定时刷新考试安排记录，将过期考试变为待发布
+     * 周一至周五 每隔15分钟刷新一次
+     */
+    @Scheduled(cron="0 */15 * * * MON-FRI")
+    public void refreshExamPlan() {
+        List<TbExamPaper> examPapers = tbExamPaperDao.getReleaseExamPaper();
+        if (examPapers.size() > 0) {
+            for (TbExamPaper tbExamPaper : examPapers) {
+                String invalidTime = tbExamPaper.getInvalidTime();
+                Integer examTime = tbExamPaper.getExamTime();
+                /* 验证是否可移除 */
+                if (validateExamPaperBeOverdue(invalidTime,examTime)) {
+                    /*
+                      如果失效了，将已发布的考试变为未发布
+                     */
+                    tbExamPaperDao.updateExamStatus(tbExamPaper.getExamPaperNum());
+                }
+            }
+        }
+    }
+    private boolean validateExamPaperBeOverdue(String invalidTime, int examTime) {
+        boolean flag = false;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            Date beginTimeDate = sdf.parse(invalidTime);
+            long beginTimeTime = beginTimeDate.getTime();
+
+            /* 转换考试时间为毫秒单位 */
+            int examTimeSecond = examTime * 60 * 1000;
+
+            Date nowDate = new Date();
+            long nowDateTime = nowDate.getTime();
+
+            /* 当前时间超过了 考试结束时间，即为过期记录 */
+            if(nowDateTime > (beginTimeTime+examTimeSecond)) {
+                flag = true;
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return flag;
+    }
+
 }

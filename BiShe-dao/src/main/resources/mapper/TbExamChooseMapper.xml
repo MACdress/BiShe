@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bishe.portal.dao.TbExamChooseDao">
+    <resultMap id="TbExamChooseMap" type="com.bishe.portal.model.mo.TbExamChoose">
+        <id column="id" property="id"/>
+        <result column="subject_id" property="subjectId"/>
+        <result column="answer" property="answer"/>
+        <result column="is_correct" property="isCorrect"/>
+        <result column="exam_start_num" property="examStartNum"/>
+    </resultMap>
+
+    <sql id="TableName">
+        tb_exam_choose
+    </sql>
+
+    <sql id="Fields">
+        subject_id,answer,is_correct,exam_start_num
+    </sql>
+
+    <insert id="insertExamChoose">
+        insert INTO <include refid="TableName"/> (
+            <include refid="Fields"/>,
+            create_at,
+            update_at
+        )values (
+            #{examChoose.subjectId},
+            #{examChoose.answer},
+            #{examChoose.isCorrect},
+            #{examChoose.examStartNum},
+            NOW(),
+            NOW()
+        )
+    </insert>
+
+    <select id="getExamChooseByNum" resultMap="TbExamChooseMap">
+        select <include refid="Fields"/>
+        from <include refid="TableName"/>
+        where subject_id = #{subjectId} and exam_start_num = #{examStartNum}
+    </select>
+
+    <update id="updateAnswer">
+        update <include refid="TableName"/>
+        set answer = #{answer}
+        where subject_id = #{subjectId} and exam_start_num = #{examStartNum}
+    </update>
+
+    <select id="getCorrectChoose" resultMap="TbExamChooseMap">
+        select <include refid="Fields"/>
+        from <include refid="TableName"/>
+        where exam_start_num = #{examStartNum} and is_correct = 1
+    </select>
+</mapper>

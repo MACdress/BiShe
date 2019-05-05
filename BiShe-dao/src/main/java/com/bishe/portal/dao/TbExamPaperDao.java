@@ -28,7 +28,7 @@ public interface TbExamPaperDao {
      * 删除一张试卷
      * @param examPaperId 试卷的ID
      */
-    void deleteExamPaper(@Param("id") int examPaperId);
+    void deleteExamPaper(@Param("examPaperNum") String examPaperNum);
 
     /**
      * 获取试卷基础信息
@@ -36,4 +36,10 @@ public interface TbExamPaperDao {
      * @return 试卷的基础信息集合
      */
     List<TbExamPaper> selectExamPaper(@Param("examPaper") FindExamPaperPo examPaperPo);
+
+    TbExamPaper getExamPaperByNumber(@Param("examPaperNum")String examPaperNum);
+
+    List<TbExamPaper> getReleaseExamPaper();
+
+    void updateExamStatus(String examPaperNum);
 }

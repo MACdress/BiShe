@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bishe.portal.dao.TbExamJudgeDao">
+    <resultMap id="TbExamJudgeMap" type="com.bishe.portal.model.mo.TbExamJudge">
+        <id column="id" property="id"/>
+        <result column="exam_tittle" property="examTittle"/>
+        <result column="exam_answer" property="examAnswer"/>
+        <result column="score" property="score"/>
+        <result column="subject_id" property="subjectId"/>
+    </resultMap>
+
+    <sql id="TableName">
+        tb_exam_judge
+    </sql>
+
+    <sql id="Fields">
+        exam_tittle,exam_answer,score,subject_id
+    </sql>
+
+    <insert id="insertExamJudgeInfo">
+        insert INTO <include refid="TableName"/> (
+        <include refid="Fields"/>,
+        create_at,
+        update_at)
+        values(
+        #{tbExamJudge.examTittle},
+        #{tbExamJudge.examAnswer},
+        #{tbExamJudge.score},
+        #{tbExamJudge.subjectId},
+        NOW(),
+        NOW()
+        )
+    </insert>
+
+    <select id="getExamJudgeByNumber" resultMap="TbExamJudgeMap">
+        select <include refid="Fields"/>
+        from  <include refid="TableName"/>
+        where subject_id in
+        <foreach collection="list" item="subjectId" open="(" close=")" separator=",">
+            #{subjectId}
+        </foreach>
+    </select>
+
+    <select id="getExamJudgeBySubject" resultMap="TbExamJudgeMap">
+        select <include refid="Fields"/>
+        from  <include refid="TableName"/>
+        where subject_id = #{subjectId}
+    </select>
+</mapper>

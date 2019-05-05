@@ -15,4 +15,5 @@ public class ExamPaperVo implements Serializable {
     private String createUnit;
     private String responsible;
     private Integer status;
+    private Integer examTime;
 }

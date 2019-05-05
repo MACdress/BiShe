@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bishe.portal.dao.TbExamSelectOptionDao">
+    <resultMap id="TbExamPaperMap" type="com.bishe.portal.model.mo.TbExamSelectOption">
+        <id column="id" property="id"/>
+        <result column="exam_select" property="examSelect"/>
+        <result column="option" property="option"/>
+        <result column="option_content" property="optionContent"/>
+    </resultMap>
+
+    <sql id="TableName">
+        tb_exam_select_option
+    </sql>
+
+    <sql id="Fields">
+        exam_select,option,option_content
+    </sql>
+
+    <insert id="insertExamSelectOption">
+        insert INTO <include refid="TableName"/> (
+        <include refid="Fields"/>,
+        create_at,
+        update_at)
+        values(
+        #{tbExamSelectOption.examSelect},
+        #{tbExamSelectOption.option},
+        #{tbExamSelectOption.optionContent},
+        NOW(),
+        NOW()
+        )
+    </insert>
+    <select id=""
+</mapper>

@@ -8,7 +8,8 @@ import lombok.Data;
 @Data
 public class TbExamJudge {
     private int id;
-    private int examPaperId;
-    private String exampleTittle;
-    private String exampleAnswer;
+    private String subjectId;
+    private String examTittle;
+    private int examAnswer;
+    private int score;
 }

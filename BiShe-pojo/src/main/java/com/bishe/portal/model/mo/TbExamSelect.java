@@ -8,8 +8,9 @@ import lombok.Data;
 @Data
 public class TbExamSelect {
     private int id;
-    private int examPaperId;
+    private String subjectId;
     private String examTittle;
     private String examParse;
     private String examAnswer;
+    private Integer score;
 }

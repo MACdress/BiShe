@@ -8,11 +8,10 @@ import java.io.Serializable;
  * @author gaopan31
  */
 @Data
-public class ManageInformationParamVo implements Serializable {
+public class ManageColumnInfoParamVo implements Serializable {
+    private Integer id;
     private String tittle;
     private String author;
-    private String edit;
-    private String key;
     private String origin;
     private String originUrl;
     private Integer belongColumn;
@@ -23,4 +22,5 @@ public class ManageInformationParamVo implements Serializable {
     private String commentEndTime;
     private String summary;
     private String text;
+    private String createUser;
 }

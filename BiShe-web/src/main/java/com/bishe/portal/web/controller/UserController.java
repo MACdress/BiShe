@@ -1,7 +1,6 @@
 package com.bishe.portal.web.controller;
 
 import com.alibaba.druid.util.StringUtils;
-import com.bishe.portal.model.po.SimpleUserInfo;
 import com.bishe.portal.model.po.TbUsersPo;
 import com.bishe.portal.model.vo.RegisterUserVo;
 import com.bishe.portal.model.vo.SelectUserParamVo;
@@ -11,6 +10,7 @@ import com.bishe.portal.service.utils.ReturnInfo;
 import com.bishe.portal.web.utils.JsonView;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
@@ -92,4 +92,16 @@ public class UserController {
         return JsonView.render(200,"success");
     }
 
+    @RequestMapping(value="inputUserInfo",method= {RequestMethod.POST})
+    @ResponseBody
+    public String inputUserInfo(@RequestParam(value="file_excel") MultipartFile file) {
+        String readResult = "";
+        try {
+            readResult = userService.readExcelFile(file);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return  JsonView.render(200,readResult);
+
+    }
 }

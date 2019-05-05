@@ -17,7 +17,9 @@ public interface ExamPaperService {
 
     void updateExamPaper(ExamPaperVo examPaperVo);
 
-    void deleteExamPaper(int examPaperId);
+    void deleteExamPaper(String examPaperNum);
 
     List<ExamPaperVo> findExamPaperList(FindExamPaperVo findExamPaperVo);
+
+    List<ExamPaperVo> getReleaseExamPaper();
 }

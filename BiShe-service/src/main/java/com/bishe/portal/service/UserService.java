@@ -7,6 +7,7 @@ import com.bishe.portal.model.po.TbUsersPo;
 import com.bishe.portal.model.vo.SelectUserParamVo;
 import com.bishe.portal.model.vo.UserInfoVo;
 import com.bishe.portal.service.utils.ReturnInfo;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -36,4 +37,6 @@ public interface UserService {
 
 
     List<UserInfoVo> getAllUserInfo(SelectUserParamVo paramVo);
+
+    String readExcelFile(MultipartFile file);
 }

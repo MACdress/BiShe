@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bishe.portal.dao.TbExamStartDao">
+    <resultMap id="TbExamStartMap" type="com.bishe.portal.model.mo.TbExamStart">
+        <id column="id" property="id"/>
+        <result column="exam_start_num" property="examStartNum"/>
+        <result column="examinee" property="examinee"/>
+        <result column="score" property="score"/>
+        <result column="exam_paper_num" property="examPaperNum"/>
+    </resultMap>
+
+    <sql id="TableName">
+        tb_exam_start
+    </sql>
+
+    <sql id="Fields">
+        exam_start_num,examinee,score,exam_paper_num
+    </sql>
+
+    <insert id="insertExamStart">
+        insert into <include refid="TableName"/>(
+        <include refid="Fields"/>,
+        create_at,
+        update_at)
+        values (
+        #{examStart.examStartNum},
+        #{examStart.examinee},
+        #{examStart.score},
+        #{examStart.examPaperNum},
+        NOW(),
+        NOW()
+        )
+    </insert>
+
+    <select id="getExamStartByNum" resultMap="TbExamStartMap">
+        select <include refid="Fields"/>
+        from <include refid="TableName"/>
+        where exam_start_num = #{examStartNum}
+    </select>
+
+    <update id="updateScore">
+        update <include refid="TableName"/>
+        set score = #{score}
+        where exam_start_num = #{examStartNum}
+    </update>
+</mapper>
