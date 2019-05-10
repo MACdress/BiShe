@@ -1,15 +1,22 @@
 package com.bishe.portal.service;
 
-import com.bishe.portal.model.vo.ExamJudgeInfoVo;
-import com.bishe.portal.model.vo.ExamPaperMiddleInfoVo;
-import com.bishe.portal.model.vo.ExamSelectInfoVo;
+import com.bishe.portal.model.vo.*;
 
 import java.util.List;
 
 public interface ExamPaperMiddleInfoService {
-    void addQuestionInExamPaper(List<ExamSelectInfoVo> examSelectList, List<ExamJudgeInfoVo> judgeInfoList);
+    void addQuestionInExamPaper(AddExamPaperMiddleVo addExamPaperMiddleVo);
 
     ExamPaperMiddleInfoVo getExamPaperInfo(String examPaperNum);
 
-    void removeExamPaperSubject(String examPaperNum, String subjectId);
+    void removeExamPaperSubject(String examPaperNum, List<SimpleSubjectVo> subjectId);
+
+    void addParamSelect(ExamSelectInfoVo selectInfoVo);
+
+    void addParamJudge(ExamJudgeInfoVo judgeInfoVo);
+
+
+    PageShowVo getAllSelectExamPaperSubject(PageShowVo pageShowVo);
+
+    PageShowVo getAllJudgeExamPaperSubject(PageShowVo pageShowVo);
 }

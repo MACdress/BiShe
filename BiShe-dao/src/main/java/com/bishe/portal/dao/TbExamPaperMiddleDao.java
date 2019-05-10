@@ -12,5 +12,5 @@ public interface TbExamPaperMiddleDao {
 
     List<String> getSubjectIdByExamPaperNum(@Param("examPaperNum") String examPaperNum);
 
-    void deleteExamPaperSubject(@Param("examPaperNum") String examPaperNum,@Param("subjectId") String subjectId);
+    void deleteExamPaperSubject(@Param("examPaperNum") String examPaperNum,@Param("subjectIdList") List<String> subjectId);
 }

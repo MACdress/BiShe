@@ -32,7 +32,7 @@ public class UserController {
     @ResponseBody
     public String login(@RequestBody RegisterUserVo registerUserVo, HttpSession httpSession){
         TbUsersPo user = new TbUsersPo();
-        user.setAccount(registerUserVo.getAccount());
+        user.setTel(registerUserVo.getTel());
         user.setPwd(registerUserVo.getPassword());
         ReturnInfo retuenInfo = userService.login(user);
         if ( retuenInfo.isSuccess()) {
@@ -89,7 +89,7 @@ public class UserController {
     @RequestMapping(value = "test",method = RequestMethod.GET)
     @ResponseBody
     public String getTest (){
-        return JsonView.render(200,"success");
+        return JsonView.render(404,"未登录，请先登录");
     }
 
     @RequestMapping(value="inputUserInfo",method= {RequestMethod.POST})
@@ -103,5 +103,12 @@ public class UserController {
         }
         return  JsonView.render(200,readResult);
 
+    }
+
+    @RequestMapping(value="outPutUserInfo",method= {RequestMethod.POST})
+    @ResponseBody
+    public String outPutUserInfo(){
+        userService.outExcelFile();
+        return JsonView.render(200,"导出成功");
     }
 }

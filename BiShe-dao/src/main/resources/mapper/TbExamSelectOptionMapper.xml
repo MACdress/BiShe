@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bishe.portal.dao.TbExamSelectOptionDao">
-    <resultMap id="TbExamPaperMap" type="com.bishe.portal.model.mo.TbExamSelectOption">
+    <resultMap id="TbExamSelectOptionMap" type="com.bishe.portal.model.mo.TbExamSelectOption">
         <id column="id" property="id"/>
         <result column="exam_select" property="examSelect"/>
-        <result column="option" property="option"/>
+        <result column="options" property="option"/>
         <result column="option_content" property="optionContent"/>
     </resultMap>
 
@@ -13,10 +13,10 @@
     </sql>
 
     <sql id="Fields">
-        exam_select,option,option_content
+        exam_select,options,option_content
     </sql>
 
-    <insert id="insertExamSelectOption">
+    <insert id="insertExamSelectOption" parameterType="com.bishe.portal.model.mo.TbExamSelectOption">
         insert INTO <include refid="TableName"/> (
         <include refid="Fields"/>,
         create_at,
@@ -28,6 +28,13 @@
         NOW(),
         NOW()
         )
+        <selectKey resultType="int" keyProperty="id" order="AFTER">
+            SELECT @@IDENTITY
+        </selectKey>
     </insert>
-    <select id=""
+    <select id="getSelectOptionList" resultMap="TbExamSelectOptionMap">
+        select <include refid="Fields"/>
+        from <include refid="TableName"/>
+        where exam_select = #{examSelect}
+    </select>
 </mapper>

@@ -110,14 +110,20 @@ public class TbColumnInfoServiceImpl implements TbColumnInfoService {
         ManageColumnInfoSimpleVo result = new ManageColumnInfoSimpleVo();
         result.setId(tbColumnInfo.getId());
         result.setBelongColumn(tbColumnInfo.getBelongColumn());
-        TbColumnManage columnManage = tbColumnManageDao.getColumnInfoById(tbColumnInfo.getBelongColumn().toString());
-        result.setBelongColumnName(columnManage.getColumnName());
+        Integer belongColumn = tbColumnInfo.getBelongColumn();
+        int belongColumnId = 0;
+        if (belongColumn != null){
+            belongColumnId = tbColumnInfo.getBelongColumn();
+        }
+        TbColumnManage columnManage = tbColumnManageDao.getColumnInfoById(String.valueOf(belongColumnId));
+        result.setBelongColumnName(columnManage==null?"":columnManage.getColumnName());
         result.setInformationStatus(tbColumnInfo.getInformationStatus());
         result.setTittle(tbColumnInfo.getTittle());
         result.setCreateUser(tbColumnInfo.getCreateUser());
         TbUsers userInfo = tbUsersDao.getUserInfoByAccount(tbColumnInfo.getCreateUser());
         result.setCreateUserName(userInfo == null ?"":userInfo.getName());
-        result.setCreateAt(tbColumnInfo.getCreateAt().toString());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        result.setCreateAt(sdf.format(tbColumnInfo.getCreateAt()));
         return result;
     }
 
@@ -135,6 +141,8 @@ public class TbColumnInfoServiceImpl implements TbColumnInfoService {
         tbColumnInfo.setSummary(manageInformationParamVo.getSummary());
         tbColumnInfo.setText(manageInformationParamVo.getText());
         tbColumnInfo.setTittle(manageInformationParamVo.getTittle());
+        tbColumnInfo.setCreateUser(manageInformationParamVo.getCreateUser());
+        tbColumnInfo.setIsTop(0);
         return tbColumnInfo;
     }
 }

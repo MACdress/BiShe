@@ -13,7 +13,7 @@ public interface ExamPaperService {
      *
      * @param examPaperVo
      */
-    void addExamPaper(ExamPaperVo examPaperVo);
+    ExamPaperVo addExamPaper(ExamPaperVo examPaperVo);
 
     void updateExamPaper(ExamPaperVo examPaperVo);
 
@@ -21,5 +21,7 @@ public interface ExamPaperService {
 
     List<ExamPaperVo> findExamPaperList(FindExamPaperVo findExamPaperVo);
 
-    List<ExamPaperVo> getReleaseExamPaper();
+    List<ExamPaperVo> getReleaseExamPaper(String account);
+
+    List<ExamPaperVo> findExamPaperListByType(Integer examPaperType,int page,int pageSize);
 }

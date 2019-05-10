@@ -13,9 +13,8 @@ public class ExamSelectInfoVo implements Serializable {
     private String examAnswer;
     private List<ExamSelectOptionInfoVo> selectOptionInfos;
     private Integer score;
-    private String examPaperNum;
     /**
      * 1代表选择提，2代表判断题
      */
-    private Integer examInfoType;
+    private Integer examSubjectType;
 }

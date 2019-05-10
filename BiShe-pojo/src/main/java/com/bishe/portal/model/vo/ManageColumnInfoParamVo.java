@@ -23,4 +23,7 @@ public class ManageColumnInfoParamVo implements Serializable {
     private String summary;
     private String text;
     private String createUser;
+    public ManageColumnInfoParamVo(){
+
+    }
 }

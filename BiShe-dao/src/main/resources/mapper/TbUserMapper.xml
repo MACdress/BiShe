@@ -43,7 +43,7 @@
                 #{tbUsers.email},
                 #{tbUsers.permission},
                 #{tbUsers.tel},
-                #{tbUsers.birthday},
+                #{tbUsers.birthDay},
                 #{tbUsers.sex},
                 #{tbUsers.sale},
                 #{tbUsers.account},
@@ -76,7 +76,7 @@
         SELECT
             <include refid="Fields"/>
         FROM <include refid="TableName"/>
-        WHERE account = #{tel} and is_deleate = 1
+        WHERE tel = #{tel} and is_deleate = 1
         LIMIT 1;
     </select>
 

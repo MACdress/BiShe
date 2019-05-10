@@ -10,10 +10,12 @@ import java.io.Serializable;
 @Data
 public class ExamPaperVo implements Serializable {
     private String examPaperName;
-    private String examPaperType;
+    private Integer examPaperType;
     private String invalidTime;
     private String createUnit;
     private String responsible;
     private Integer status;
     private Integer examTime;
+    private String examPaperNum;
+    private Integer examPaperStatus;
 }

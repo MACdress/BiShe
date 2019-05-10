@@ -1,8 +1,6 @@
 package com.bishe.portal.service;
 
 
-import com.bishe.portal.model.mo.TbUsers;
-import com.bishe.portal.model.po.SimpleUserInfo;
 import com.bishe.portal.model.po.TbUsersPo;
 import com.bishe.portal.model.vo.SelectUserParamVo;
 import com.bishe.portal.model.vo.UserInfoVo;
@@ -39,4 +37,6 @@ public interface UserService {
     List<UserInfoVo> getAllUserInfo(SelectUserParamVo paramVo);
 
     String readExcelFile(MultipartFile file);
+
+    void outExcelFile();
 }

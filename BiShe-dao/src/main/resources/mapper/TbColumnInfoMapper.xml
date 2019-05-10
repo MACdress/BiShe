@@ -23,7 +23,7 @@
         tb_column_info
     </sql>
     <sql id="Fields">
-        id,tittle,author,origin,origin_url,belong_column,information_status,down_time,is_comment,comment_begin_time,comment_end_time,summary,text,create_user,is_top,create_at
+        tittle,author,origin,origin_url,belong_column,information_status,down_time,is_comment,comment_begin_time,comment_end_time,summary,text,create_user,is_top
     </sql>
 
     <insert id="insertInformationInfo">
@@ -45,12 +45,10 @@
           #{tbColumnInfo.summary},
           #{tbColumnInfo.text},
           #{tbColumnInfo.createUser},
-          #{tbColumnInfo.isTop}
+          #{tbColumnInfo.isTop},
           NOW(),
           NOW()
         )
-        NOW(),
-        NOW()
     </insert>
 
     <update id="setAllIsUnTop">
@@ -72,25 +70,25 @@
     <update id="updateColumnInfo">
         UPDATE <include refid="TableName"/>
         <set>
-            <if test="columnInfo.tittle != nll">
+            <if test="columnInfo.tittle != null">
                 tittle = #{columnInfo.tittle},
             </if>
-            <if test="columnInfo.author != nll">
+            <if test="columnInfo.author != null">
                 author = #{columnInfo.author},
             </if>
-            <if test="columnInfo.origin != nll">
+            <if test="columnInfo.origin != null">
                 origin = #{columnInfo.origin},
             </if>
-            <if test="columnInfo.originUrl != nll">
+            <if test="columnInfo.originUrl != null">
                 origin_url = #{columnInfo.originUrl},
             </if>
-            <if test="columnInfo.belongColumn != nll">
+            <if test="columnInfo.belongColumn != null">
                 belong_column =  #{columnInfo.belongColumn},
             </if>
-            <if test="columnInfo.informationStatus !=nll">
+            <if test="columnInfo.informationStatus !=null">
                 information_status =  #{columnInfo.informationStatus},
             </if>
-            <if test="columnInfo.downTime !=nll ">
+            <if test="columnInfo.downTime !=null ">
                 down_time = #{columnInfo.downTime},
             </if>
             <if test="columnInfo.isComment != null">
@@ -116,13 +114,13 @@
     </update>
 
     <select id="getColumnInfoById" resultMap="TbColumnInfoMap">
-        select <include refid="Fields"/>
+        select <include refid="Fields"/>,id,create_at
         from   <include refid="TableName"/>
         where id = #{id}
     </select>
 
     <select id="selectColumnInfoList" resultMap="TbColumnInfoMap">
-        select <include refid="Fields"/>
+        select <include refid="Fields"/>,id,create_at
         from   <include refid="TableName"/>
         <where>
             <if test="columnInfoParam.tittle != null ">
@@ -138,11 +136,26 @@
                 create_at &lt; #{columnInfoParam.createEndTime}
             </if>
             <if test="columnInfoParam.informationStatus != null ">
-                column_name = #{columnInfoParam.informationStatus}
+                information_status = #{columnInfoParam.informationStatus}
             </if>
             <if test="columnInfoParam.createUser != null ">
-                column_name = #{columnInfoParam.createUser}
+                create_user = #{columnInfoParam.createUser}
             </if>
         </where>
+    </select>
+
+    <select id="getColumnInfoByBelongColumn" resultMap="TbColumnInfoMap">
+        select <include refid="Fields"/>,id,create_at
+        from   <include refid="TableName"/>
+        where  belong_column = #{belongColumn}
+    </select>
+
+    <select id="getColumnListByColumnId" resultMap="TbColumnInfoMap">
+        select <include refid="Fields"/>,id
+        from   <include refid="TableName"/>
+        where belong_column in
+        <foreach collection="columnManageIdList" separator="," close=")" open="(" item="belongColumn">
+            #{belongColumn}
+        </foreach>
     </select>
 </mapper>

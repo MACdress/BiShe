@@ -9,6 +9,7 @@ import java.io.Serializable;
  */
 @Data
 public class ColumnInfoVo implements Serializable {
+    private Integer id;
     private String  columnName;
     private String parentId;
     private String parentName;

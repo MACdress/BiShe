@@ -7,6 +7,9 @@
         <result column="examinee" property="examinee"/>
         <result column="score" property="score"/>
         <result column="exam_paper_num" property="examPaperNum"/>
+        <result column="exam_end" property="examEnd"/>
+        <result column="create_at" property="createAt"/>
+        <result column="update_at" property="updateAt"/>
     </resultMap>
 
     <sql id="TableName">
@@ -14,7 +17,7 @@
     </sql>
 
     <sql id="Fields">
-        exam_start_num,examinee,score,exam_paper_num
+        exam_start_num,examinee,score,exam_paper_num,exam_end
     </sql>
 
     <insert id="insertExamStart">
@@ -27,20 +30,33 @@
         #{examStart.examinee},
         #{examStart.score},
         #{examStart.examPaperNum},
+        #{examStart.examEnd},
         NOW(),
         NOW()
         )
     </insert>
 
     <select id="getExamStartByNum" resultMap="TbExamStartMap">
-        select <include refid="Fields"/>
+        select <include refid="Fields"/>,create_at,update_at
         from <include refid="TableName"/>
         where exam_start_num = #{examStartNum}
     </select>
 
     <update id="updateScore">
         update <include refid="TableName"/>
-        set score = #{score}
+        set score = #{score} , exam_end = 1,update_at = NOW()
         where exam_start_num = #{examStartNum}
     </update>
+
+    <select id="getFinishExamInfo" resultMap="TbExamStartMap">
+        select <include refid="Fields"/>,create_at,update_at
+        from <include refid="TableName"/>
+        LIMIT #{startIndex},#{pageSize}
+    </select>
+
+    <select id="getExamStartByExaminee" resultMap="TbExamStartMap">
+        select <include refid="Fields"/>,create_at,update_at
+        from <include refid="TableName"/>
+        where examinee = #{account}
+    </select>
 </mapper>

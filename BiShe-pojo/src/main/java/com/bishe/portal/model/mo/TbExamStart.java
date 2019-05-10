@@ -11,6 +11,7 @@ public class TbExamStart {
     private String examinee;
     private int score;
     private String examPaperNum;
+    private int  examEnd;
     private Date createAt;
     private Date updateAt;
 }

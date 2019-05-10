@@ -9,6 +9,7 @@ import java.io.Serializable;
  */
 @Data
 public class FindExamPaperVo implements Serializable {
+    private String examPaperNum;
     private String examPaperName;
     private String invalidBeginTime;
     private String invalidEndTime;
@@ -17,4 +18,5 @@ public class FindExamPaperVo implements Serializable {
     private Integer status;
     private Integer page;
     private Integer pageSize;
+    private Integer examPaperType;
 }

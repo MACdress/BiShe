@@ -7,6 +7,7 @@ import lombok.Data;
  */
 @Data
 public class ParamColumnInfoPo {
+    private Integer id;
     private Integer parentId;
     private String  createUserId;
     private String columnName;

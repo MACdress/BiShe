@@ -1,12 +1,14 @@
 package com.bishe.portal.service.impl;
 
 import com.bishe.portal.dao.TbExamPaperDao;
+import com.bishe.portal.dao.TbExamStartDao;
 import com.bishe.portal.model.mo.TbExamPaper;
+import com.bishe.portal.model.mo.TbExamStart;
 import com.bishe.portal.model.po.FindExamPaperPo;
 import com.bishe.portal.model.vo.ExamPaperVo;
 import com.bishe.portal.model.vo.FindExamPaperVo;
 import com.bishe.portal.service.ExamPaperService;
-import com.bishe.portal.service.utils.Encryption;
+import com.bishe.portal.service.enums.ExamPaperStatusEnum;
 import com.bishe.portal.service.utils.UUIDUtils;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -14,9 +16,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author 73515
@@ -25,11 +25,16 @@ import java.util.List;
 public class ExamPaperServiceImpl implements ExamPaperService {
     @Resource
     TbExamPaperDao tbExamPaperDao;
+    @Resource
+    TbExamStartDao tbExamStartDao;
     @Override
-    public void addExamPaper(ExamPaperVo examPaperVo) {
+    public ExamPaperVo addExamPaper(ExamPaperVo examPaperVo) {
         TbExamPaper examPaper = getExamPaper(examPaperVo);
         examPaper.setExamPaperNum(UUIDUtils.getUUID(8));
-        tbExamPaperDao.insertExamPaper(getExamPaper(examPaperVo));
+        tbExamPaperDao.insertExamPaper(examPaper);
+        examPaper = tbExamPaperDao.getExamPaperByNumber(examPaper.getExamPaperNum());
+        ExamPaperVo examPaperVo1 = getExamPaperVo(examPaper);
+        return examPaperVo1;
     }
 
     @Override
@@ -54,24 +59,52 @@ public class ExamPaperServiceImpl implements ExamPaperService {
     }
 
     @Override
-    public List<ExamPaperVo> getReleaseExamPaper() {
+    public List<ExamPaperVo> getReleaseExamPaper(String account) {
         List<ExamPaperVo> result = new ArrayList<>();
         List<TbExamPaper> examPapers = tbExamPaperDao.getReleaseExamPaper();
         if (examPapers.size() > 0) {
+            List<TbExamStart> examStartList = tbExamStartDao.getExamStartByExaminee(account);
+            Map<String,TbExamStart> examStartMap = new HashMap<>();
+            for (TbExamStart tbExamStart:examStartList){
+                examStartMap.put(tbExamStart.getExamPaperNum(),tbExamStart);
+            }
             for (TbExamPaper tbExamPaper : examPapers) {
                 String invalidTime = tbExamPaper.getInvalidTime();
                 Integer examTime = tbExamPaper.getExamTime();
+                ExamPaperVo examPaperVo = getExamPaperVo(tbExamPaper);
+
                 /* 验证是否可移除 */
                 if (validateExamPaperBeOverdue(invalidTime,examTime)) {
                     /*
-                      如果失效了，将已发布的考试变为未发布
+                      如果失效了，将已发布的考试变为以结束
                      */
                     tbExamPaperDao.updateExamStatus(tbExamPaper.getExamPaperNum());
                 }else{
-                    ExamPaperVo examPaperVo = getExamPaperVo(tbExamPaper);
+                    if (examStartMap.containsKey(tbExamPaper.getExamPaperNum())){
+                        TbExamStart tbExamStart = examStartMap.get(tbExamPaper.getExamPaperNum());
+                        if(tbExamStart.getExamEnd()==1){
+                            examPaperVo.setExamPaperStatus(ExamPaperStatusEnum.EXAM_IS_START.getStatus());
+                        }else{
+                            examPaperVo.setExamPaperStatus(ExamPaperStatusEnum.EXAM_UN_START.getStatus());
+                        }
+                    }
                     result.add(examPaperVo);
+
                 }
             }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<ExamPaperVo>findExamPaperListByType(Integer examPaperType, int pageNum, int pageSizeNum) {
+        int startIndex = (pageNum-1)*pageSizeNum;
+        List<TbExamPaper> examPapers = tbExamPaperDao.getExamPaperByType(examPaperType.intValue(),startIndex,pageSizeNum);
+        List<ExamPaperVo> result = new ArrayList<>();
+        for (TbExamPaper examPaper:examPapers){
+            ExamPaperVo examPaperVo = getExamPaperVo(examPaper);
+            result.add(examPaperVo);
         }
         return result;
     }
@@ -84,6 +117,7 @@ public class ExamPaperServiceImpl implements ExamPaperService {
         result.setResponsible(examPaper.getResponsible());
         result.setStatus(examPaper.getStatus());
         result.setExamPaperType(examPaper.getExamPaperType());
+        result.setExamPaperNum(examPaper.getExamPaperNum());
         return result;
     }
 
@@ -94,6 +128,10 @@ public class ExamPaperServiceImpl implements ExamPaperService {
         result.setInvalidBeginTime(findExamPaperVo.getInvalidBeginTime());
         result.setResponsible(findExamPaperVo.getResponsible());
         result.setInvalidEndTime(findExamPaperVo.getInvalidEndTime());
+        result.setExamPaperNum(findExamPaperVo.getExamPaperNum());
+        result.setPageSize(findExamPaperVo.getPageSize()==0?10:findExamPaperVo.getPageSize());
+        result.setStartIndex((findExamPaperVo.getPage()-1)*result.getPageSize());
+        result.setExamPaperType(findExamPaperVo.getExamPaperType());
         return result;
     }
 
@@ -106,6 +144,7 @@ public class ExamPaperServiceImpl implements ExamPaperService {
         result.setResponsible(examPaperVo.getResponsible());
         result.setStatus(examPaperVo.getStatus());
         result.setExamTime(examPaperVo.getExamTime());
+        result.setExamPaperNum(examPaperVo.getExamPaperNum());
         return result;
     }
 

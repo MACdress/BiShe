@@ -2,6 +2,7 @@ package com.bishe.portal.service;
 
 import com.bishe.portal.model.po.ParamColumnInfoPo;
 import com.bishe.portal.model.vo.ColumnInfoVo;
+import com.bishe.portal.model.vo.ShowColumnInfoVo;
 
 import java.util.List;
 
@@ -49,4 +50,6 @@ public interface ColumnManageService{
     List<ColumnInfoVo> getAllParentColumnList(String columnId);
 
     List<ColumnInfoVo> getAllParentColumn();
+
+    List<ShowColumnInfoVo> getAllColumnInfo();
 }

@@ -13,4 +13,5 @@ public class ExamStartVo implements Serializable {
     private String beginTime;
     private String endTime;
     private int allScore;
+    private String examPaperName;
 }

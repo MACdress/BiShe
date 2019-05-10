@@ -11,7 +11,7 @@ public class ExamPaperMiddleInfoVo implements Serializable {
     private List<ExamJudgeInfoVo> examJudgeInfoVos;
     private List<ExamSelectInfoVo> examSelectInfoVos;
     private String  examPaperName;
-    private String  examPaperType;
+    private Integer  examPaperType;
     private String  invalidTime;
     private String  createUnit;
     private String  responsible;

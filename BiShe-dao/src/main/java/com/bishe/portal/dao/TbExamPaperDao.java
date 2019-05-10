@@ -41,5 +41,7 @@ public interface TbExamPaperDao {
 
     List<TbExamPaper> getReleaseExamPaper();
 
-    void updateExamStatus(String examPaperNum);
+    void updateExamStatus(@Param("examPaperNum") String examPaperNum);
+
+    List<TbExamPaper> getExamPaperByType( @Param("examPaperType") int intValue,@Param("startIndex") int page, @Param("pageSize") int pageSize);
 }

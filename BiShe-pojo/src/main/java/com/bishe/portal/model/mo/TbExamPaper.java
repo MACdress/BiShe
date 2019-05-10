@@ -12,7 +12,7 @@ import java.util.Date;
 public class TbExamPaper {
     private int id;
     private String examPaperName;
-    private String examPaperType;
+    private Integer examPaperType;
     /**
      * 失效时间
      */

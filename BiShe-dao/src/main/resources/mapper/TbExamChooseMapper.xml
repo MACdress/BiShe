@@ -7,6 +7,7 @@
         <result column="answer" property="answer"/>
         <result column="is_correct" property="isCorrect"/>
         <result column="exam_start_num" property="examStartNum"/>
+        <result column="exam_subject_type" property="examSubjectType"/>
     </resultMap>
 
     <sql id="TableName">
@@ -14,7 +15,7 @@
     </sql>
 
     <sql id="Fields">
-        subject_id,answer,is_correct,exam_start_num
+        subject_id,answer,is_correct,exam_start_num,exam_subject_type
     </sql>
 
     <insert id="insertExamChoose">
@@ -27,6 +28,7 @@
             #{examChoose.answer},
             #{examChoose.isCorrect},
             #{examChoose.examStartNum},
+            #{examChoose.examSubjectType},
             NOW(),
             NOW()
         )
@@ -48,5 +50,11 @@
         select <include refid="Fields"/>
         from <include refid="TableName"/>
         where exam_start_num = #{examStartNum} and is_correct = 1
+    </select>
+
+    <select id="getChooseByStartNum" resultMap="TbExamChooseMap">
+        select <include refid="Fields"/>
+        from <include refid="TableName"/>
+        where exam_start_num = #{examStartNum}
     </select>
 </mapper>

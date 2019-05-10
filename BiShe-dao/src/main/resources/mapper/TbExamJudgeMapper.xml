@@ -32,11 +32,11 @@
         )
     </insert>
 
-    <select id="getExamJudgeByNumber" resultMap="TbExamJudgeMap">
+    <select id="getExamJudgeByNumbers" resultMap="TbExamJudgeMap">
         select <include refid="Fields"/>
         from  <include refid="TableName"/>
         where subject_id in
-        <foreach collection="list" item="subjectId" open="(" close=")" separator=",">
+        <foreach collection="subjectIdList" item="subjectId" open="(" close=")" separator=",">
             #{subjectId}
         </foreach>
     </select>
@@ -45,5 +45,11 @@
         select <include refid="Fields"/>
         from  <include refid="TableName"/>
         where subject_id = #{subjectId}
+    </select>
+
+    <select id="getAllJudgeSubject" resultMap="TbExamJudgeMap">
+        select <include refid="Fields"/>
+        from  <include refid="TableName"/>
+        LIMIT #{startIndex},#{pageSize}
     </select>
 </mapper>

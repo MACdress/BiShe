@@ -1,12 +1,16 @@
 package com.bishe.portal.service.impl;
 
+import com.bishe.portal.dao.TbColumnInfoDao;
 import com.bishe.portal.dao.TbColumnManageDao;
 import com.bishe.portal.dao.TbUsersDao;
+import com.bishe.portal.model.mo.TbColumnInfo;
 import com.bishe.portal.model.mo.TbColumnManage;
 import com.bishe.portal.model.mo.TbUsers;
 import com.bishe.portal.model.po.ParamColumnInfoPo;
 import com.bishe.portal.model.po.TbColumnManagePo;
+import com.bishe.portal.model.vo.ColumnInfoSimpleVo;
 import com.bishe.portal.model.vo.ColumnInfoVo;
+import com.bishe.portal.model.vo.ShowColumnInfoVo;
 import com.bishe.portal.service.ColumnManageService;
 import com.bishe.portal.service.utils.UUIDUtils;
 import org.springframework.stereotype.Service;
@@ -14,7 +18,9 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author gaopan31
@@ -26,6 +32,9 @@ public class ColumnManageServiceImpl implements ColumnManageService {
 
     @Resource
     private TbUsersDao tbUsersDao;
+
+    @Resource
+    private TbColumnInfoDao tbColumnInfoDao;
 
     @Override
     public void addColumnManage(ParamColumnInfoPo paramColumnInfoPo) {
@@ -67,6 +76,62 @@ public class ColumnManageServiceImpl implements ColumnManageService {
         return getColumnInfoList(tbColumnManagePos);
     }
 
+    @Override
+    public List<ShowColumnInfoVo> getAllColumnInfo() {
+        List<ShowColumnInfoVo> result = new ArrayList<>();
+        List<TbColumnManagePo> columnMangeList = tbColumnManageDao.getColumnInfoByListByParentId(0);
+        if (columnMangeList!=null) {
+            List<Integer> columnManageIdList = new ArrayList<>();
+            for (TbColumnManagePo tbColumnManagePo : columnMangeList) {
+                columnManageIdList.add(tbColumnManagePo.getId());
+            }
+            if(columnManageIdList.size()<=0){
+                return result;
+            }
+            List<TbColumnInfo> columnInfoList = tbColumnInfoDao.getColumnListByColumnId(columnManageIdList);
+            Map<Integer, List<TbColumnInfo>> columnInfoMap = getColumnInfoMap(columnInfoList);
+            for(TbColumnManagePo columnManagePo:columnMangeList){
+                ShowColumnInfoVo showColumnInfoVo = new ShowColumnInfoVo();
+                showColumnInfoVo.setColumnManageId(columnManagePo.getId());
+                showColumnInfoVo.setColumnManageName(columnManagePo.getColumnName());
+                List<TbColumnInfo> tbColumnInfos = columnInfoMap.get(columnManagePo.getId());
+                if ((tbColumnInfos !=null)&&tbColumnInfos.size()>0) {
+                    List<ColumnInfoSimpleVo> columnInfoSimpleVos = new ArrayList<>();
+                    for (TbColumnInfo tbColumnInfo : tbColumnInfos) {
+                        ColumnInfoSimpleVo columnInfoSimpleVo = getColumnInfoSimpleVo(tbColumnInfo);
+                        columnInfoSimpleVos.add(columnInfoSimpleVo);
+                    }
+                    showColumnInfoVo.setColumnInfoList(columnInfoSimpleVos);
+                    result.add(showColumnInfoVo);
+                }
+            }
+        }
+        return result;
+    }
+
+    private ColumnInfoSimpleVo getColumnInfoSimpleVo(TbColumnInfo tbColumnInfo) {
+        ColumnInfoSimpleVo result = new ColumnInfoSimpleVo();
+        result.setBelongColumn(tbColumnInfo.getBelongColumn());
+        result.setIsTop(tbColumnInfo.getIsTop());
+        result.setSummary(tbColumnInfo.getSummary());
+        result.setId(tbColumnInfo.getId());
+        return result;
+    }
+
+    private Map<Integer,List<TbColumnInfo>> getColumnInfoMap(List<TbColumnInfo> columnInfoList) {
+        Map<Integer,List<TbColumnInfo>> result = new HashMap<>();
+        for (TbColumnInfo tbColumnInfo:columnInfoList){
+            Integer belongColumnId = tbColumnInfo.getBelongColumn();
+            List<TbColumnInfo> tbColumnInfoList = new ArrayList<>();
+            if(result.containsKey(belongColumnId)){
+                tbColumnInfoList = result.get(belongColumnId);
+            }
+            tbColumnInfoList.add(tbColumnInfo);
+            result.put(belongColumnId,tbColumnInfoList);
+        }
+        return result;
+    }
+
     private  List<ColumnInfoVo> getColumnInfoList(List<TbColumnManagePo> tbColumnManages){
         List<ColumnInfoVo> result = new ArrayList<>();
         for (TbColumnManagePo tbColumnManagePo : tbColumnManages){
@@ -94,23 +159,23 @@ public class ColumnManageServiceImpl implements ColumnManageService {
             columnInfoVo.setColumnText(tbColumnManagePo.getColumnText());
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             columnInfoVo.setCreateTime(simpleDateFormat.format(tbColumnManagePo.getCreateAt()).trim());
-            /*
-                 新闻总数待开发
-             */
-            columnInfoVo.setTotal(0);
+            List<TbColumnInfo> tbColumnInfos = tbColumnInfoDao.getColumnInfoByBelongColumn(tbColumnManagePo.getId());
+            columnInfoVo.setTotal(tbColumnInfos.size());
+            columnInfoVo.setId(tbColumnManagePo.getId());
             return columnInfoVo;
      }
 
     private TbColumnManage getTbColumnManage(ParamColumnInfoPo paramColumnInfoPo) {
         TbColumnManage tbColumnManage = new TbColumnManage();
-        tbColumnManage.setParent(paramColumnInfoPo.getParentId());
+        tbColumnManage.setParent(paramColumnInfoPo.getParentId()==null?0:paramColumnInfoPo.getParentId());
         tbColumnManage.setColumnImg(paramColumnInfoPo.getColumnImg());
         tbColumnManage.setColumnName(paramColumnInfoPo.getColumnName());
-        tbColumnManage.setColumnStatus(paramColumnInfoPo.getColumnStatus());
-        tbColumnManage.setIsReview(paramColumnInfoPo.getIsReview());
+        tbColumnManage.setColumnStatus(paramColumnInfoPo.getColumnStatus()==null?0:paramColumnInfoPo.getColumnStatus());
+        tbColumnManage.setIsReview(paramColumnInfoPo.getIsReview()==null?0:paramColumnInfoPo.getIsReview());
         tbColumnManage.setReviewUser(paramColumnInfoPo.getReviewUserId());
         tbColumnManage.setColumnText(paramColumnInfoPo.getColumnText());
         tbColumnManage.setCreateUser(paramColumnInfoPo.getCreateUserId());
+        tbColumnManage.setId(paramColumnInfoPo.getId()==null?0:paramColumnInfoPo.getId());
         return tbColumnManage;
     }
 }

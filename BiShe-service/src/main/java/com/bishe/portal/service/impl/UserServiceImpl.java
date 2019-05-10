@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ReturnInfo login(TbUsersPo user) {
         ReturnInfo returnInfo = new ReturnInfo();
-        TbUsers userInfo = tbUsersDao.getUserInfoByAccount(user.getAccount());
+        TbUsers userInfo = tbUsersDao.getUserInfoByTel(user.getTel());
         if (userInfo != null) {
             String newPwd = Encryption.getPwd(userInfo.getSale(), user.getPwd());
             if (newPwd.equals(userInfo.getPwd())) {
@@ -68,6 +68,8 @@ public class UserServiceImpl implements UserService {
         tbUsersPo.setPwd(newPwd);
         tbUsersPo.setSale(sale);
         TbUsers tbUsers = getTbUsers(tbUsersPo);
+        tbUsers.setPwd(tbUsersPo.getPwd()==null?"":tbUsersPo.getPwd());
+        tbUsers.setSale(tbUsersPo.getSale());
         tbUsersDao.insert(tbUsers);
         return getUserInfoVo(tbUsersDao.getUserInfoByAccount(tbUsers.getAccount()));
     }
@@ -97,17 +99,24 @@ public class UserServiceImpl implements UserService {
     @Override
     public String readExcelFile(MultipartFile file) {
         ExcelUtils excelUtils = new ExcelUtils();
-        List <TbUsers> insertParam = new ArrayList<>();
+        List <TbUsers> insertParam ;
         try {
             insertParam = excelUtils.getExcelInfo(file);
         }catch (Exception e){
             System.out.println("导入Excel文件出现错误");
             return  "导入失败";
         }
-        for (TbUsers tbUsers : insertParam){
-            tbUsersDao.insert(tbUsers);
+        if (insertParam!=null && insertParam.size()>0){
+            for (TbUsers tbUsers : insertParam) {
+                tbUsersDao.insert(tbUsers);
+            }
         }
         return "导入成功";
+    }
+
+    @Override
+    public void outExcelFile() {
+
     }
 
     private TbUsersPo getTbUserPo (TbUsers tbUsers){
@@ -148,7 +157,7 @@ public class UserServiceImpl implements UserService {
         tbUsers.setJob(StringUtils.isEmpty(tbUsersPo.getJob()) ? "" : tbUsersPo.getJob());
         tbUsers.setFixedTel(StringUtils.isEmpty(tbUsersPo.getFixedTel()) ? "" : tbUsersPo.getFixedTel());
         tbUsers.setName(StringUtils.isEmpty(tbUsersPo.getName()) ? "" : tbUsersPo.getName());
-        tbUsers.setIdentity(tbUsersPo.getIdentity());
+        tbUsers.setIdentity(tbUsersPo.getIdentity()==null?0:tbUsersPo.getIdentity());
         tbUsers.setTurnPositiveDate(StringUtils.isEmpty(tbUsersPo.getTurnPositiveDate()) ? "" : tbUsersPo.getTurnPositiveDate());
         tbUsers.setNationality(StringUtils.isEmpty(tbUsersPo.getNationality()) ? "" : tbUsersPo.getNationality());
         tbUsers.setBranch(StringUtils.isEmpty(tbUsersPo.getBranch()) ? "" : tbUsersPo.getBranch());
@@ -160,7 +169,7 @@ public class UserServiceImpl implements UserService {
     private UserInfoVo getUserInfoVo (TbUsers tbUsers){
         UserInfoVo result = new UserInfoVo();
         if(tbUsers == null){
-            return result;
+            return null;
         }
         result.setBirthDay(StringUtils.isEmpty(tbUsers.getBirthDay()) ? "" : tbUsers.getBirthDay());
         result.setSex(tbUsers.getSex());

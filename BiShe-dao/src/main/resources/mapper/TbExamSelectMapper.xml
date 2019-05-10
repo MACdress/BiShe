@@ -16,10 +16,10 @@
     </sql>
 
     <sql id="Fields">
-        subject_id,exam_tittle,exam_answer,score,exam_parse,subject_id
+        subject_id,exam_tittle,exam_answer,score,exam_parse
     </sql>
 
-    <insert id="insertExamPaper" parameterType="com.bishe.portal.model.mo.TbExamSelect">
+    <insert id="insertExamSelectInfo" parameterType="com.bishe.portal.model.mo.TbExamSelect">
         insert INTO <include refid="TableName"/> (
         <include refid="Fields"/>,
         create_at,
@@ -30,7 +30,6 @@
         #{tbExamSelect.examAnswer},
         #{tbExamSelect.score},
         #{tbExamSelect.examParse},
-        #{tbExamSelect.subjectId},
         NOW(),
         NOW()
         )
@@ -39,11 +38,11 @@
         </selectKey>
     </insert>
 
-    <select id="getExamSelectByNumber" resultMap="TbExamSelectMap">
+    <select id="getExamSelectByNumbers" resultMap="TbExamSelectMap">
         select <include refid="Fields"/>
         from  <include refid="TableName"/>
         where subject_id in
-        <foreach collection="list" item="examPaperNum" open="(" close=")" separator=",">
+        <foreach collection="subjectIdList" item="examPaperNum" open="(" close=")" separator=",">
             #{examPaperNum}
         </foreach>
     </select>
@@ -52,5 +51,11 @@
         select <include refid="Fields"/>
         from  <include refid="TableName"/>
         where subject_id = #{subjectId}
+    </select>
+
+    <select id="getAllSelectSubject" resultMap="TbExamSelectMap">
+        select <include refid="Fields"/>
+        from  <include refid="TableName"/>
+        LIMIT #{startIndex},#{pageSize}
     </select>
 </mapper>

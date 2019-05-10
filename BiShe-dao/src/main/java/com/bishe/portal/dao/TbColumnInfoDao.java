@@ -33,4 +33,8 @@ public interface TbColumnInfoDao {
     List<TbColumnInfo> selectColumnInfoList(@Param("columnInfoParam") FindColumnInfoParamVo findColumnInfoParamVo);
 
     void setAllIsUnTop(@Param("belongColumn") Integer belongColumn);
+
+    List<TbColumnInfo> getColumnInfoByBelongColumn(@Param("belongColumn") int id);
+
+    List<TbColumnInfo> getColumnListByColumnId(@Param("columnManageIdList") List<Integer> columnManageIdList);
 }

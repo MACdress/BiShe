@@ -7,6 +7,7 @@ import com.bishe.portal.service.ColumnManageService;
 import com.bishe.portal.web.utils.JsonView;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
@@ -17,7 +18,7 @@ import java.util.List;
  */
 @Controller
 @CrossOrigin
-@RequestMapping(value = "/admin/ColumnManage")
+@RequestMapping(value = "/admin/columnManage")
 public class AdminColumnManageController {
     @Resource
     ColumnManageService columnManageService;
@@ -28,7 +29,7 @@ public class AdminColumnManageController {
      */
     @RequestMapping(value = "addColumnInfo",method = RequestMethod.POST)
     @ResponseBody
-    public String addColumn(@RequestBody  ParamColumnInfoPo paramColumnInfoPo, HttpSession httpSession){
+    public String addColumn(@RequestBody  ParamColumnInfoPo paramColumnInfoPo ,HttpSession httpSession){
         UserInfoVo userInfoVo = (UserInfoVo)httpSession.getAttribute("user");
         if ((userInfoVo == null)||(userInfoVo.getPermission()!=1)){
             return JsonView.render(404,"user is not admin");
@@ -63,7 +64,7 @@ public class AdminColumnManageController {
      */
     @RequestMapping(value = "modify",method = RequestMethod.POST)
     @ResponseBody
-    public String modifyColumn(ParamColumnInfoPo paramColumnInfoPo,HttpSession httpSession){
+    public String modifyColumn(@RequestBody ParamColumnInfoPo paramColumnInfoPo,HttpSession httpSession){
         UserInfoVo userInfoVo = (UserInfoVo)httpSession.getAttribute("user");
         if ((userInfoVo == null)||(userInfoVo.getPermission()!=1)){
             return JsonView.render(404,"user is not admin");
@@ -78,14 +79,18 @@ public class AdminColumnManageController {
      * @param id 栏目ID
      * @return 返回响应
      */
-    @RequestMapping(value = "deleteColumn",method = RequestMethod.POST)
+    @RequestMapping(value = "deleteColumn",method = RequestMethod.GET)
     @ResponseBody
-    public String deleteColumn(@RequestParam("id") int id,HttpSession httpSession){
+    public String deleteColumn(Integer id,HttpSession httpSession){
         UserInfoVo userInfoVo = (UserInfoVo)httpSession.getAttribute("user");
         if ((userInfoVo == null)||(userInfoVo.getPermission()!=1)){
             return JsonView.render(404,"user is not admin");
         }
-        columnManageService.deleteColumnInfo(id);
+        if (id == null){
+            return JsonView.render(301,"入参错误");
+        }
+        int columnId = id == null?0:id.intValue();
+        columnManageService.deleteColumnInfo(columnId);
         return JsonView.render(200,"delete success");
     }
 

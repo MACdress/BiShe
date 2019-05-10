@@ -28,7 +28,7 @@
         tb_manage_column
     </sql>
     <sql id="Fields">
-        id,column_name,is_review,parent,column_status, column_img, column_text,review_user, create_user
+        column_name,is_review,parent,column_status, column_img, column_text,review_user, create_user
     </sql>
     <sql id="FieldsPo">
         id,column_name,is_review,parent,column_status, column_img, column_text,review_user, create_user,create_at
@@ -54,25 +54,25 @@
     <update id="updateColumnMange">
         UPDATE <include refid="TableName"/>
         <set>
-            <if test="tbColumnManage.columnName != nll">
+            <if test="tbColumnManage.columnName != null">
               column_name = #{tbColumnManage.columnName},
             </if>
-            <if test="tbColumnManage.isReview != nll">
+            <if test="tbColumnManage.isReview != null">
               is_review = #{tbColumnManage.isReview},
             </if>
-            <if test="tbColumnManage.parent != nll">
+            <if test="tbColumnManage.parent != null">
                 parent = #{tbColumnManage.parent},
             </if>
-            <if test="tbColumnManage.columnStatus != nll">
+            <if test="tbColumnManage.columnStatus != null">
               column_status = #{tbColumnManage.columnStatus},
             </if>
-            <if test="tbColumnManage.columnImg != nll">
+            <if test="tbColumnManage.columnImg != null">
               column_img =  #{tbColumnManage.columnImg},
             </if>
-            <if test="tbColumnManage.columnText !=nll">
+            <if test="tbColumnManage.columnText !=null">
               column_text =  #{tbColumnManage.columnText},
             </if>
-            <if test="tbColumnManage.reviewUser !=nll ">
+            <if test="tbColumnManage.reviewUser !=null ">
               review_user = #{tbColumnManage.reviewUser},
             </if>
             <if test="tbColumnManage.createUser != null">
@@ -85,7 +85,7 @@
          where  id = #{tbColumnManage.id}
     </update>
     <select id="getColumnInfoById" resultMap="TbColumnManageMap">
-        select  <include refid="Fields"/> from <include refid="TableName"/> where id = #{id}
+        select  <include refid="Fields"/>,id from <include refid="TableName"/> where id = #{id}
     </select>
 
     <select id="getColumnInfoByList" resultMap="TbColumnMangePoMap">

@@ -13,4 +13,6 @@ public interface TbExamChooseDao {
     void updateAnswer(@Param("examStartNum") String examStartNum, @Param("subjectId") String subjectId,@Param("answer") String answer);
 
     List<TbExamChoose> getCorrectChoose(@Param("examStartNum") String examStartNum);
+
+    List<TbExamChoose> getChooseByStartNum(@Param("examStartNum") String examStartNum);
 }

@@ -1,10 +1,14 @@
 package com.bishe.portal.service.utils;
 
 import com.bishe.portal.model.mo.TbUsers;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -143,6 +147,38 @@ public class ExcelUtils {
             return false;
         }
         return true;
+    }
+
+    public void outPutUserInfoExcel (){
+        HSSFWorkbook wb = new HSSFWorkbook();
+        HSSFSheet sheet=wb.createSheet("用户信息");
+        HSSFRow row1=sheet.createRow(0);
+        HSSFCell cell=row1.createCell(0);
+        cell.setCellValue("用户信息一览表");
+        sheet.addMergedRegion(new CellRangeAddress(0,0,0,3));
+        HSSFRow row2=sheet.createRow(1);
+        //创建单元格并设置单元格内容
+        row2.createCell(0).setCellValue("编号");
+        row2.createCell(1).setCellValue("姓名");
+        row2.createCell(2).setCellValue("性别");
+        row2.createCell(3).setCellValue("生日");
+        row2.createCell(4).setCellValue("身份证");
+        row2.createCell(5).setCellValue("权限");
+        row2.createCell(6).setCellValue("身份");
+        row2.createCell(7).setCellValue("邮箱");
+        row2.createCell(8).setCellValue("民族");
+        row2.createCell(9).setCellValue("所在党支部");
+        row2.createCell(10).setCellValue("固定电话");
+        row2.createCell(11).setCellValue("地址");
+        row2.createCell(12).setCellValue("工作岗位");
+        row2.createCell(13).setCellValue("入党日期");
+        row2.createCell(14).setCellValue("转正日期");
+        row2.createCell(15).setCellValue("电话");
+        getUserInfoPassage(sheet);
+    }
+
+    private void getUserInfoPassage(HSSFSheet sheet){
+
     }
 
     // @描述：是否是2003的excel，返回true是2003

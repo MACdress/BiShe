@@ -1,11 +1,9 @@
 package com.bishe.portal.service.impl;
 
+import com.alibaba.druid.util.StringUtils;
 import com.bishe.portal.dao.*;
 import com.bishe.portal.model.mo.*;
-import com.bishe.portal.model.vo.ExamJudgeInfoVo;
-import com.bishe.portal.model.vo.ExamPaperMiddleInfoVo;
-import com.bishe.portal.model.vo.ExamSelectInfoVo;
-import com.bishe.portal.model.vo.ExamSelectOptionInfoVo;
+import com.bishe.portal.model.vo.*;
 import com.bishe.portal.service.ExamPaperMiddleInfoService;
 import com.bishe.portal.service.utils.UUIDUtils;
 import org.springframework.stereotype.Service;
@@ -28,45 +26,51 @@ public class ExamPaperMiddleInfoServiceImpl implements ExamPaperMiddleInfoServic
     TbExamPaperMiddleDao tbExamPaperMiddleDao;
 
     @Override
-    public void addQuestionInExamPaper(List<ExamSelectInfoVo> examSelectList, List<ExamJudgeInfoVo> judgeInfoList) {
-        String examPaperNum = examSelectList.get(0).getExamPaperNum();
+    public void addQuestionInExamPaper(AddExamPaperMiddleVo addExamPaperMiddleVo) {
+        String examPaperNum = addExamPaperMiddleVo.getExamPaperNum();
+        if (StringUtils.isEmpty(examPaperNum)){
+            return;
+        }
         TbExamPaper examPaper = tbExamPaperDao.getExamPaperByNumber(examPaperNum);
         int judgeGrade = examPaper.getExamJudgeScore();
         int selectGrade = examPaper.getExamSelectScore();
         int count = examPaper.getExamPaperCount();
         List <TbExamPaperMiddle> examQuestionList = new ArrayList<>();
-        for (ExamJudgeInfoVo examJudgeInfoVo:judgeInfoList){
-            TbExamJudge tbExamJudge = getTbExamJudge(examJudgeInfoVo);
-            tbExamJudgeDao.insertExamJudgeInfo(tbExamJudge);
-            TbExamPaperMiddle tbExamPaperMiddle = new TbExamPaperMiddle();
-            tbExamPaperMiddle.setExamPaperNum(examPaperNum);
-            tbExamPaperMiddle.setExamSubjectId(tbExamJudge.getSubjectId());
-            examQuestionList.add(tbExamPaperMiddle);
-            judgeGrade += examJudgeInfoVo.getScore();
-            count++;
+        List<SimpleSubjectVo> subjectList = addExamPaperMiddleVo.getSubjectList();
+        if (subjectList.size()==0){
+            return;
         }
-        for (ExamSelectInfoVo examSelectInfoVo : examSelectList){
-            List<ExamSelectOptionInfoVo> selectOptionInfos = examSelectInfoVo.getSelectOptionInfos();
-            TbExamSelect tbExamSelect = getTbExamSelect(examSelectInfoVo);
-            TbExamPaperMiddle tbExamPaperMiddle = new TbExamPaperMiddle();
-            tbExamPaperMiddle.setExamPaperNum(examPaperNum);
-            tbExamPaperMiddle.setExamSubjectId(tbExamSelect.getSubjectId());
-            examQuestionList.add(tbExamPaperMiddle);
-            tbExamSelectDao.insertExamSelectInfo(tbExamSelect);
-            for (ExamSelectOptionInfoVo examSelectOptionInfo:selectOptionInfos){
-                TbExamSelectOption tbExamSelectOption = getTbExamSelectOption(examSelectOptionInfo);
-                tbExamSelectOption.setExamSelect(tbExamSelect.getId());
-                tbExamSelectOptionDao.insertExamSelectOption(tbExamSelectOption);
+        for (SimpleSubjectVo simpleSubjectVo : subjectList){
+            if(StringUtils.isEmpty(simpleSubjectVo.getSubjectId())){
+                continue;
             }
-            selectGrade += examSelectInfoVo.getScore();
-            count ++;
+            if((simpleSubjectVo.getExamSubjectType()!=null)&&(simpleSubjectVo.getExamSubjectType()==1)){
+                TbExamSelect examSelectBySubject = tbExamSelectDao.getExamSelectBySubject(simpleSubjectVo.getSubjectId());
+                selectGrade+= examSelectBySubject.getScore();
+                TbExamPaperMiddle tbExamPaperMiddle  = new TbExamPaperMiddle();
+                tbExamPaperMiddle.setExamSubjectId(simpleSubjectVo.getSubjectId());
+                tbExamPaperMiddle.setExamPaperNum(examPaperNum);
+                examQuestionList.add(tbExamPaperMiddle);
+            }
+            if((simpleSubjectVo.getExamSubjectType()!=null)&&(simpleSubjectVo.getExamSubjectType()==2)){
+                TbExamJudge examJudgeBySubject = tbExamJudgeDao.getExamJudgeBySubject(simpleSubjectVo.getSubjectId());
+                judgeGrade+=examJudgeBySubject.getScore();
+                TbExamPaperMiddle tbExamPaperMiddle  = new TbExamPaperMiddle();
+                tbExamPaperMiddle.setExamSubjectId(simpleSubjectVo.getSubjectId());
+                tbExamPaperMiddle.setExamPaperNum(examPaperNum);
+                examQuestionList.add(tbExamPaperMiddle);
+            }
+            count++;
         }
         examPaper.setExamPaperCount(count);
         examPaper.setExamJudgeScore(judgeGrade);
         examPaper.setExamSelectScore(selectGrade);
         tbExamPaperDao.updateExamPaper(examPaper);
-        for (TbExamPaperMiddle tbExamPaperMiddle : examQuestionList){
-            tbExamPaperMiddleDao.insertTbExamPaperMiddle(tbExamPaperMiddle);
+        System.out.println(examQuestionList.size());
+        if (examQuestionList.size()>0) {
+            for (TbExamPaperMiddle tbExamPaperMiddle : examQuestionList) {
+                tbExamPaperMiddleDao.insertTbExamPaperMiddle(tbExamPaperMiddle);
+            }
         }
     }
 
@@ -84,6 +88,7 @@ public class ExamPaperMiddleInfoServiceImpl implements ExamPaperMiddleInfoServic
         examPaperVo.setExamPaperType(examPaper.getExamPaperType());
         examPaperVo.setExamPaperName(examPaper.getExamPaperName());
         examPaperVo.setExamPaperCount(examPaper.getExamPaperCount());
+        examPaperVo.setExamPaperNumber(examPaper.getExamPaperNum());
         examPaperVo.setExamPaperScore(examPaper.getExamJudgeScore()+examPaper.getExamSelectScore());
         List<ExamSelectInfoVo> selectInfoVos = new ArrayList<>();
         List<ExamJudgeInfoVo> examJudgeInfoVos = new ArrayList<>();
@@ -111,8 +116,70 @@ public class ExamPaperMiddleInfoServiceImpl implements ExamPaperMiddleInfoServic
     }
 
     @Override
-    public void removeExamPaperSubject(String examPaperNum, String subjectId) {
-        tbExamPaperMiddleDao.deleteExamPaperSubject(examPaperNum,subjectId);
+    public void removeExamPaperSubject(String examPaperNum, List<SimpleSubjectVo> subjectId) {
+        List<String> subjectList = new ArrayList<>();
+        for (SimpleSubjectVo simpleSubjectVo:subjectId){
+            subjectList.add(simpleSubjectVo.getSubjectId());
+        }
+        tbExamPaperMiddleDao.deleteExamPaperSubject(examPaperNum,subjectList);
+    }
+
+    @Override
+    public void addParamSelect(ExamSelectInfoVo selectInfoVo) {
+        TbExamSelect tbExamSelect = getTbExamSelect(selectInfoVo);
+        tbExamSelect.setSubjectId(UUIDUtils.getUUID(4));
+        tbExamSelectDao.insertExamSelectInfo(tbExamSelect);
+        TbExamSelect examSelectBySubject = tbExamSelectDao.getExamSelectBySubject(tbExamSelect.getSubjectId());
+        ExamSelectInfoVo examSelectInfoVo = getExamSelectInfoVo(examSelectBySubject);
+        List<ExamSelectOptionInfoVo> selectOptionInfos = selectInfoVo.getSelectOptionInfos();
+        for (ExamSelectOptionInfoVo examSelectOptionInfoVo:selectOptionInfos){
+            tbExamSelectOptionDao.insertExamSelectOption(getTbExamSelectOption(examSelectOptionInfoVo));
+
+        }
+    }
+
+    @Override
+    public void addParamJudge(ExamJudgeInfoVo judgeInfoVo) {
+        tbExamJudgeDao.insertExamJudgeInfo(getTbExamJudge(judgeInfoVo));
+    }
+
+    @Override
+    public PageShowVo getAllSelectExamPaperSubject(PageShowVo pageShowVo) {
+        int startIndex  = (pageShowVo.getPage()-1)*pageShowVo.getPageSize();
+        List<TbExamSelect> selects = tbExamSelectDao.getAllSelectSubject(startIndex,pageShowVo.getPageSize());
+        List<ExamSelectInfoVo> selectInfoVos = new ArrayList<>();
+        for (TbExamSelect tbExamSelect : selects){
+            ExamSelectInfoVo examSelectInfoVo = getExamSelectInfoVo(tbExamSelect);
+            List<ExamSelectOptionInfoVo> selectOptionInfoVos = new ArrayList<>();
+            List<TbExamSelectOption> selectOptionList = tbExamSelectOptionDao.getSelectOptionList(tbExamSelect.getId());
+            for (TbExamSelectOption tbExamSelectOption:selectOptionList){
+                ExamSelectOptionInfoVo examSelectOptionInfoVo = getExamSelectOptionVo(tbExamSelectOption);
+                selectOptionInfoVos.add(examSelectOptionInfoVo);
+            }
+            examSelectInfoVo.setSelectOptionInfos(selectOptionInfoVos);
+            selectInfoVos.add(examSelectInfoVo);
+        }
+        PageShowVo pageShowVo1 = new PageShowVo();
+        pageShowVo1.setPageSize(pageShowVo.getPageSize());
+        pageShowVo1.setPage(pageShowVo.getPage());
+        pageShowVo1.setData(selectInfoVos);
+        return pageShowVo1;
+    }
+
+    @Override
+    public PageShowVo getAllJudgeExamPaperSubject(PageShowVo pageShowVo) {
+        int startIndex  = (pageShowVo.getPage()-1)*pageShowVo.getPageSize();
+        List<TbExamJudge> judges = tbExamJudgeDao.getAllJudgeSubject(startIndex,pageShowVo.getPageSize());
+        List<ExamJudgeInfoVo> examJudgeInfoVos  = new ArrayList<>();
+        for (TbExamJudge tbExamJudge :judges){
+            ExamJudgeInfoVo examJudgeInfoVo  = getExamJudgeInfoVo(tbExamJudge);
+            examJudgeInfoVos.add(examJudgeInfoVo);
+        }
+        PageShowVo pageShowVo1 = new PageShowVo();
+        pageShowVo1.setPageSize(pageShowVo.getPageSize());
+        pageShowVo1.setPage(pageShowVo.getPage());
+        pageShowVo1.setData(examJudgeInfoVos);
+        return pageShowVo1;
     }
 
     private ExamSelectOptionInfoVo getExamSelectOptionVo(TbExamSelectOption tbExamSelectOption) {
@@ -129,7 +196,7 @@ public class ExamPaperMiddleInfoServiceImpl implements ExamPaperMiddleInfoServic
         examSelectInfoVo.setExamTittle(tbExamSelect.getExamTittle());
         examSelectInfoVo.setScore(tbExamSelect.getScore());
         examSelectInfoVo.setSubjectId(tbExamSelect.getSubjectId());
-        examSelectInfoVo.setExamInfoType(1);
+        examSelectInfoVo.setExamSubjectType(1);
         return examSelectInfoVo;
     }
 
@@ -139,7 +206,7 @@ public class ExamPaperMiddleInfoServiceImpl implements ExamPaperMiddleInfoServic
         examJudgeInfoVo.setExamTittle(tbExamJudge.getExamTittle());
         examJudgeInfoVo.setScore(tbExamJudge.getScore());
         examJudgeInfoVo.setSubjectId(tbExamJudge.getSubjectId());
-        examJudgeInfoVo.setExamInfoType(2);
+        examJudgeInfoVo.setExamSubjectType(2);
         return examJudgeInfoVo;
     }
 
@@ -156,7 +223,6 @@ public class ExamPaperMiddleInfoServiceImpl implements ExamPaperMiddleInfoServic
         tbExamSelect.setExamParse(examSelectInfoVo.getExamParse());
         tbExamSelect.setScore(examSelectInfoVo.getScore());
         tbExamSelect.setExamTittle(examSelectInfoVo.getExamTittle());
-        tbExamSelect.setSubjectId(UUIDUtils.getUUID(4));
         return tbExamSelect;
     }
 

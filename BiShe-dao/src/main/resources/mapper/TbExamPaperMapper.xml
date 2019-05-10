@@ -22,7 +22,7 @@
     </sql>
 
     <sql id="Fields">
-        exam_paper_name,exam_paper_type,invalidTime,createUnit,responsible,status,exam_paper_num,exam_judge_score,exam_select_score,exam_paper_count,exam_time
+        exam_paper_name,exam_paper_type,invalid_time,create_unit,responsible,status,exam_paper_num,exam_judge_score,exam_select_score,exam_paper_count,exam_time
     </sql>
 
     <insert id="insertExamPaper">
@@ -45,44 +45,42 @@
         NOW(),
         NOW()
         )
-        create_at,
-        update_at
     </insert>
 
     <update id="updateExamPaper">
         UPDATE <include refid="TableName"/>
         <set>
-            <if test="examPaper.examPaperName != nll">
+            <if test="examPaper.examPaperName != null">
                 exam_paper_name = #{examPaper.examPaperName},
             </if>
-            <if test="examPaper.examPaperType != nll">
+            <if test="examPaper.examPaperType != null">
                 exam_paper_type = #{examPaper.examPaperType},
             </if>
-            <if test="examPaper.invalidTime != nll">
+            <if test="examPaper.invalidTime != null">
                 invalid_time = #{examPaper.invalidTime},
             </if>
-            <if test="examPaper.createUnit != nll">
+            <if test="examPaper.createUnit != null">
                 create_unit = #{examPaper.createUnit},
             </if>
-            <if test="examPaper.responsible != nll">
+            <if test="examPaper.responsible != null">
                 responsible =  #{examPaper.responsible},
             </if>
-            <if test="examPaper.status">
-                status = #{examPaper.status}
+            <if test="examPaper.status!= null">
+                status = #{examPaper.status},
             </if>
-            <if test="examPaper.examPaperNum">
-                exam_paper_num = #{examPaper.examPaperNum}
+            <if test="examPaper.examJudgeScore!= 0">
+                exam_judge_score = #{examPaper.examJudgeScore},
             </if>
-            <if test="examPaper.examJudgeGrade">
-                exam_judge_grade = #{examPaper.examJudgeScore}
+            <if test="examPaper.examSelectScore!= 0">
+                exam_select_score = #{examPaper.examSelectScore},
             </if>
-            <if test="examPaper.examSelectGrade">
-                exam_select_grade = #{examPaper.examSelectScore}
+            <if test="examPaper.examPaperCount!= 0">
+                exam_paper_count = #{examPaper.examPaperCount},
             </if>
-            <if test="examPaper.examPaperCount">
-                exam_paper_count = #{examPaper.examPaperCount}
+            <if test="examPaper.examTime!=null">
+                exam_time = #{examPaper.examTime},
             </if>
-            <if test="1">
+            <if test="examPaper.examPaperNum !=null">
                 update_at = NOW(),
             </if>
         </set>
@@ -99,7 +97,7 @@
             <if test="examPaper.examPaperName != null ">
                 exam_paper_name = #{examPaper.examPaperName}
             </if>
-            <if test="examPaper.invalidBeginTime == null">
+            <if test="examPaper.invalidBeginTime != null">
                 invalid_time &gt; #{examPaper.invalidBeginTime}
             </if>
             <if test="examPaper.invalidEndTime != null ">
@@ -117,15 +115,23 @@
             <if test="examPaper.examPaperNum != null">
                 exam_paper_num = #{examPaper.examPaperNum}
             </if>
+            <if test="examPaper.examPaperType != null">
+                exam_paper_type = #{examPaper.examPaperType}
+            </if>
         </where>
-        <if test="examPaper.page != null and examPaper.pageSize!=null">
-            LIMIT #{examPaper.page-1}*#{examPaper.pageSize},#{examPaper.pageSize}
+        <if test="examPaper.startIndex !=  null and examPaper.pageSize!= null">
+            LIMIT #{examPaper.startIndex},#{examPaper.pageSize}
         </if>
     </select>
 
     <select id="getExamPaperByNumber" resultMap="TbExamPaperMap">
         select <include refid="Fields"/> from <include refid="TableName"/>
         where exam_paper_num = #{examPaperNum}
+    </select>
+
+    <select id="getExamPaperByType" resultMap="TbExamPaperMap">
+        select <include refid="Fields"/> from <include refid="TableName"/>
+        where exam_paper_type = #{examPaperType} LIMIT #{startIndex},#{pageSize}
     </select>
 
     <update id="updateExamStatus">

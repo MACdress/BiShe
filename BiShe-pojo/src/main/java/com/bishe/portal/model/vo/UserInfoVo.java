@@ -18,8 +18,8 @@ public class UserInfoVo implements Serializable {
      */
     private Integer identity;
     /**
-     * 用戶權限：0代表普通用戶，1代表管理者
-     */
+     * 用戶權限：0代表普通用戶，1代管理员;
+     * */
     private Integer permission;
     /**
      * 账号

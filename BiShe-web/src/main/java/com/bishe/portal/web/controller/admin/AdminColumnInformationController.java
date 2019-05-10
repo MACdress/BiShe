@@ -25,13 +25,16 @@ public class AdminColumnInformationController {
      * 新增一个咨讯信息
      * @return 返回响应
      */
-    @RequestMapping(value = "addInformation",method = RequestMethod.POST)
+    @RequestMapping(value = "addInformation", method = RequestMethod.POST)
     @ResponseBody
     public String addInformationInfo (@RequestBody ManageColumnInfoParamVo manageInformationParamVo, HttpSession httpSession){
         if (manageInformationParamVo == null){
             return JsonView.render(404,"新增失败");
         }
         UserInfoVo userInfoVo = (UserInfoVo)httpSession.getAttribute("user");
+        if ((userInfoVo == null)||(userInfoVo.getPermission()!=1)){
+            return JsonView.render(404,"user is not admin");
+        }
         manageInformationParamVo.setCreateUser(userInfoVo.getAccount());
         tbColumnInfoService.addInformationInfo(manageInformationParamVo);
         return JsonView.render(200,"新增成功");
@@ -42,7 +45,7 @@ public class AdminColumnInformationController {
      * @param findColumnInfoParamVo 查询的入参
      * @return 返回响应
      */
-    @RequestMapping(value = "getColumnInfo",method = RequestMethod.GET)
+    @RequestMapping(value = "getColumnInfo",method = RequestMethod.POST)
     @ResponseBody
     public String getColumnInformation(@RequestBody FindColumnInfoParamVo findColumnInfoParamVo){
         if ((findColumnInfoParamVo == null)||(findColumnInfoParamVo.getBelongColumn() == null)){
@@ -69,16 +72,16 @@ public class AdminColumnInformationController {
 
     /**
      * 置顶资讯
-     * @param id 资讯id
+     * @param manageColumnInfoParamVo 资讯id
      * @return 返回响应
      */
     @RequestMapping(value = "setTop",method = RequestMethod.POST)
     @ResponseBody
-    public String setIsTop(Integer id){
-        if ((id == null)||(id == 0)){
+    public String setIsTop(@RequestBody ManageColumnInfoParamVo manageColumnInfoParamVo){
+        if ((manageColumnInfoParamVo.getId() == null)||(manageColumnInfoParamVo.getId() == 0)){
             return JsonView.render(404,"入参有误");
         }
-        tbColumnInfoService.setIsTop(id);
+        tbColumnInfoService.setIsTop(manageColumnInfoParamVo.getId());
         return JsonView.render(200,"更新成功");
     }
 
@@ -87,7 +90,7 @@ public class AdminColumnInformationController {
      * @param id 资讯id
      * @return 返回响应
      */
-    @RequestMapping(value = "deleteColumnInfo",method = RequestMethod.POST)
+    @RequestMapping(value = "deleteColumnInfo",method = RequestMethod.GET)
     @ResponseBody
     public String deleteColumnInfo(Integer id){
         if ((id == null)||(id == 0)){
