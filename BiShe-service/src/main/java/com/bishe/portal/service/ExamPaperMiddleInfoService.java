@@ -11,9 +11,9 @@ public interface ExamPaperMiddleInfoService {
 
     void removeExamPaperSubject(String examPaperNum, List<SimpleSubjectVo> subjectId);
 
-    void addParamSelect(ExamSelectInfoVo selectInfoVo);
+    ExamSelectInfoVo addParamSelect(ExamSelectInfoVo selectInfoVo);
 
-    void addParamJudge(ExamJudgeInfoVo judgeInfoVo);
+    ExamJudgeInfoVo addParamJudge(ExamJudgeInfoVo judgeInfoVo);
 
 
     PageShowVo getAllSelectExamPaperSubject(PageShowVo pageShowVo);

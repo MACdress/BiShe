@@ -47,4 +47,8 @@ public interface TbUsersDao {
      * @return 用户信息
      */
     TbUsers getUserInfoByTel(@Param("tel") String tel);
+
+    void updateUserImg(@Param("userImg") String imgUrl,@Param("account") String account);
+
+    List<TbUsers> getAllUserInfoNoPage();
 }

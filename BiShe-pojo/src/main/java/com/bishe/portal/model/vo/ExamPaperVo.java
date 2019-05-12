@@ -1,6 +1,7 @@
 package com.bishe.portal.model.vo;
 
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
 
@@ -18,4 +19,5 @@ public class ExamPaperVo implements Serializable {
     private Integer examTime;
     private String examPaperNum;
     private Integer examPaperStatus;
+    private MultipartFile examPaperImg;
 }

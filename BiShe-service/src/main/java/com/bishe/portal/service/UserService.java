@@ -5,6 +5,7 @@ import com.bishe.portal.model.po.TbUsersPo;
 import com.bishe.portal.model.vo.SelectUserParamVo;
 import com.bishe.portal.model.vo.UserInfoVo;
 import com.bishe.portal.service.utils.ReturnInfo;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -38,5 +39,8 @@ public interface UserService {
 
     String readExcelFile(MultipartFile file);
 
-    void outExcelFile();
+    HSSFWorkbook outExcelFile();
+
+    String[] uploadUserImg(MultipartFile file,String account);
+     String weixinPay(String userId, String productId);
 }

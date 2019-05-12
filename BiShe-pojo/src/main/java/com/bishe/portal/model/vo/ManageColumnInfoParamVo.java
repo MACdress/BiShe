@@ -1,6 +1,7 @@
 package com.bishe.portal.model.vo;
 
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
 
@@ -23,6 +24,7 @@ public class ManageColumnInfoParamVo implements Serializable {
     private String summary;
     private String text;
     private String createUser;
+    private MultipartFile columnImg;
     public ManageColumnInfoParamVo(){
 
     }

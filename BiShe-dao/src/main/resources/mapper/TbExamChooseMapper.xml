@@ -42,7 +42,7 @@
 
     <update id="updateAnswer">
         update <include refid="TableName"/>
-        set answer = #{answer}
+        set answer = #{answer},update_at = NOW()
         where subject_id = #{subjectId} and exam_start_num = #{examStartNum}
     </update>
 

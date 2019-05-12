@@ -26,7 +26,7 @@ public interface TbExamPaperDao {
 
     /**
      * 删除一张试卷
-     * @param examPaperId 试卷的ID
+     * @param examPaperNum 试卷的ID
      */
     void deleteExamPaper(@Param("examPaperNum") String examPaperNum);
 

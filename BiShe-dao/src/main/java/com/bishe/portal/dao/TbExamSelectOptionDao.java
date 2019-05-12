@@ -10,5 +10,5 @@ import java.util.List;
 public interface TbExamSelectOptionDao {
      void insertExamSelectOption(@Param("tbExamSelectOption") TbExamSelectOption tbExamSelectOption);
 
-    List<TbExamSelectOption> getSelectOptionList(@Param("examSelect") int id);
+    List<TbExamSelectOption> getSelectOptionList(@Param("examSelect") String id);
 }

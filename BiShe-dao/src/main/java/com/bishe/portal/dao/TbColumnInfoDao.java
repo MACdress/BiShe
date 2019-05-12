@@ -26,7 +26,7 @@ public interface TbColumnInfoDao {
 
     void deleteColumnInfo(@Param("id") Integer id);
 
-    void updateColumnInfo(@Param("columnInfo") ManageColumnInfoParamVo manageInformationParamVo);
+    void updateColumnInfo(@Param("columnInfo") TbColumnInfo manageInformationParamVo);
 
     TbColumnInfo getColumnInfoById(@Param("id") Integer id);
 

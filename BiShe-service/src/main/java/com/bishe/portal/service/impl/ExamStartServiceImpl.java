@@ -42,6 +42,7 @@ public class ExamStartServiceImpl implements ExamStartService {
 
     @Override
     public ExamPaperStartMiddleInfoVo startExam(String examPaperNum, String account) {
+        ExamPaperStartMiddleInfoVo end = new ExamPaperStartMiddleInfoVo();
         TbExamStart examStart = new TbExamStart();
         examStart.setExaminee(account);
         examStart.setExamPaperNum(examPaperNum);
@@ -49,49 +50,62 @@ public class ExamStartServiceImpl implements ExamStartService {
         examStart.setScore(0);
         examStartDao.insertExamStart(examStart);
         TbExamStart tbExamStart = examStartDao.getExamStartByNum(examStart.getExamStartNum());
-        ExamStartVo result = getExamStartVo(tbExamStart);
-        ExamPaperStartMiddleInfoVo end = new ExamPaperStartMiddleInfoVo();
-        end.setAllScore(result.getAllScore());
-        end.setBeginTime(result.getBeginTime());
-        end.setEndTime(result.getEndTime());
-        end.setExamineeId(result.getExaminee());
-        TbUsers userInfo = tbUsersDao.getUserInfoByAccount(end.getExamineeId());
-        end.setExamineeName(userInfo == null?"":userInfo.getName());
-        TbExamPaper examPaper = examPaperDao.getExamPaperByNumber(examPaperNum);
-        end.setExamSelectScore(examPaper.getExamSelectScore());
-        end.setExamJudgeScore(examPaper.getExamJudgeScore());
-        end.setCreateUnit(examPaper.getCreateUnit());
-        end.setExamPaperNumber(examPaper.getExamPaperNum());
-        end.setExamStartNum(result.getExamStartNum());
-        end.setExamPaperType(examPaper.getExamPaperType());
-        TbColumnManage columnInfo = tbColumnManageDao.getColumnInfoById(String.valueOf(examPaper.getExamPaperType()));
-        end.setExamPaperTypeName(columnInfo.getColumnName());
-        end.setAllScore(examPaper.getExamJudgeScore()+examPaper.getExamSelectScore());
-        end.setExamPaperName(examPaper.getExamPaperName());
-        end.setExamPaperCount(examPaper.getExamPaperCount());
-        List<String> subjectList = tbExamPaperMiddleDao.getSubjectIdByExamPaperNum(end.getExamPaperNumber());
-        List<TbExamSelect> selectList = tbExamSelectDao.getExamSelectByNumbers(subjectList);
-        List<TbExamJudge> judgeList = tbExamJudgeDao.getExamJudgeByNumbers(subjectList);
-        List<ExamJudgeInfoVo> judgeVoList  = new ArrayList<>();
-        List<ExamSelectInfoVo> selectVoList = new ArrayList<>();
-        for (TbExamJudge tbExamJudge :judgeList){
-            ExamJudgeInfoVo examJudgeInfoVo  = getExamJudgeInfoVo(tbExamJudge);
-            judgeVoList.add(examJudgeInfoVo);
-        }
-        for (TbExamSelect tbExamSelect : selectList){
-            ExamSelectInfoVo examSelectInfoVo = getExamSelectInfoVo(tbExamSelect);
-            List<ExamSelectOptionInfoVo> selectOptionInfoVos = new ArrayList<>();
-            List<TbExamSelectOption> selectOptionList = tbExamSelectOptionDao.getSelectOptionList(tbExamSelect.getId());
-            for (TbExamSelectOption tbExamSelectOption:selectOptionList){
-                ExamSelectOptionInfoVo examSelectOptionInfoVo = getExamSelectOptionVo(tbExamSelectOption);
-                selectOptionInfoVos.add(examSelectOptionInfoVo);
+        if (tbExamStart != null) {
+            ExamStartVo result = getExamStartVo(tbExamStart);
+            end.setAllScore(result.getAllScore());
+            end.setBeginTime(result.getBeginTime());
+            end.setEndTime(result.getEndTime());
+            end.setExamineeId(result.getExaminee());
+            TbUsers userInfo = tbUsersDao.getUserInfoByAccount(end.getExamineeId());
+            end.setExamineeName(userInfo == null ? "" : userInfo.getName());
+            TbExamPaper examPaper = examPaperDao.getExamPaperByNumber(examPaperNum);
+            if (examPaper != null) {
+                end.setExamSelectScore(examPaper.getExamSelectScore());
+                end.setExamJudgeScore(examPaper.getExamJudgeScore());
+                end.setCreateUnit(examPaper.getCreateUnit());
+                end.setExamPaperNumber(examPaper.getExamPaperNum());
+                end.setExamStartNum(result.getExamStartNum());
+                end.setExamPaperType(examPaper.getExamPaperType());
+                end.setExamTime(examPaper.getExamTime());
+                TbColumnManage columnInfo = tbColumnManageDao.getColumnInfoById(String.valueOf(examPaper.getExamPaperType()));
+                if (columnInfo != null) {
+                    end.setExamPaperTypeName(columnInfo.getColumnName());
+                    end.setAllScore(examPaper.getExamJudgeScore() + examPaper.getExamSelectScore());
+                    end.setExamPaperName(examPaper.getExamPaperName());
+                    end.setExamPaperCount(examPaper.getExamPaperCount());
+                }
+                List<String> subjectList = tbExamPaperMiddleDao.getSubjectIdByExamPaperNum(end.getExamPaperNumber());
+                if((subjectList!=null)&&(subjectList.size()>0)) {
+                    List<TbExamSelect> selectList = tbExamSelectDao.getExamSelectByNumbers(subjectList);
+                    List<TbExamJudge> judgeList = tbExamJudgeDao.getExamJudgeByNumbers(subjectList);
+                    List<ExamJudgeInfoVo> judgeVoList = new ArrayList<>();
+                    List<ExamSelectInfoVo> selectVoList = new ArrayList<>();
+                    if (judgeList!=null&&judgeList.size()>0) {
+                        for (TbExamJudge tbExamJudge : judgeList) {
+                            ExamJudgeInfoVo examJudgeInfoVo = getExamJudgeInfoVo(tbExamJudge);
+                            judgeVoList.add(examJudgeInfoVo);
+                        }
+                    }
+                    if (selectList!=null&&subjectList.size()>0) {
+                        for (TbExamSelect tbExamSelect : selectList) {
+                            ExamSelectInfoVo examSelectInfoVo = getExamSelectInfoVo(tbExamSelect);
+                            List<ExamSelectOptionInfoVo> selectOptionInfoVos = new ArrayList<>();
+                            List<TbExamSelectOption> selectOptionList = tbExamSelectOptionDao.getSelectOptionList(tbExamSelect.getSubjectId());
+                            if (selectOptionList!=null&&selectOptionList.size()>0) {
+                                for (TbExamSelectOption tbExamSelectOption : selectOptionList) {
+                                    ExamSelectOptionInfoVo examSelectOptionInfoVo = getExamSelectOptionVo(tbExamSelectOption);
+                                    selectOptionInfoVos.add(examSelectOptionInfoVo);
+                                }
+                            }
+                            examSelectInfoVo.setSelectOptionInfos(selectOptionInfoVos);
+                            selectVoList.add(examSelectInfoVo);
+                        }
+                    }
+                    end.setExamSelectInfoVos(selectVoList);
+                    end.setExamJudgeInfoVos(judgeVoList);
+                }
             }
-            examSelectInfoVo.setSelectOptionInfos(selectOptionInfoVos);
-            selectVoList.add(examSelectInfoVo);
         }
-        end.setExamSelectInfoVos(selectVoList);
-        end.setExamJudgeInfoVos(judgeVoList);
-        end.setExamTime(examPaper.getExamTime());
         return end;
 
     }

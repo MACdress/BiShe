@@ -64,4 +64,5 @@ public class TbUsers {
 /      * 转正日期
      */
     private String turnPositiveDate;
+    private String userImg;
 }

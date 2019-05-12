@@ -11,6 +11,7 @@ import com.bishe.portal.model.vo.ManageColumnInfoParamVo;
 import com.bishe.portal.model.vo.ManageColumnInfoSimpleVo;
 import com.bishe.portal.model.vo.ManageColumnInfoVo;
 import com.bishe.portal.service.TbColumnInfoService;
+import com.bishe.portal.service.utils.COSClientUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -34,8 +35,19 @@ public class TbColumnInfoServiceImpl implements TbColumnInfoService {
 
     @Override
     public void addInformationInfo(ManageColumnInfoParamVo manageInformationParamVo) {
-        TbColumnInfo tbManageInformation = getTbManageInformation(manageInformationParamVo);
-        tbColumnInfoDao.insertInformationInfo(tbManageInformation);
+        try {
+            String imgUrl = "";
+            if (manageInformationParamVo.getColumnImg() != null) {
+                COSClientUtil cosClientUtil = new COSClientUtil();
+                String name = cosClientUtil.uploadFile2Cos(manageInformationParamVo.getColumnImg());
+                imgUrl = cosClientUtil.getImgUrl(name);
+            }
+            TbColumnInfo tbManageInformation = getTbManageInformation(manageInformationParamVo);
+            tbManageInformation.setInfoImg(imgUrl);
+            tbColumnInfoDao.insertInformationInfo(tbManageInformation);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -52,7 +64,19 @@ public class TbColumnInfoServiceImpl implements TbColumnInfoService {
 
     @Override
     public void updateColumnInfo(ManageColumnInfoParamVo manageInformationParamVo) {
-        tbColumnInfoDao.updateColumnInfo(manageInformationParamVo);
+        try {
+            String imgUrl = "";
+            if (manageInformationParamVo.getColumnImg() != null) {
+                COSClientUtil cosClientUtil = new COSClientUtil();
+                String name = cosClientUtil.uploadFile2Cos(manageInformationParamVo.getColumnImg());
+                imgUrl = cosClientUtil.getImgUrl(name);
+            }
+            TbColumnInfo tbManageInformation = getTbManageInformation(manageInformationParamVo);
+            tbManageInformation.setInfoImg(imgUrl);
+            tbColumnInfoDao.updateColumnInfo(tbManageInformation);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override

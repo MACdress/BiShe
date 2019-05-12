@@ -1,6 +1,7 @@
 package com.bishe.portal.web.controller;
 
 import com.alibaba.druid.util.StringUtils;
+import com.alipay.api.internal.parser.json.JsonConverter;
 import com.bishe.portal.model.po.TbUsersPo;
 import com.bishe.portal.model.vo.RegisterUserVo;
 import com.bishe.portal.model.vo.SelectUserParamVo;
@@ -8,13 +9,27 @@ import com.bishe.portal.model.vo.UserInfoVo;
 import com.bishe.portal.service.UserService;
 import com.bishe.portal.service.utils.ReturnInfo;
 import com.bishe.portal.web.utils.JsonView;
+import com.bishe.portal.web.utils.QRUtil;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.qiniu.util.Json;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.OutputStream;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 熊猫
@@ -94,7 +109,7 @@ public class UserController {
 
     @RequestMapping(value="inputUserInfo",method= {RequestMethod.POST})
     @ResponseBody
-    public String inputUserInfo(@RequestParam(value="file_excel") MultipartFile file) {
+    public String inputUserInfo(@RequestParam(value="file") MultipartFile file) {
         String readResult = "";
         try {
             readResult = userService.readExcelFile(file);
@@ -105,10 +120,87 @@ public class UserController {
 
     }
 
-    @RequestMapping(value="outPutUserInfo",method= {RequestMethod.POST})
+    @RequestMapping(value="outPutUserInfo",method= {RequestMethod.GET})
     @ResponseBody
-    public String outPutUserInfo(){
-        userService.outExcelFile();
-        return JsonView.render(200,"导出成功");
+    public String outPutUserInfo(HttpServletResponse httpResponse){
+        try {
+            HSSFWorkbook hssfWorkbook = userService.outExcelFile();
+            System.out.println("------"+hssfWorkbook);
+            if (hssfWorkbook!=null) {
+                String fileName = "Excel-" + String.valueOf(System.currentTimeMillis()).substring(4, 13) + ".xls";
+                String headStr = "attachment; filename=\"" + fileName + "\"";
+                httpResponse.setContentType("APPLICATION/OCTET-STREAM");
+                httpResponse.setHeader("Content-Disposition", headStr);
+                OutputStream out = httpResponse.getOutputStream();
+                hssfWorkbook.write(out);
+                out.flush();
+                out.close();
+                return JsonView.render(200, "导出成功");
+            }else {
+                return JsonView.render(404, "导出失败");
+            }
+        }catch (Exception e){
+            System.out.println(e);
+            return JsonView.render(404, "导出失败");
+        }
+
     }
+
+    @RequestMapping(value="uploadUserImg",method= {RequestMethod.POST})
+    @ResponseBody
+    public String uploadUserImg(@RequestParam("file") MultipartFile file,HttpSession session){
+//        UserInfoVo tbUsersPo  = (UserInfoVo) session.getAttribute("user");
+//        if ((tbUsersPo == null)||(tbUsersPo.getPermission()!=1)){
+//            return JsonView.render(404,"user is not admin");
+//        }
+        String[] strings = userService.uploadUserImg(file,"8cb1e006");
+        return JsonView.render(200,"成功",strings);
+    }
+
+    @RequestMapping(value="goAlipay",method= {RequestMethod.GET})
+    @ResponseBody
+    public void goAlipay(HttpServletRequest httpServletRequest,HttpServletResponse httpServletResponse){
+
+    }
+    @ResponseBody
+    @RequestMapping("/qrcode.do")
+    public void qrcode(HttpServletRequest request, HttpServletResponse response,
+                       ModelMap modelMap) {
+        try {
+            String productId = request.getParameter("productId");
+            String userId = "user01";
+            String text = userService.weixinPay(userId, productId);
+            //根据url来生成生成二维码
+            int width = 300;
+            int height = 300;
+            //二维码的图片格式
+            String format = "gif";
+            Hashtable hints = new Hashtable();
+            //内容所使用编码
+            hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
+            BitMatrix bitMatrix;
+            try {
+                bitMatrix = new MultiFormatWriter().encode(text, BarcodeFormat.QR_CODE, width, height, hints);
+                QRUtil.writeToStream(bitMatrix, format, response.getOutputStream());
+            } catch (WriterException e) {
+                e.printStackTrace();
+            }
+
+        } catch (Exception e) {
+        }
+    }
+    @ResponseBody
+    @RequestMapping("/hadPay.do")
+    public String hadPay(HttpServletRequest request) {
+        try {
+            //简单的业务逻辑：在微信的回调接口里面，已经定义了，回调返回成功的话，那么 _PAY_RESULT 不为空
+            if(request.getSession().getAttribute("_PAY_RESULT") != null ){
+                return JsonView.render(200,"支付成功");
+            }
+            return JsonView.render(200,"支付失败");
+        } catch (Exception e) {
+            return JsonView.render(200,e.getMessage());
+        }
+    }
+
 }

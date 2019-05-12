@@ -26,7 +26,7 @@ public class CorsFilter implements Filter {
         if (isCross) {
             String origin = httpServletRequest.getHeader("origin");// 获取源站
             String requestHeaders = httpServletRequest.getHeader("Access-Control-Request-Headers");
-            if (StringUtils.isEmpty(requestHeaders)){
+            if (StringUtils.isEmpty(requestHeaders)) {
                 requestHeaders = "";
             }
             System.out.println("拦截请求: " + httpServletRequest.getServletPath());
@@ -35,12 +35,12 @@ public class CorsFilter implements Filter {
             //允许的方法
             httpServletResponse.setHeader("Access-Control-Allow-Methods", "POST, GET,PUT, OPTIONS, DELETE,OPTIONS");
             //所能看到的请求头
-            httpServletResponse.setHeader("Access-Control-Allow-Headers","Accept, Origin, XRequestedWith, Content-Type, LastModified," + requestHeaders);
+            httpServletResponse.setHeader("Access-Control-Allow-Headers", "Accept, Origin, XRequestedWith, Content-Type, LastModified," + requestHeaders);
             //浏览器所能获取到的请求头
-            httpServletResponse.setHeader("Access-Control-Expose-Headers","Authorization,Origin, No-Cache, X-Requested-With, If-Modified-Since, Pragma, Last-Modified, Cache-Control, Expires, Content-Type, X-E4M-With");
-            httpServletResponse.setHeader("Cache-Control","no-cache");
+            httpServletResponse.setHeader("Access-Control-Expose-Headers", "Authorization,Origin, No-Cache, X-Requested-With, If-Modified-Since, Pragma, Last-Modified, Cache-Control, Expires, Content-Type, X-E4M-With");
+            httpServletResponse.setHeader("Cache-Control", "no-cache");
             httpServletResponse.setHeader("Access-Control-Allow-Credentials", "true");
-        }
+            //httpServletResponse.setContentType("text/html;charset=UTF-8");
 //        HttpSession session = httpServletRequest.getSession();
 //        Object user = session.getAttribute("user");
 //        if ((httpServletRequest.getRequestURI().startsWith(httpServletRequest.getContextPath()+"/userCenter/login"))){
@@ -51,7 +51,8 @@ public class CorsFilter implements Filter {
 //            httpServletResponse.getWriter().write(render);
 //            return;
 //        }
-        filterChain.doFilter(httpServletRequest, httpServletResponse);
+            filterChain.doFilter(httpServletRequest, httpServletResponse);
+        }
     }
 
     @Override

@@ -3,23 +3,18 @@ package com.bishe.portal.service.impl;
 import com.alibaba.druid.util.StringUtils;
 import com.bishe.portal.dao.TbUsersDao;
 import com.bishe.portal.model.mo.TbUsers;
-import com.bishe.portal.model.po.SimpleUserInfo;
 import com.bishe.portal.model.po.TbUsersPo;
 import com.bishe.portal.model.vo.SelectUserParamVo;
 import com.bishe.portal.model.vo.UserInfoVo;
 import com.bishe.portal.service.UserService;
-import com.bishe.portal.service.utils.Encryption;
-import com.bishe.portal.service.utils.ExcelUtils;
-import com.bishe.portal.service.utils.ReturnInfo;
-import com.bishe.portal.service.utils.UUIDUtils;
+import com.bishe.portal.service.utils.*;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * @Author:GaoPan
@@ -115,8 +110,76 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void outExcelFile() {
+    public HSSFWorkbook outExcelFile() {
+        List<TbUsers> userInfo = tbUsersDao.getAllUserInfoNoPage();
+        HSSFWorkbook sheets = ExcelUtils.outPutUserInfoExcel(userInfo);
+        return sheets;
+    }
 
+    @Override
+    public String[] uploadUserImg(MultipartFile file, String account) {
+        String[] split = new String[0];
+        try {
+            COSClientUtil cosClientUtil = new COSClientUtil();
+            String name = cosClientUtil.uploadFile2Cos(file);
+            String imgUrl = cosClientUtil.getImgUrl(name);
+            tbUsersDao.updateUserImg(imgUrl,account);
+            split = imgUrl.split("\\?");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return split;
+    }
+
+    @Override
+    public String weixinPay(String userId, String productId) {
+        String out_trade_no = "" + System.currentTimeMillis(); //订单号 （调整为自己的生产逻辑）
+
+        // 账号信息
+        String appid = AlipayConfig.APP_ID;  // appid
+        //String appsecret = PayConfigUtil.APP_SECRET; // appsecret
+        String mch_id = AlipayConfig.MCH_ID; // 商业号
+        String key = AlipayConfig.API_KEY; // key
+
+        String currTime = PayToolUtil.getCurrTime();
+        String strTime = currTime.substring(8, currTime.length());
+        String strRandom = PayToolUtil.buildRandom(4) + "";
+        String nonce_str = strTime + strRandom;
+
+        // 获取发起电脑 ip
+        String spbill_create_ip = AlipayConfig.CREATE_IP;
+        // 回调接口
+        String notify_url = AlipayConfig.NOTIFY_URL;
+        String trade_type = "NATIVE";
+
+        SortedMap<Object,Object> packageParams = new TreeMap<Object,Object>();
+        packageParams.put("appid", appid);
+        packageParams.put("mch_id", mch_id);
+        packageParams.put("nonce_str", nonce_str);
+        packageParams.put("body", "可乐");  //（调整为自己的名称）
+        packageParams.put("out_trade_no", out_trade_no);
+        packageParams.put("total_fee", "10"); //价格的单位为分
+        packageParams.put("spbill_create_ip", spbill_create_ip);
+        packageParams.put("notify_url", notify_url);
+        packageParams.put("trade_type", trade_type);
+
+        String sign = PayToolUtil.createSign("UTF-8", packageParams,key);
+        packageParams.put("sign", sign);
+
+        String requestXML = PayToolUtil.getRequestXml(packageParams);
+        System.out.println(requestXML);
+
+        String resXml = HttpUtil.postData(AlipayConfig.UFDODER_URL, requestXML);
+
+        Map map = null;
+        try {
+            map = XMLUtil4jdom.doXMLParse(resXml);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String urlCode = (String) map.get("code_url");
+
+        return urlCode;
     }
 
     private TbUsersPo getTbUserPo (TbUsers tbUsers){

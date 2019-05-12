@@ -15,6 +15,7 @@
         <result column="exam_select_score" property="examSelectScore"/>
         <result column="exam_paper_count" property="examPaperCount"/>
         <result column="exam_time" property="examTime"/>
+        <result column="exam_paper_img" property="examPaperImg"/>
     </resultMap>
 
     <sql id="TableName">
@@ -22,7 +23,7 @@
     </sql>
 
     <sql id="Fields">
-        exam_paper_name,exam_paper_type,invalid_time,create_unit,responsible,status,exam_paper_num,exam_judge_score,exam_select_score,exam_paper_count,exam_time
+        exam_paper_name,exam_paper_type,invalid_time,create_unit,responsible,status,exam_paper_num,exam_judge_score,exam_select_score,exam_paper_count,exam_time,exam_paper_img
     </sql>
 
     <insert id="insertExamPaper">
@@ -42,6 +43,7 @@
         #{examPaper.examSelectScore},
         #{examPaper.examPaperCount},
         #{examPaper.examTime},
+        #{examPaper.examPaperImg},
         NOW(),
         NOW()
         )
@@ -83,11 +85,14 @@
             <if test="examPaper.examPaperNum !=null">
                 update_at = NOW(),
             </if>
+            <if test="examPaper.examPaperImg !=null">
+                exam_paper_img = #{examPaper.examPaperImg}
+            </if>
         </set>
         where  exam_paper_num = #{examPaper.examPaperNum}
     </update>
 
-    <delete id="deleteExamPaper" parameterType="int">
+    <delete id="deleteExamPaper">
         DELETE from <include refid="TableName"/>  where exam_paper_num = #{examPaperNum}
     </delete>
 
@@ -136,7 +141,7 @@
 
     <update id="updateExamStatus">
         update <include refid="TableName"/>
-        set status = 2
+        set status = 2,update_at = NOW()
         where exam_paper_num = #{examPaperNum}
     </update>
 

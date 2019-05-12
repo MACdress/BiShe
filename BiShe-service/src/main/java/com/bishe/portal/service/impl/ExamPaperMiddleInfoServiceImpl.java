@@ -79,39 +79,50 @@ public class ExamPaperMiddleInfoServiceImpl implements ExamPaperMiddleInfoServic
         ExamPaperMiddleInfoVo examPaperVo = new ExamPaperMiddleInfoVo();
         examPaperVo.setExamPaperNumber(examPaperNum);
         TbExamPaper examPaper = tbExamPaperDao.getExamPaperByNumber(examPaperNum);
-        examPaperVo.setCreateUnit(examPaper.getCreateUnit());
-        examPaperVo.setExamJudgeScore(examPaper.getExamJudgeScore());
-        examPaperVo.setExamSelectScore(examPaper.getExamSelectScore());
-        examPaperVo.setInvalidTime(examPaper.getInvalidTime());
-        examPaperVo.setStatus(examPaper.getStatus());
-        examPaperVo.setResponsible(examPaper.getResponsible());
-        examPaperVo.setExamPaperType(examPaper.getExamPaperType());
-        examPaperVo.setExamPaperName(examPaper.getExamPaperName());
-        examPaperVo.setExamPaperCount(examPaper.getExamPaperCount());
-        examPaperVo.setExamPaperNumber(examPaper.getExamPaperNum());
-        examPaperVo.setExamPaperScore(examPaper.getExamJudgeScore()+examPaper.getExamSelectScore());
-        List<ExamSelectInfoVo> selectInfoVos = new ArrayList<>();
-        List<ExamJudgeInfoVo> examJudgeInfoVos = new ArrayList<>();
-        List<String> subjectIdList = tbExamPaperMiddleDao.getSubjectIdByExamPaperNum(examPaperNum);
-        List<TbExamJudge> examJudgeList = tbExamJudgeDao.getExamJudgeByNumbers(subjectIdList);
-        for (TbExamJudge tbExamJudge :examJudgeList){
-            ExamJudgeInfoVo examJudgeInfoVo  = getExamJudgeInfoVo(tbExamJudge);
-            examJudgeInfoVos.add(examJudgeInfoVo);
-        }
-        examPaperVo.setExamJudgeInfoVos(examJudgeInfoVos);
-        List<TbExamSelect> examSelectList = tbExamSelectDao.getExamSelectByNumbers(subjectIdList);
-        for (TbExamSelect tbExamSelect : examSelectList){
-            ExamSelectInfoVo examSelectInfoVo = getExamSelectInfoVo(tbExamSelect);
-            List<TbExamSelectOption> selectOptionList = tbExamSelectOptionDao.getSelectOptionList(tbExamSelect.getId());
-            List<ExamSelectOptionInfoVo> selectOptionInfoVos = new ArrayList<>();
-            for (TbExamSelectOption tbExamSelectOption:selectOptionList){
-                ExamSelectOptionInfoVo examSelectOptionInfoVo = getExamSelectOptionVo(tbExamSelectOption);
-                selectOptionInfoVos.add(examSelectOptionInfoVo);
+        if(examPaper!=null) {
+            examPaperVo.setCreateUnit(examPaper.getCreateUnit());
+            examPaperVo.setExamJudgeScore(examPaper.getExamJudgeScore());
+            examPaperVo.setExamSelectScore(examPaper.getExamSelectScore());
+            examPaperVo.setInvalidTime(examPaper.getInvalidTime());
+            examPaperVo.setStatus(examPaper.getStatus());
+            examPaperVo.setResponsible(examPaper.getResponsible());
+            examPaperVo.setExamPaperType(examPaper.getExamPaperType());
+            examPaperVo.setExamPaperName(examPaper.getExamPaperName());
+            examPaperVo.setExamPaperCount(examPaper.getExamPaperCount());
+            examPaperVo.setExamPaperNumber(examPaper.getExamPaperNum());
+            examPaperVo.setExamTime(examPaper.getExamTime());
+            examPaperVo.setExamPaperScore(examPaper.getExamJudgeScore() + examPaper.getExamSelectScore());
+            List<ExamSelectInfoVo> selectInfoVos = new ArrayList<>();
+            List<ExamJudgeInfoVo> examJudgeInfoVos = new ArrayList<>();
+            List<String> subjectIdList = tbExamPaperMiddleDao.getSubjectIdByExamPaperNum(examPaperNum);
+            if (subjectIdList!=null&&subjectIdList.size()>0) {
+                List<TbExamJudge> examJudgeList = tbExamJudgeDao.getExamJudgeByNumbers(subjectIdList);
+                if (examJudgeList != null && examJudgeList.size() > 0) {
+                    for (TbExamJudge tbExamJudge : examJudgeList) {
+                        ExamJudgeInfoVo examJudgeInfoVo = getExamJudgeInfoVo(tbExamJudge);
+                        examJudgeInfoVos.add(examJudgeInfoVo);
+                    }
+                }
+                List<TbExamSelect> examSelectList = tbExamSelectDao.getExamSelectByNumbers(subjectIdList);
+                if(examSelectList!=null&&examSelectList.size()>0) {
+                    for (TbExamSelect tbExamSelect : examSelectList) {
+                        ExamSelectInfoVo examSelectInfoVo = getExamSelectInfoVo(tbExamSelect);
+                        List<TbExamSelectOption> selectOptionList = tbExamSelectOptionDao.getSelectOptionList(tbExamSelect.getSubjectId());
+                        List<ExamSelectOptionInfoVo> selectOptionInfoVos = new ArrayList<>();
+                        if(selectInfoVos!=null&&selectInfoVos.size()>0) {
+                            for (TbExamSelectOption tbExamSelectOption : selectOptionList) {
+                                ExamSelectOptionInfoVo examSelectOptionInfoVo = getExamSelectOptionVo(tbExamSelectOption);
+                                selectOptionInfoVos.add(examSelectOptionInfoVo);
+                            }
+                        }
+                        examSelectInfoVo.setSelectOptionInfos(selectOptionInfoVos);
+                        selectInfoVos.add(examSelectInfoVo);
+                    }
+                }
             }
-            examSelectInfoVo.setSelectOptionInfos(selectOptionInfoVos);
-            selectInfoVos.add(examSelectInfoVo);
+            examPaperVo.setExamSelectInfoVos(selectInfoVos);
+            examPaperVo.setExamJudgeInfoVos(examJudgeInfoVos);
         }
-        examPaperVo.setExamSelectInfoVos(selectInfoVos);
         return examPaperVo;
     }
 
@@ -125,7 +136,7 @@ public class ExamPaperMiddleInfoServiceImpl implements ExamPaperMiddleInfoServic
     }
 
     @Override
-    public void addParamSelect(ExamSelectInfoVo selectInfoVo) {
+    public ExamSelectInfoVo addParamSelect(ExamSelectInfoVo selectInfoVo) {
         TbExamSelect tbExamSelect = getTbExamSelect(selectInfoVo);
         tbExamSelect.setSubjectId(UUIDUtils.getUUID(4));
         tbExamSelectDao.insertExamSelectInfo(tbExamSelect);
@@ -133,14 +144,22 @@ public class ExamPaperMiddleInfoServiceImpl implements ExamPaperMiddleInfoServic
         ExamSelectInfoVo examSelectInfoVo = getExamSelectInfoVo(examSelectBySubject);
         List<ExamSelectOptionInfoVo> selectOptionInfos = selectInfoVo.getSelectOptionInfos();
         for (ExamSelectOptionInfoVo examSelectOptionInfoVo:selectOptionInfos){
-            tbExamSelectOptionDao.insertExamSelectOption(getTbExamSelectOption(examSelectOptionInfoVo));
-
+            TbExamSelectOption tbExamSelectOption = getTbExamSelectOption(examSelectOptionInfoVo);
+            tbExamSelectOption.setExamSelect(tbExamSelect.getSubjectId());
+            tbExamSelectOptionDao.insertExamSelectOption(tbExamSelectOption);
         }
+        examSelectInfoVo.setSelectOptionInfos(selectOptionInfos);
+        return examSelectInfoVo;
     }
 
     @Override
-    public void addParamJudge(ExamJudgeInfoVo judgeInfoVo) {
-        tbExamJudgeDao.insertExamJudgeInfo(getTbExamJudge(judgeInfoVo));
+    public ExamJudgeInfoVo addParamJudge(ExamJudgeInfoVo judgeInfoVo) {
+        TbExamJudge tbExamJudge = getTbExamJudge(judgeInfoVo);
+        tbExamJudge.setSubjectId(UUIDUtils.getUUID(4));
+        tbExamJudgeDao.insertExamJudgeInfo(tbExamJudge);
+        TbExamJudge examJudgeBySubject = tbExamJudgeDao.getExamJudgeBySubject(tbExamJudge.getSubjectId());
+        return getExamJudgeInfoVo(examJudgeBySubject);
+
     }
 
     @Override
@@ -151,7 +170,7 @@ public class ExamPaperMiddleInfoServiceImpl implements ExamPaperMiddleInfoServic
         for (TbExamSelect tbExamSelect : selects){
             ExamSelectInfoVo examSelectInfoVo = getExamSelectInfoVo(tbExamSelect);
             List<ExamSelectOptionInfoVo> selectOptionInfoVos = new ArrayList<>();
-            List<TbExamSelectOption> selectOptionList = tbExamSelectOptionDao.getSelectOptionList(tbExamSelect.getId());
+            List<TbExamSelectOption> selectOptionList = tbExamSelectOptionDao.getSelectOptionList(tbExamSelect.getSubjectId());
             for (TbExamSelectOption tbExamSelectOption:selectOptionList){
                 ExamSelectOptionInfoVo examSelectOptionInfoVo = getExamSelectOptionVo(tbExamSelectOption);
                 selectOptionInfoVos.add(examSelectOptionInfoVo);
@@ -231,7 +250,6 @@ public class ExamPaperMiddleInfoServiceImpl implements ExamPaperMiddleInfoServic
         tbExamJudge.setExamAnswer(Integer.valueOf(examJudgeInfoVo.getExamAnswer()));
         tbExamJudge.setExamTittle(examJudgeInfoVo.getExamTittle());
         tbExamJudge.setScore(examJudgeInfoVo.getScore());
-        tbExamJudge.setSubjectId(UUIDUtils.getUUID(4));
         return tbExamJudge;
     }
 }

@@ -20,4 +20,5 @@ public class ExamPaperMiddleInfoVo implements Serializable {
     private Integer examJudgeScore;
     private Integer examSelectScore;
     private Integer examPaperScore;
+    private Integer examTime;
 }

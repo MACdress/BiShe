@@ -42,4 +42,5 @@ public class TbExamPaper {
     private int examPaperCount;
 
     private int examTime;
+    private String examPaperImg;
 }

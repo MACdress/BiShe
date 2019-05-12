@@ -31,15 +31,15 @@ public class AdminExamPaperMiddleInfoController {
     @RequestMapping(value = "addParamSelect",method = RequestMethod.POST)
     @ResponseBody
     public String addParamSelect(@RequestBody ExamSelectInfoVo selectInfoVo){
-        examPaperMiddleInfoService.addParamSelect(selectInfoVo);
-        return JsonView.render(200,"添加成功");
+        ExamSelectInfoVo examSelectInfoVo = examPaperMiddleInfoService.addParamSelect(selectInfoVo);
+        return JsonView.render(200,"添加成功",examSelectInfoVo);
     }
 
     @RequestMapping(value = "addParamJudge",method = RequestMethod.POST)
     @ResponseBody
     public String addParamJudge(@RequestBody ExamJudgeInfoVo judgeInfoVo){
-        examPaperMiddleInfoService.addParamJudge(judgeInfoVo);
-        return JsonView.render(200,"添加成功");
+        ExamJudgeInfoVo examJudgeInfoVo = examPaperMiddleInfoService.addParamJudge(judgeInfoVo);
+        return JsonView.render(200,"添加成功",examJudgeInfoVo);
     }
 
     @RequestMapping(value = "getExamPaperInfo",method = RequestMethod.GET)

@@ -9,6 +9,7 @@ import com.bishe.portal.model.vo.ExamPaperVo;
 import com.bishe.portal.model.vo.FindExamPaperVo;
 import com.bishe.portal.service.ExamPaperService;
 import com.bishe.portal.service.enums.ExamPaperStatusEnum;
+import com.bishe.portal.service.utils.COSClientUtil;
 import com.bishe.portal.service.utils.UUIDUtils;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -29,17 +30,43 @@ public class ExamPaperServiceImpl implements ExamPaperService {
     TbExamStartDao tbExamStartDao;
     @Override
     public ExamPaperVo addExamPaper(ExamPaperVo examPaperVo) {
-        TbExamPaper examPaper = getExamPaper(examPaperVo);
-        examPaper.setExamPaperNum(UUIDUtils.getUUID(8));
-        tbExamPaperDao.insertExamPaper(examPaper);
-        examPaper = tbExamPaperDao.getExamPaperByNumber(examPaper.getExamPaperNum());
-        ExamPaperVo examPaperVo1 = getExamPaperVo(examPaper);
-        return examPaperVo1;
+        ExamPaperVo examPaperVo1 = new ExamPaperVo();
+        try {
+            String imgUrl = "";
+            if (examPaperVo.getExamPaperImg() != null) {
+                COSClientUtil cosClientUtil = new COSClientUtil();
+                String name = cosClientUtil.uploadFile2Cos(examPaperVo.getExamPaperImg());
+                imgUrl = cosClientUtil.getImgUrl(name);
+            }
+            TbExamPaper examPaper = getExamPaper(examPaperVo);
+            examPaper.setExamPaperNum(UUIDUtils.getUUID(8));
+            examPaper.setExamPaperImg(imgUrl);
+            tbExamPaperDao.insertExamPaper(examPaper);
+            examPaper = tbExamPaperDao.getExamPaperByNumber(examPaper.getExamPaperNum());
+            examPaperVo1 = getExamPaperVo(examPaper);
+            return examPaperVo1;
+        }catch (Exception e){
+            return examPaperVo1;
+        }finally {
+            return examPaperVo1;
+        }
     }
 
     @Override
     public void updateExamPaper(ExamPaperVo examPaperVo) {
-        tbExamPaperDao.updateExamPaper(getExamPaper(examPaperVo));
+        try {
+            String imgUrl = "";
+            if (examPaperVo.getExamPaperImg() != null) {
+                COSClientUtil cosClientUtil = new COSClientUtil();
+                String name = cosClientUtil.uploadFile2Cos(examPaperVo.getExamPaperImg());
+                imgUrl = cosClientUtil.getImgUrl(name);
+            }
+            TbExamPaper examPaper = getExamPaper(examPaperVo);
+            examPaper.setExamPaperImg(imgUrl);
+            tbExamPaperDao.updateExamPaper(examPaper);
+        }catch (Exception e){
+
+        }
     }
 
     @Override
@@ -118,6 +145,7 @@ public class ExamPaperServiceImpl implements ExamPaperService {
         result.setStatus(examPaper.getStatus());
         result.setExamPaperType(examPaper.getExamPaperType());
         result.setExamPaperNum(examPaper.getExamPaperNum());
+        result.setExamTime(examPaper.getExamTime());
         return result;
     }
 
