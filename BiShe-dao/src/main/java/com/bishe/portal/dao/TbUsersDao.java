@@ -51,4 +51,6 @@ public interface TbUsersDao {
     void updateUserImg(@Param("userImg") String imgUrl,@Param("account") String account);
 
     List<TbUsers> getAllUserInfoNoPage();
+
+    void updateUserInfo(@Param("tbUser") TbUsers tbUsers);
 }

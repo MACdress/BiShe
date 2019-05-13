@@ -1,7 +1,6 @@
 package com.bishe.portal.web.controller;
 
 import com.alibaba.druid.util.StringUtils;
-import com.alipay.api.internal.parser.json.JsonConverter;
 import com.bishe.portal.model.po.TbUsersPo;
 import com.bishe.portal.model.vo.RegisterUserVo;
 import com.bishe.portal.model.vo.SelectUserParamVo;
@@ -15,7 +14,6 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
-import com.qiniu.util.Json;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -29,7 +27,6 @@ import javax.servlet.http.HttpSession;
 import java.io.OutputStream;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author 熊猫
@@ -203,4 +200,14 @@ public class UserController {
         }
     }
 
+    @RequestMapping(value = "updateUserInfo",method = RequestMethod.POST)
+    @ResponseBody
+    public String updateUserInfo(@RequestBody RegisterUserVo registerUserVo,HttpSession session){
+        UserInfoVo tbUsersPo  = (UserInfoVo) session.getAttribute("user");
+        if((tbUsersPo!=null)&&(tbUsersPo.getTel().equals(registerUserVo.getTel()))){
+            return JsonView.render(301,"is login");
+        }
+        userService.updateUserInfo(getUserPo(registerUserVo),tbUsersPo.getAccount());
+        return JsonView.render(200,"更新成功");
+    }
 }

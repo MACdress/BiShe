@@ -42,5 +42,8 @@ public interface UserService {
     HSSFWorkbook outExcelFile();
 
     String[] uploadUserImg(MultipartFile file,String account);
-     String weixinPay(String userId, String productId);
+
+    String weixinPay(String userId, String productId);
+
+    void updateUserInfo(TbUsersPo registerUserVo, String account);
 }

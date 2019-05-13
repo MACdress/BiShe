@@ -9,6 +9,7 @@ import com.bishe.portal.model.vo.UserInfoVo;
 import com.bishe.portal.service.UserService;
 import com.bishe.portal.service.utils.*;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.jdom.JDOMException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -168,18 +169,28 @@ public class UserServiceImpl implements UserService {
 
         String requestXML = PayToolUtil.getRequestXml(packageParams);
         System.out.println(requestXML);
-
         String resXml = HttpUtil.postData(AlipayConfig.UFDODER_URL, requestXML);
 
         Map map = null;
         try {
-            map = XMLUtil4jdom.doXMLParse(resXml);
+            try {
+                map = XMLUtil4jdom.doXMLParse(resXml);
+            } catch (JDOMException e) {
+                e.printStackTrace();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
         String urlCode = (String) map.get("code_url");
 
         return urlCode;
+    }
+
+    @Override
+    public void updateUserInfo(TbUsersPo registerUserVo, String account) {
+        TbUsers tbUsers = getTbUsers(registerUserVo);
+        tbUsers.setAccount(account);
+        tbUsersDao.updateUserInfo(tbUsers);
     }
 
     private TbUsersPo getTbUserPo (TbUsers tbUsers){
@@ -217,6 +228,7 @@ public class UserServiceImpl implements UserService {
         tbUsers.setPermission(tbUsersPo.getPermission());
         tbUsers.setEmail(StringUtils.isEmpty(tbUsersPo.getEmail()) ? "" : tbUsersPo.getEmail());
         tbUsers.setAccount(UUIDUtils.getUUID(8));
+        tbUsers.setMonthlySalary(tbUsersPo.getMonthlySalary());
         tbUsers.setJob(StringUtils.isEmpty(tbUsersPo.getJob()) ? "" : tbUsersPo.getJob());
         tbUsers.setFixedTel(StringUtils.isEmpty(tbUsersPo.getFixedTel()) ? "" : tbUsersPo.getFixedTel());
         tbUsers.setName(StringUtils.isEmpty(tbUsersPo.getName()) ? "" : tbUsersPo.getName());
@@ -224,8 +236,14 @@ public class UserServiceImpl implements UserService {
         tbUsers.setTurnPositiveDate(StringUtils.isEmpty(tbUsersPo.getTurnPositiveDate()) ? "" : tbUsersPo.getTurnPositiveDate());
         tbUsers.setNationality(StringUtils.isEmpty(tbUsersPo.getNationality()) ? "" : tbUsersPo.getNationality());
         tbUsers.setBranch(StringUtils.isEmpty(tbUsersPo.getBranch()) ? "" : tbUsersPo.getBranch());
+        int basePay = 1;
+        if (tbUsers.getIdentity()==1){
+            basePay = 2;
+        }
+        tbUsers.setBasePay(basePay);
         tbUsers.setJoinPartyDate(StringUtils.isEmpty(tbUsersPo.getJoinPartyDate()) ? "" : tbUsersPo.getJoinPartyDate());
         tbUsers.setAddress(StringUtils.isEmpty(tbUsersPo.getAddress()) ? "" : tbUsersPo.getAddress());
+
         return tbUsers;
     }
 
@@ -250,6 +268,7 @@ public class UserServiceImpl implements UserService {
         result.setJob(StringUtils.isEmpty(tbUsers.getJob()) ? "" : tbUsers.getJob());
         result.setJoinPartyDate(StringUtils.isEmpty(tbUsers.getJoinPartyDate()) ? "" : tbUsers.getJoinPartyDate());
         result.setTurnPositiveDate(StringUtils.isEmpty(tbUsers.getTurnPositiveDate()) ? "" : tbUsers.getTurnPositiveDate());
+        result.setMonthlySalary(tbUsers.getMonthlySalary());
         return result;
     }
 }

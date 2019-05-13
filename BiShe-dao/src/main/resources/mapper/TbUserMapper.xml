@@ -21,6 +21,8 @@
         <result column="turn_positive_date" property="turnPositiveDate"/>
         <result column="id_card" property="idCard"/>
         <result column="user_img" property="userImg"/>
+        <result column="monthly_salary" property="monthlySalary"/>
+        <result column="base_pay" property="basePay"/>
     </resultMap>
     <resultMap id="SimpleTbUsersMap" type="com.bishe.portal.model.po.SimpleUserInfo">
         <id column="id" property="id"/>
@@ -32,7 +34,7 @@
     </sql>
     <sql id="Fields">
         name,pwd,email,permission,tel,birthday,sex,sale,account,identity,nationality,
-        branch,fixed_tel,address,job,join_party_date,turn_positive_date,id_card,user_img
+        branch,fixed_tel,address,job,join_party_date,turn_positive_date,id_card,user_img,monthly_salary,base_pay
     </sql>
     <insert id="insert">
         INSERT INTO <include refid="TableName"/> (
@@ -58,6 +60,8 @@
                 #{tbUsers.turnPositiveDate},
                 #{tbUsers.idCard},
                 #{tbUsers.userImg},
+                #{tbUsers.monthlySalary},
+                #{tbUsers.basePay},
                 NOW(),
                 NOW());
     </insert>
@@ -123,6 +127,49 @@
         update <include refid="TableName"/>
         set user_img = #{userImg} , update_at = NOW()
         where account = #{account}
+    </update>
+
+    <update id="updateUserInfo" >
+        update  <include refid="TableName"/>
+        <set>
+            <if test="tbUser.pwd != null">
+                pwd = #{tbUser.pwd},
+            </if>
+            <if test="tbUser.email != null">
+                email = #{tbUser.email},
+            </if>
+            <if test="tbUser.invalidTime != null">
+                invalid_time = #{tbUser.invalidTime},
+            </if>
+            <if test="tbUser.createUnit != null">
+                create_unit = #{tbUser.createUnit},
+            </if>
+            <if test="tbUser.responsible != null">
+                responsible =  #{tbUser.responsible},
+            </if>
+            <if test="tbUser.status!= null">
+                status = #{tbUser.status},
+            </if>
+            <if test="tbUser.examJudgeScore!= 0">
+                exam_judge_score = #{tbUser.examJudgeScore},
+            </if>
+            <if test="tbUser.examSelectScore!= 0">
+                exam_select_score = #{tbUser.examSelectScore},
+            </if>
+            <if test="tbUser.examPaperCount!= 0">
+                exam_paper_count = #{tbUser.examPaperCount},
+            </if>
+            <if test="tbUser.examTime!=null">
+                exam_time = #{tbUser.examTime},
+            </if>
+            <if test="tbUser.examPaperNum !=null">
+                update_at = NOW(),
+            </if>
+            <if test="tbUser.examPaperImg !=null">
+                exam_paper_img = #{tbUser.examPaperImg}
+            </if>
+        </set>
+        where account = #{tbUser.account};
     </update>
 </mapper>
 

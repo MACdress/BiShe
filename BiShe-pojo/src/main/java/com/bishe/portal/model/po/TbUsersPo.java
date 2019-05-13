@@ -38,4 +38,5 @@ public class TbUsersPo {
     private Integer sex;
 
     private String sale;
+    private String monthlySalary;
 }

@@ -17,4 +17,5 @@ public class RegisterUserVo implements Serializable {
     private Integer sex;
     private String tel;
     private String account;
+    private String monthlySalary;
 }

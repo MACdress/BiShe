@@ -65,4 +65,6 @@ public class TbUsers {
      */
     private String turnPositiveDate;
     private String userImg;
+    private String monthlySalary;
+    private int basePay;
 }

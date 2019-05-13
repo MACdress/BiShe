@@ -56,4 +56,6 @@ public class UserInfoVo implements Serializable {
      /      * 转正日期
      */
     private String turnPositiveDate;
+    private String monthlySalary;
+
 }

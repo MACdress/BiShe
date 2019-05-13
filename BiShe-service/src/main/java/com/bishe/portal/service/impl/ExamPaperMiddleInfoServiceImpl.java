@@ -109,8 +109,11 @@ public class ExamPaperMiddleInfoServiceImpl implements ExamPaperMiddleInfoServic
                         ExamSelectInfoVo examSelectInfoVo = getExamSelectInfoVo(tbExamSelect);
                         List<TbExamSelectOption> selectOptionList = tbExamSelectOptionDao.getSelectOptionList(tbExamSelect.getSubjectId());
                         List<ExamSelectOptionInfoVo> selectOptionInfoVos = new ArrayList<>();
-                        if(selectInfoVos!=null&&selectInfoVos.size()>0) {
+                        if(selectOptionList!=null&&selectOptionList.size()>0) {
                             for (TbExamSelectOption tbExamSelectOption : selectOptionList) {
+                                if(tbExamSelectOption.getExamSelect().equals("8120")) {
+                                System.out.println();
+                                }
                                 ExamSelectOptionInfoVo examSelectOptionInfoVo = getExamSelectOptionVo(tbExamSelectOption);
                                 selectOptionInfoVos.add(examSelectOptionInfoVo);
                             }
