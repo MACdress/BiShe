@@ -15,4 +15,6 @@ public class ExamJudgeInfoVo implements Serializable {
      * 1代表选择提，2代表判断题
      */
     private Integer examSubjectType;
+    private Integer examMiddleType;
+    private String  examMiddleTypeName;
 }

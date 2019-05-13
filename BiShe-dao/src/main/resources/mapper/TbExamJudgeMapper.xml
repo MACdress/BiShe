@@ -7,6 +7,7 @@
         <result column="exam_answer" property="examAnswer"/>
         <result column="score" property="score"/>
         <result column="subject_id" property="subjectId"/>
+        <result column="exam_middle_type" property="examMiddleType"/>
     </resultMap>
 
     <sql id="TableName">
@@ -14,7 +15,7 @@
     </sql>
 
     <sql id="Fields">
-        exam_tittle,exam_answer,score,subject_id
+        exam_tittle,exam_answer,score,subject_id,exam_middle_type
     </sql>
 
     <insert id="insertExamJudgeInfo">
@@ -27,6 +28,7 @@
         #{tbExamJudge.examAnswer},
         #{tbExamJudge.score},
         #{tbExamJudge.subjectId},
+        #{tbExamJudge.examMiddleType},
         NOW(),
         NOW()
         )

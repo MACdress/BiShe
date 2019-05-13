@@ -5,6 +5,7 @@ import com.bishe.portal.dao.*;
 import com.bishe.portal.model.mo.*;
 import com.bishe.portal.model.vo.*;
 import com.bishe.portal.service.ExamPaperMiddleInfoService;
+import com.bishe.portal.service.enums.ExamMiddleTypeEnum;
 import com.bishe.portal.service.utils.UUIDUtils;
 import org.springframework.stereotype.Service;
 
@@ -219,6 +220,8 @@ public class ExamPaperMiddleInfoServiceImpl implements ExamPaperMiddleInfoServic
         examSelectInfoVo.setScore(tbExamSelect.getScore());
         examSelectInfoVo.setSubjectId(tbExamSelect.getSubjectId());
         examSelectInfoVo.setExamSubjectType(1);
+        examSelectInfoVo.setExamMiddleType(tbExamSelect.getExamMiddleType());
+        examSelectInfoVo.setExamMiddleTypeName(ExamMiddleTypeEnum.getTypeNameStatus(tbExamSelect.getExamMiddleType()));
         return examSelectInfoVo;
     }
 
@@ -229,6 +232,8 @@ public class ExamPaperMiddleInfoServiceImpl implements ExamPaperMiddleInfoServic
         examJudgeInfoVo.setScore(tbExamJudge.getScore());
         examJudgeInfoVo.setSubjectId(tbExamJudge.getSubjectId());
         examJudgeInfoVo.setExamSubjectType(2);
+        examJudgeInfoVo.setExamSubjectType(tbExamJudge.getExamMiddleType());
+        examJudgeInfoVo.setExamMiddleTypeName(ExamMiddleTypeEnum.getTypeNameStatus(tbExamJudge.getExamMiddleType()));
         return examJudgeInfoVo;
     }
 
@@ -245,6 +250,7 @@ public class ExamPaperMiddleInfoServiceImpl implements ExamPaperMiddleInfoServic
         tbExamSelect.setExamParse(examSelectInfoVo.getExamParse());
         tbExamSelect.setScore(examSelectInfoVo.getScore());
         tbExamSelect.setExamTittle(examSelectInfoVo.getExamTittle());
+        tbExamSelect.setExamMiddleType(examSelectInfoVo.getExamMiddleType());
         return tbExamSelect;
     }
 
@@ -253,6 +259,7 @@ public class ExamPaperMiddleInfoServiceImpl implements ExamPaperMiddleInfoServic
         tbExamJudge.setExamAnswer(Integer.valueOf(examJudgeInfoVo.getExamAnswer()));
         tbExamJudge.setExamTittle(examJudgeInfoVo.getExamTittle());
         tbExamJudge.setScore(examJudgeInfoVo.getScore());
+        tbExamJudge.setExamMiddleType(examJudgeInfoVo.getExamMiddleType());
         return tbExamJudge;
     }
 }

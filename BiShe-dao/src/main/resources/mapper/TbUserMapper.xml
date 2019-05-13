@@ -63,7 +63,7 @@
                 #{tbUsers.monthlySalary},
                 #{tbUsers.basePay},
                 NOW(),
-                NOW());
+                NOW())
     </insert>
 
     <select id="getAllAdminUserInfo" resultMap="SimpleTbUsersMap">
@@ -166,7 +166,7 @@
                 update_at = NOW(),
             </if>
             <if test="tbUser.examPaperImg !=null">
-                exam_paper_img = #{tbUser.examPaperImg}
+                exam_paper_img = #{tbUser.examPaperImg},
             </if>
         </set>
         where account = #{tbUser.account};

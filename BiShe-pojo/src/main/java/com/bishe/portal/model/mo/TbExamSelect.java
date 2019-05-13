@@ -12,5 +12,6 @@ public class TbExamSelect {
     private String examTittle;
     private String examParse;
     private String examAnswer;
-    private Integer score;
+    private int score;
+    private int examMiddleType;
 }

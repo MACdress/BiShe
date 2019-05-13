@@ -9,6 +9,7 @@
         <result column="exam_answer" property="examAnswer"/>
         <result column="score" property="score"/>
         <result column="exam_parse" property="examParse"/>
+        <result column="exam_middle_type" property="examMiddleType"/>
     </resultMap>
 
     <sql id="TableName">
@@ -16,7 +17,7 @@
     </sql>
 
     <sql id="Fields">
-        subject_id,exam_tittle,exam_answer,score,exam_parse
+        subject_id,exam_tittle,exam_answer,score,exam_parse,exam_middle_type
     </sql>
 
     <insert id="insertExamSelectInfo" parameterType="com.bishe.portal.model.mo.TbExamSelect">
@@ -30,6 +31,7 @@
         #{tbExamSelect.examAnswer},
         #{tbExamSelect.score},
         #{tbExamSelect.examParse},
+        #{tbExamSelect.examMiddleType},
         NOW(),
         NOW()
         )

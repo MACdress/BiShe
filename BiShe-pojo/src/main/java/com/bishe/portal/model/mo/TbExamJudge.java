@@ -12,4 +12,5 @@ public class TbExamJudge {
     private String examTittle;
     private int examAnswer;
     private int score;
+    private int examMiddleType;
 }
