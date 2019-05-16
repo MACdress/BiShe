@@ -51,6 +51,11 @@
     <select id="getFinishExamInfo" resultMap="TbExamStartMap">
         select <include refid="Fields"/>,create_at,update_at
         from <include refid="TableName"/>
+        <where>
+            <if test="examPaperNum != null">
+                exam_paper_num = #{examPaperNum}
+            </if>
+        </where>
         LIMIT #{startIndex},#{pageSize}
     </select>
 

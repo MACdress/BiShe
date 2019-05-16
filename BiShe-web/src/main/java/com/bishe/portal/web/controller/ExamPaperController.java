@@ -79,14 +79,14 @@ public class ExamPaperController {
 
     @RequestMapping(value = "getAllExamHistory",method = RequestMethod.GET)
     @ResponseBody
-    public String getAllExamHistory(@RequestParam("page")Integer page,@RequestParam("pageSize") Integer pageSize){
+    public String getAllExamHistory(@RequestParam("page")Integer page,@RequestParam("pageSize") Integer pageSize,@RequestParam("examPaperNum") String examPaperNum){
         if (page==null||pageSize==null){
             page = 1;
             pageSize = 20;
         }
         System.out.println(page);
         System.out.println(pageSize);
-        List<ExamStartVo> examStartVoList = examStartService.getAllExamHistory(page,pageSize);
+        List<ExamStartVo> examStartVoList = examStartService.getAllExamHistory(page,pageSize,examPaperNum);
         return JsonView.render(200,"查询成功",examStartVoList);
     }
 }

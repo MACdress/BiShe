@@ -15,5 +15,5 @@ public interface ExamStartService {
 
     void ChooseExamSubjectList(List<ExamChooseVo> examChooseList, String examStartNum);
 
-    List<ExamStartVo> getAllExamHistory(int page, int pageSize);
+    List<ExamStartVo> getAllExamHistory(int page, int pageSize, String examPaperNum);
 }

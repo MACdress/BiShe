@@ -12,7 +12,7 @@ public interface TbExamStartDao {
 
     void updateScore(@Param("score") int score, @Param("examStartNum") String examStartNum);
 
-    List<TbExamStart> getFinishExamInfo(@Param("startIndex") int startIndex,@Param("pageSize") int pageSize);
+    List<TbExamStart> getFinishExamInfo(@Param("startIndex") int startIndex, @Param("pageSize") int pageSize, @Param("examPaperNum") String examPaperNum);
 
     List<TbExamStart> getExamStartByExaminee(@Param("account") String account);
 }

@@ -4,11 +4,12 @@ import com.bishe.portal.dao.*;
 import com.bishe.portal.model.mo.*;
 import com.bishe.portal.model.vo.*;
 import com.bishe.portal.service.ExamStartService;
-import com.bishe.portal.service.utils.QiniuWrapper;
 import com.bishe.portal.service.utils.UUIDUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import sun.swing.StringUIClientPropertyKey;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
@@ -209,8 +210,11 @@ public class ExamStartServiceImpl implements ExamStartService {
     }
 
     @Override
-    public List<ExamStartVo> getAllExamHistory(int page, int pageSize) {
-        List<TbExamStart> examStartList = examStartDao.getFinishExamInfo((page-1)*pageSize,pageSize);
+    public List<ExamStartVo> getAllExamHistory(int page, int pageSize, String examPaperNum) {
+        if (StringUtils.isEmpty(examPaperNum)){
+            examPaperNum = null;
+        }
+        List<TbExamStart> examStartList = examStartDao.getFinishExamInfo((page-1)*pageSize,pageSize,examPaperNum);
         List<ExamStartVo> result = new ArrayList<>();
         for (TbExamStart tbExamStart : examStartList){
             result.add(getExamStartVo(tbExamStart));
