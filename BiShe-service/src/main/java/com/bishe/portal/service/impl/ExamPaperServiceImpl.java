@@ -41,11 +41,16 @@ public class ExamPaperServiceImpl implements ExamPaperService {
             TbExamPaper examPaper = getExamPaper(examPaperVo);
             examPaper.setExamPaperNum(UUIDUtils.getUUID(8));
             examPaper.setExamPaperImg(imgUrl);
+            System.out.println("插入前"+examPaper);
             tbExamPaperDao.insertExamPaper(examPaper);
-            examPaper = tbExamPaperDao.getExamPaperByNumber(examPaper.getExamPaperNum());
-            examPaperVo1 = getExamPaperVo(examPaper);
+            System.out.println("插入后"+examPaper);
+            TbExamPaper examPaperByNumber = tbExamPaperDao.getExamPaperByNumber(examPaper.getExamPaperNum());
+            System.out.println(examPaperByNumber);
+            examPaperVo1 = getExamPaperVo(examPaperByNumber);
+            System.out.println("---------------"+examPaperVo1);
             return examPaperVo1;
         }catch (Exception e){
+            e.printStackTrace();
             return examPaperVo1;
         }finally {
             return examPaperVo1;

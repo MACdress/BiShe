@@ -16,4 +16,7 @@ public interface TbExamJudgeDao {
     TbExamJudge getExamJudgeBySubject(@Param("subjectId") String subjectId);
 
     List<TbExamJudge> getAllJudgeSubject(@Param("startIndex") int startIndex,@Param("pageSize")int pageSize);
+
+    List<TbExamJudge> getCorrectJudge (@Param("examStartNum") String examStartNum);
+
 }

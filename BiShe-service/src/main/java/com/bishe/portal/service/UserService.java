@@ -3,6 +3,7 @@ package com.bishe.portal.service;
 
 import com.bishe.portal.model.po.TbUsersPo;
 import com.bishe.portal.model.vo.SelectUserParamVo;
+import com.bishe.portal.model.vo.UserEventVo;
 import com.bishe.portal.model.vo.UserInfoVo;
 import com.bishe.portal.service.utils.ReturnInfo;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -46,4 +47,6 @@ public interface UserService {
     String weixinPay(String userId, String productId);
 
     void updateUserInfo(TbUsersPo registerUserVo, String account);
+
+    List<UserEventVo> getUserHistory(String account);
 }

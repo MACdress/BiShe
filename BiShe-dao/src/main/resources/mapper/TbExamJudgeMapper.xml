@@ -54,4 +54,11 @@
         from  <include refid="TableName"/>
         LIMIT #{startIndex},#{pageSize}
     </select>
+
+    <select id="getCorrectChoose" resultMap="TbExamJudgeMap">
+        select <include refid="Fields"/>
+        from <include refid="TableName"/>
+        where exam_start_num = #{examStartNum} and is_correct = 1
+    </select>
+
 </mapper>

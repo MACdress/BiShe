@@ -7,10 +7,11 @@ import com.bishe.portal.service.ColumnManageService;
 import com.bishe.portal.web.utils.JsonView;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.List;
 
 /**
@@ -81,7 +82,7 @@ public class AdminColumnManageController {
      */
     @RequestMapping(value = "deleteColumn",method = RequestMethod.GET)
     @ResponseBody
-    public String deleteColumn(Integer id,HttpSession httpSession){
+    public String deleteColumn(@RequestParam("id") Integer id,HttpSession httpSession){
         UserInfoVo userInfoVo = (UserInfoVo)httpSession.getAttribute("user");
         if ((userInfoVo == null)||(userInfoVo.getPermission()!=1)){
             return JsonView.render(404,"user is not admin");
@@ -101,10 +102,16 @@ public class AdminColumnManageController {
      */
     @RequestMapping(value = "getParentInfoByName",method = RequestMethod.GET)
     @ResponseBody
-    public String getParentNameByColumnName(String columnName,HttpSession httpSession){
+    public String getParentNameByColumnName(@RequestParam("columnName") String columnName,HttpSession httpSession){
         UserInfoVo userInfoVo = (UserInfoVo)httpSession.getAttribute("user");
         if ((userInfoVo == null)||(userInfoVo.getPermission()!=1)){
             return JsonView.render(404,"user is not admin");
+        }
+        try {
+            columnName = URLDecoder.decode(columnName,"ISO8859-1");
+            System.out.println(columnName);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
         }
         List<ColumnInfoVo> rs = columnManageService.getColumnInfoByName(columnName);
         return  JsonView.render(200,"success",rs);
@@ -117,7 +124,7 @@ public class AdminColumnManageController {
      */
     @RequestMapping(value = "getColumnByParent", method = RequestMethod.GET)
     @ResponseBody
-    public String getAllParentColumn(String columnId,HttpSession httpSession){
+    public String getAllParentColumn(@RequestParam("columnId") String columnId,HttpSession httpSession){
         UserInfoVo userInfoVo = (UserInfoVo)httpSession.getAttribute("user");
         if ((userInfoVo == null)||(userInfoVo.getPermission()!=1)){
             return JsonView.render(404,"user is not admin");

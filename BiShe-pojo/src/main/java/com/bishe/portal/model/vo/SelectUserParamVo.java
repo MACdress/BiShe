@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 @Data
 public class SelectUserParamVo implements Serializable {
-    private String identity;
+    private Integer identity;
     private String name;
     private Integer sex;
     private String idCard;

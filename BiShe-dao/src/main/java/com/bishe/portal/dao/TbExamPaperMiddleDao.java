@@ -10,7 +10,7 @@ import java.util.List;
 public interface TbExamPaperMiddleDao {
     void insertTbExamPaperMiddle(@Param("tbExamPaperMiddle") TbExamPaperMiddle tbExamPaperMiddle);
 
-    List<String> getSubjectIdByExamPaperNum(@Param("examPaperNum") String examPaperNum);
+    List<String> getSubjectIdByExamPaperNum(@Param("examPaperNum") String examPaperNum,@Param("startIndex") int startIndex,@Param("pageSize") Integer pageSize);
 
     void deleteExamPaperSubject(@Param("examPaperNum") String examPaperNum,@Param("subjectIdList") List<String> subjectId);
 }

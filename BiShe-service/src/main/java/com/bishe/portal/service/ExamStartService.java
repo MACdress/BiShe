@@ -7,13 +7,15 @@ import com.bishe.portal.model.vo.ExamStartVo;
 import java.util.List;
 
 public interface ExamStartService {
-    ExamPaperStartMiddleInfoVo startExam(String examPaperNum, String account);
+    ExamPaperStartMiddleInfoVo startExam(String examPaperNum, String account, Integer page, Integer pageSize, String examStartNum);
 
     ExamStartVo endExam(String examStartNum);
 
     void chooseExamSubject(ExamChooseVo examChooseVo);
 
-    void ChooseExamSubjectList(List<ExamChooseVo> examChooseList, String examStartNum);
+    void chooseExamSubjectList(List<ExamChooseVo> examChooseList, String examStartNum);
 
     List<ExamStartVo> getAllExamHistory(int page, int pageSize, String examPaperNum);
+
+    List<ExamStartVo> getUserExamHistory(Integer page, Integer pageSize, String account);
 }

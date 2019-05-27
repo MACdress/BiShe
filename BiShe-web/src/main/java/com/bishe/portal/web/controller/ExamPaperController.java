@@ -25,7 +25,7 @@ public class ExamPaperController {
     @ResponseBody
     public String getExamPaper(HttpSession session){
         UserInfoVo tbUsersPo  = (UserInfoVo) session.getAttribute("user");
-        if ((tbUsersPo == null)||(tbUsersPo.getPermission()!=1)){
+        if ((tbUsersPo == null)){
             return JsonView.render(404,"user is not admin");
         }
         List<ExamPaperVo>examPaperVoList =  examPaperService.getReleaseExamPaper(tbUsersPo.getAccount());
@@ -34,15 +34,21 @@ public class ExamPaperController {
 
     @RequestMapping(value = "startExam",method = RequestMethod.GET)
     @ResponseBody
-    public String startExam(String examPaperNum, HttpSession session){
+    public String startExam(@RequestParam("examPaperNum") String examPaperNum, @RequestParam("examStartNum") String examStartNum,@RequestParam("page") Integer page, @RequestParam("pageSize")Integer pageSize, HttpSession session){
         if (StringUtils.isNullOrEmpty(examPaperNum)){
             return JsonView.render(404,"入参错误");
         }
         UserInfoVo tbUsersPo  = (UserInfoVo) session.getAttribute("user");
-        if ((tbUsersPo == null)||(tbUsersPo.getPermission()!=1)){
+        if ((tbUsersPo == null)){
             return JsonView.render(404,"user is not admin");
         }
-        ExamPaperStartMiddleInfoVo examStartVo =  examStartService.startExam(examPaperNum,tbUsersPo.getAccount());
+        if((page == null)||(page == 0)){
+            page = 1;
+        }
+        if ((pageSize==null)||(pageSize == 0)){
+            pageSize = 20;
+        }
+        ExamPaperStartMiddleInfoVo examStartVo =  examStartService.startExam(examPaperNum,tbUsersPo.getAccount(),page,pageSize,examStartNum);
         return  JsonView.render(200,"成功",examStartVo);
     }
 
@@ -50,7 +56,7 @@ public class ExamPaperController {
     @ResponseBody
     public String endExam(String examStartNum,HttpSession session){
         UserInfoVo tbUsersPo  = (UserInfoVo) session.getAttribute("user");
-        if ((tbUsersPo == null)||(tbUsersPo.getPermission()!=1)){
+        if ((tbUsersPo == null)){
             return JsonView.render(404,"user is not admin");
         }
         if (StringUtils.isNullOrEmpty(examStartNum)){
@@ -73,7 +79,7 @@ public class ExamPaperController {
         if (StringUtils.isNullOrEmpty(pageChooseExamVo.getExamStartNum())||(pageChooseExamVo.getExamChooseList()==null)){
             return JsonView.render(404,"入参错误");
         }
-        examStartService.ChooseExamSubjectList(pageChooseExamVo.getExamChooseList(),pageChooseExamVo.getExamStartNum());
+        examStartService.chooseExamSubjectList(pageChooseExamVo.getExamChooseList(),pageChooseExamVo.getExamStartNum());
         return JsonView.render(200,"选择成功");
     }
 
@@ -84,9 +90,22 @@ public class ExamPaperController {
             page = 1;
             pageSize = 20;
         }
-        System.out.println(page);
-        System.out.println(pageSize);
         List<ExamStartVo> examStartVoList = examStartService.getAllExamHistory(page,pageSize,examPaperNum);
         return JsonView.render(200,"查询成功",examStartVoList);
     }
+    @RequestMapping(value = "getUserExamHistory",method = RequestMethod.GET)
+    @ResponseBody
+    public String getAllExamHistory(@RequestParam("page")Integer page,@RequestParam("pageSize") Integer pageSize,HttpSession session){
+        UserInfoVo tbUsersPo  = (UserInfoVo) session.getAttribute("user");
+        if ((tbUsersPo == null)){
+            return JsonView.render(404,"user is not admin");
+        }
+        if (page==null||pageSize==null){
+            page = 1;
+            pageSize = 20;
+        }
+        List<ExamStartVo> examStartVoList = examStartService.getUserExamHistory(page,pageSize,tbUsersPo.getAccount());
+        return JsonView.render(200,"查询成功",examStartVoList);
+    }
+
 }

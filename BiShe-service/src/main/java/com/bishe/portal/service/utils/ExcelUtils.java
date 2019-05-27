@@ -87,7 +87,6 @@ public class ExcelUtils {
     private List<TbUsers> readExcelValue(Workbook wb) {
         // 得到第一个shell
         Sheet sheet = wb.getSheetAt(0);
-        System.out.println("gaolei dayin============" +sheet);
         // 得到Excel的行数
         this.totalRows = sheet.getPhysicalNumberOfRows();
         System.out.println("行数======="+this.totalRows);
@@ -125,18 +124,18 @@ public class ExcelUtils {
                 tbUsers.setIdentity(1);
             }
             tbUsers.setEmail((String)getCellValue(row.getCell(6)));
-            tbUsers.setNationality(row.getCell(7).getStringCellValue());
-            tbUsers.setBranch(row.getCell(8).getStringCellValue());
+            tbUsers.setNationality((String)getCellValue(row.getCell(7)));
+            tbUsers.setBranch((String)getCellValue(row.getCell(8)));
             tbUsers.setFixedTel((String)getCellValue(row.getCell(9)));
-            tbUsers.setAddress(row.getCell(10).getStringCellValue());
-            tbUsers.setJob(row.getCell(11).getStringCellValue());
-            tbUsers.setJoinPartyDate(row.getCell(12).getStringCellValue());
-            tbUsers.setTurnPositiveDate(row.getCell(13).getStringCellValue());
+            tbUsers.setAddress((String)getCellValue(row.getCell(10)));
+            tbUsers.setJob((String)getCellValue(row.getCell(11)));
+            tbUsers.setJoinPartyDate((String)getCellValue(row.getCell(12)));
+            tbUsers.setTurnPositiveDate((String)getCellValue(row.getCell(13)));
             tbUsers.setTel((String)getCellValue(row.getCell(14)));
             tbUsers.setPwd((String)getCellValue(row.getCell(15)));
             tbUsers.setAccount(UUIDUtils.getUUID(8));
-            tbUsers.setPwd(Encryption.getPwd(tbUsers.getPwd(),tbUsers.getSale()));
             tbUsers.setSale(Encryption.getSale());
+            tbUsers.setPwd(Encryption.getPwd(tbUsers.getPwd(),tbUsers.getSale()));
             stuList.add(tbUsers);
         }
         return stuList;
@@ -322,13 +321,16 @@ public class ExcelUtils {
         }
     }
     public static  Object getCellValue(Cell cell){
+        if (cell==null){
+            return "";
+        }
         Object value = null;
         DecimalFormat df = new DecimalFormat("0");  //格式化字符类型的数字
         SimpleDateFormat sdf = new SimpleDateFormat("yyy-MM-dd");  //日期格式化
         DecimalFormat df2 = new DecimalFormat("0.00");  //格式化数字
         switch (cell.getCellType()) {
             case Cell.CELL_TYPE_STRING:
-                value = cell.getRichStringCellValue().getString();
+                value = cell.getRichStringCellValue()==null?"":cell.getRichStringCellValue().getString();
                 break;
             case Cell.CELL_TYPE_NUMERIC:
                 if("General".equals(cell.getCellStyle().getDataFormatString())){

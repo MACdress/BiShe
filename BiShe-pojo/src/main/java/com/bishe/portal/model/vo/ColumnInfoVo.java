@@ -11,7 +11,7 @@ import java.io.Serializable;
 public class ColumnInfoVo implements Serializable {
     private Integer id;
     private String  columnName;
-    private String parentId;
+    private Integer parentId;
     private String parentName;
     private String createUserId;
     private String createUserName;

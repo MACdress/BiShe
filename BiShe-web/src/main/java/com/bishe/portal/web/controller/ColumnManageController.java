@@ -42,7 +42,7 @@ public class ColumnManageController {
     @ResponseBody
     public String getAllParentColumn(HttpSession httpSession){
         UserInfoVo userInfoVo = (UserInfoVo)httpSession.getAttribute("user");
-        if ((userInfoVo == null)||(userInfoVo.getPermission()!=1)){
+        if ((userInfoVo == null)){
             return JsonView.render(404,"user is not admin");
         }
         List<ColumnInfoVo> result  = columnManageService.getAllParentColumn();
@@ -57,7 +57,7 @@ public class ColumnManageController {
     @ResponseBody
     public String getAllParentColumn(String columnId,HttpSession httpSession){
         UserInfoVo userInfoVo = (UserInfoVo)httpSession.getAttribute("user");
-        if ((userInfoVo == null)||(userInfoVo.getPermission()!=1)){
+        if ((userInfoVo == null)){
             return JsonView.render(404,"user is not admin");
         }
         List<ColumnInfoVo> rs = columnManageService.getAllParentColumnList(columnId);

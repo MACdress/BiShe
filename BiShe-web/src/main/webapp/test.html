@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
+</head>
+
+<body>
+<form id="uploadForm" enctype="multipart/form-data">
+    <input id="file" type="file" name="file"/>
+    <br><br><br>
+    <button id="upload" type="button" onclick="uploadImg()" >测试上传图片到腾讯云</button>
+</form>
+<script type="text/javascript">
+    // $.ajax({
+    //     type:"GET",
+    //     url:"http://120.79.14.244:8090/BiShe-web/userCenter/login",
+    //     data:JSON.stringify(data),
+    //     dataType:'json',
+    //     xhrFields:{
+    //         withCredentials:true
+    //     },
+    //     crossDomain:true,
+    //     success:function (data) {
+    //         console.log(data)
+    //         window.location= ''
+    //     }
+   // })
+    function uploadImg() {
+        $.ajax({
+            type: "POST",
+            url: 'http://localhost:8080/BiShe_web_war_exploded/userCenter/inputUserInfo',
+            data: new FormData($('#uploadForm')[0]),
+            processData: false,
+            contentType: false,
+            xhrFields:{
+                withCredentials:true
+            },
+            crossDomain:true,
+            success: function (data) {
+                alert(data)
+            },
+            error:function (XMLHttpRequest, textStatus, errorThrown) {
+                alert("请求失败！");
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

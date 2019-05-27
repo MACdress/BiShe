@@ -16,6 +16,13 @@ public class RegisterUserVo implements Serializable {
     private String birthDay;
     private Integer sex;
     private String tel;
-    private String account;
-    private String monthlySalary;
+    private String address;
+    private String branch;
+    private String fixedTel;
+    private String idCard;
+    private Integer identity;
+    private String job;
+    private String joinPartyDate;
+    private String nationality;
+    private String turnPositiveDate;
 }

@@ -30,7 +30,7 @@ public interface TbColumnManageDao {
      * @param id 栏目ID
      * @return 栏目信息
      */
-    TbColumnManage getColumnInfoById (@Param("id")String id);
+    TbColumnManage getColumnInfoById (@Param("id")int id);
 
     /**
      * 删除一个栏目

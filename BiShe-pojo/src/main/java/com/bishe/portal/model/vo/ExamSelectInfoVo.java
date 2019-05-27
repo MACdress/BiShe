@@ -19,4 +19,5 @@ public class ExamSelectInfoVo implements Serializable {
     private Integer examSubjectType;
     private Integer examMiddleType;
     private String  examMiddleTypeName;
+    private String  myAnswer;
 }

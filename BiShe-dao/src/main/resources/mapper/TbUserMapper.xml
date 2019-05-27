@@ -92,28 +92,28 @@
         from <include refid="TableName"/>
         <where>
             <if test="selectParam.identity != null ">
-                identity = #{selectParam.identity}
+                and  identity = #{selectParam.identity}
             </if>
             <if test="selectParam.name != null">
-                name =  #{selectParam.name}
+                and name =  #{selectParam.name}
             </if>
             <if test="selectParam.sex != null">
-                sex = #{selectParam.sex}
+                and sex = #{selectParam.sex}
             </if>
             <if test="selectParam.idCard != null">
-                idCard = #{selectParam.idCard}
+               and idCard = #{selectParam.idCard}
             </if>
             <if test="selectParam.joinPartyDate != null">
-                join_party_date = #{selectParam.joinPartyDate}
+               and join_party_date = #{selectParam.joinPartyDate}
             </if>
             <if test="selectParam.branch != null">
-                branch = #{selectParam.branch}
+                and branch = #{selectParam.branch}
             </if>
             <if test="1 == 1">
-                is_deleate = 1
+                and is_deleate = 1
             </if>
         </where>
-        order by id desc LIMIT (#{selectParam.page}-1)*#{selectParam.pageSize},#{selectParam.pageSize
+        order by id desc LIMIT #{selectParam.page},#{selectParam.pageSize}
     </select>
 
     <select id="getAllUserInfoNoPage" resultMap="TbUsersMap">
@@ -138,35 +138,41 @@
             <if test="tbUser.email != null">
                 email = #{tbUser.email},
             </if>
-            <if test="tbUser.invalidTime != null">
-                invalid_time = #{tbUser.invalidTime},
+            <if test="tbUser.name != null">
+                name = #{tbUser.name},
             </if>
-            <if test="tbUser.createUnit != null">
-                create_unit = #{tbUser.createUnit},
+            <if test="tbUser.idCard != null">
+                id_card = #{tbUser.idCard},
             </if>
-            <if test="tbUser.responsible != null">
-                responsible =  #{tbUser.responsible},
+            <if test="tbUser.identity != null">
+                identity = #{tbUser.identity},
             </if>
-            <if test="tbUser.status!= null">
-                status = #{tbUser.status},
+            <if test="tbUser.tel != null">
+                tel = #{tbUser.tel},
             </if>
-            <if test="tbUser.examJudgeScore!= 0">
-                exam_judge_score = #{tbUser.examJudgeScore},
+            <if test="tbUser.sex != null">
+                sex = #{tbUser.sex},
             </if>
-            <if test="tbUser.examSelectScore!= 0">
-                exam_select_score = #{tbUser.examSelectScore},
+            <if test="tbUser.nationality != null">
+                nationality = #{tbUser.nationality},
             </if>
-            <if test="tbUser.examPaperCount!= 0">
-                exam_paper_count = #{tbUser.examPaperCount},
+            <if test="tbUser.branch != null">
+                branch = #{tbUser.branch},
             </if>
-            <if test="tbUser.examTime!=null">
-                exam_time = #{tbUser.examTime},
+            <if test="tbUser.fixedTel != null">
+                fixed_tel = #{tbUser.fixedTel},
             </if>
-            <if test="tbUser.examPaperNum !=null">
-                update_at = NOW(),
+            <if test="tbUser.address != null">
+                address = #{tbUser.address},
             </if>
-            <if test="tbUser.examPaperImg !=null">
-                exam_paper_img = #{tbUser.examPaperImg},
+            <if test="tbUser.job != null">
+                job = #{tbUser.job},
+            </if>
+            <if test="tbUser.joinPartyDate != null">
+                join_party_date = #{tbUser.joinPartyDate},
+            </if>
+            <if test="tbUser.turnPositiveDate != null">
+                turn_positive_date = #{tbUser.turnPositiveDate},
             </if>
         </set>
         where account = #{tbUser.account};

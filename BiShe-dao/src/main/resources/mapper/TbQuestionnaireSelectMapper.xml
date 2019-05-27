@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bishe.portal.dao.TbQuestionnaireSelectDao">
+    <resultMap id="TbQuestionnaireSelectMap" type="com.bishe.portal.model.mo.TbQuestionnaireSelect">
+        <id column="id" property="id"/>
+        <result column="question" property="question"/>
+        <result column="questionnaire_num" property="questionnaireNum"/>
+        <result column="question_id" property="questionId"/>
+    </resultMap>
+
+    <sql id="TableName">
+        tb_questionnaire_select
+    </sql>
+
+    <sql id="Fields">
+        question,questionnaire_num,question_id
+    </sql>
+
+    <insert id="insertQuestionnaireSelect">
+        insert into <include refid="TableName"/>(
+        <include refid="Fields"/>,
+        create_at,
+        update_at)
+        values (
+        #{tbQuestionnaireSelect.question},
+        #{tbQuestionnaireSelect.questionnaireNum},
+        #{tbQuestionnaireSelect.questionId},
+        NOW(),
+        NOW()
+        )
+    </insert>
+
+    <select id="getQuestionnaireSelectById" resultMap="TbQuestionnaireSelectMap">
+        select <include refid="Fields"/>
+        from <include refid="TableName"/>
+        where question_id = #{questionId}
+    </select>
+
+    <select id="getQuestionnaireSelectByNum" resultMap="TbQuestionnaireSelectMap">
+        select <include refid="Fields"/>
+        from <include refid="TableName"/>
+        where questionnaire_num = #{questionnaireNum}
+        limit #{startIndex},#{pageSize}
+    </select>
+
+  <delete id="deleteQuestionByNum">
+      DELETE from <include refid="TableName"/>  where questionnaire_num = #{questionnaireNum}
+  </delete>
+
+    <delete id="deleteQuestion">
+        DELETE from <include refid="TableName"/>  where question_id in
+        <foreach collection="questionIdList" item="questionId" open="(" close=")" separator=",">
+            #{questionId}
+        </foreach>
+    </delete>
+</mapper>

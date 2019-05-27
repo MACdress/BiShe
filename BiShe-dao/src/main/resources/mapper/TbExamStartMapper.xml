@@ -64,4 +64,10 @@
         from <include refid="TableName"/>
         where examinee = #{account}
     </select>
+
+    <select id="getFinishExamStartByExaminee" resultMap="TbExamStartMap">
+        select <include refid="Fields"/>,create_at,update_at
+        from <include refid="TableName"/>
+        where examinee = #{account}
+    </select>
 </mapper>

@@ -1,10 +1,13 @@
 package com.bishe.portal.service.impl;
 
 import com.alibaba.druid.util.StringUtils;
+import com.bishe.portal.dao.TbUserEventDao;
 import com.bishe.portal.dao.TbUsersDao;
+import com.bishe.portal.model.mo.TbUserEvent;
 import com.bishe.portal.model.mo.TbUsers;
 import com.bishe.portal.model.po.TbUsersPo;
 import com.bishe.portal.model.vo.SelectUserParamVo;
+import com.bishe.portal.model.vo.UserEventVo;
 import com.bishe.portal.model.vo.UserInfoVo;
 import com.bishe.portal.service.UserService;
 import com.bishe.portal.service.utils.*;
@@ -15,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -26,6 +30,8 @@ import java.util.*;
 public class UserServiceImpl implements UserService {
     @Resource
     TbUsersDao tbUsersDao;
+    @Resource
+    TbUserEventDao tbUserEventDao;
 
     @Override
     public ReturnInfo login(TbUsersPo user) {
@@ -38,6 +44,7 @@ public class UserServiceImpl implements UserService {
                 returnInfo.setSuccess(true);
                 returnInfo.setMessage("login success");
                 userInfo.setSale("");
+                System.out.println(userInfo);
                 returnInfo.setData(getUserInfoVo(userInfo));
             } else {
                 System.out.println("password error");
@@ -66,7 +73,13 @@ public class UserServiceImpl implements UserService {
         TbUsers tbUsers = getTbUsers(tbUsersPo);
         tbUsers.setPwd(tbUsersPo.getPwd()==null?"":tbUsersPo.getPwd());
         tbUsers.setSale(tbUsersPo.getSale());
+        tbUsers.setAccount(UUIDUtils.getUUID(8));
         tbUsersDao.insert(tbUsers);
+        TbUserEvent event = new TbUserEvent();
+        event.setEventDate(new Date());
+        event.setAccount(tbUsers.getAccount());
+        event.setEvent(tbUsers.getName()+"用户注册账号");
+        tbUserEventDao.insertEvent(event);
         return getUserInfoVo(tbUsersDao.getUserInfoByAccount(tbUsers.getAccount()));
     }
 
@@ -84,6 +97,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserInfoVo> getAllUserInfo(SelectUserParamVo paramVo) {
+        int page;
+        if (paramVo.getPage()<1){
+            page = 1;
+        }else{
+            page = paramVo.getPage();
+        }
+        page = (page-1)*paramVo.getPageSize();
+        paramVo.setPage(page);
         List<TbUsers> userInfo = tbUsersDao.getAllUserInfo(paramVo);
         List<UserInfoVo> result  = new ArrayList<>();
         for (TbUsers tbUsers:userInfo){
@@ -191,6 +212,32 @@ public class UserServiceImpl implements UserService {
         TbUsers tbUsers = getTbUsers(registerUserVo);
         tbUsers.setAccount(account);
         tbUsersDao.updateUserInfo(tbUsers);
+        TbUserEvent event = new TbUserEvent();
+        event.setEventDate(new Date());
+        event.setAccount(account);
+        event.setEvent(tbUsers.getName()+"用户更新用户信息");
+        tbUserEventDao.insertEvent(event);
+    }
+
+    @Override
+    public List<UserEventVo> getUserHistory(String account) {
+        List<TbUserEvent> tbUserEvents = tbUserEventDao.selectEventByUser(account);
+        List<UserEventVo> result = new ArrayList<>();
+        if(tbUserEvents!=null&&tbUserEvents.size()>0) {
+            for (TbUserEvent tbUserEvent : tbUserEvents) {
+                result.add(getUserEventVo(tbUserEvent));
+            }
+        }
+        return result;
+    }
+
+    private UserEventVo getUserEventVo(TbUserEvent tbUserEvent) {
+        UserEventVo result = new UserEventVo();
+        result.setEvent(tbUserEvent.getEvent());
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        String format = simpleDateFormat.format(tbUserEvent.getEventDate());
+        result.setEventDate(format);
+        return result;
     }
 
     private TbUsersPo getTbUserPo (TbUsers tbUsers){
@@ -227,7 +274,6 @@ public class UserServiceImpl implements UserService {
         tbUsers.setTel(StringUtils.isEmpty(tbUsersPo.getTel()) ? "" : tbUsersPo.getTel());
         tbUsers.setPermission(tbUsersPo.getPermission());
         tbUsers.setEmail(StringUtils.isEmpty(tbUsersPo.getEmail()) ? "" : tbUsersPo.getEmail());
-        tbUsers.setAccount(UUIDUtils.getUUID(8));
         tbUsers.setMonthlySalary(tbUsersPo.getMonthlySalary());
         tbUsers.setJob(StringUtils.isEmpty(tbUsersPo.getJob()) ? "" : tbUsersPo.getJob());
         tbUsers.setFixedTel(StringUtils.isEmpty(tbUsersPo.getFixedTel()) ? "" : tbUsersPo.getFixedTel());
@@ -256,11 +302,25 @@ public class UserServiceImpl implements UserService {
         result.setSex(tbUsers.getSex());
         result.setTel(StringUtils.isEmpty(tbUsers.getTel()) ? "" : tbUsers.getTel());
         result.setPermission(tbUsers.getPermission());
+        String permissionValue = "";
+        if (tbUsers.getPermission()==1) {
+            permissionValue = "管理员";
+        }else{
+            permissionValue = "普通用户";
+        }
+        result.setPermissionValue(permissionValue);
         result.setEmail(StringUtils.isEmpty(tbUsers.getEmail()) ? "" : tbUsers.getEmail());
         result.setAccount(StringUtils.isEmpty(tbUsers.getAccount()) ? "" : tbUsers.getAccount());
         result.setName(StringUtils.isEmpty(tbUsers.getName()) ? "" : tbUsers.getName());
         result.setIdCard(StringUtils.isEmpty(tbUsers.getIdCard()) ? "" : tbUsers.getIdCard());
         result.setIdentity(tbUsers.getIdentity());
+        String identityValue = "";
+        if (tbUsers.getIdentity()==1){
+            identityValue = "正是党员";
+        }else{
+            identityValue = "预备党员";
+        }
+        result.setIdentityValue(identityValue);
         result.setNationality(StringUtils.isEmpty(tbUsers.getNationality()) ? "" : tbUsers.getNationality());
         result.setBranch(StringUtils.isEmpty(tbUsers.getBranch()) ? "" : tbUsers.getBranch());
         result.setFixedTel(StringUtils.isEmpty(tbUsers.getFixedTel()) ? "" : tbUsers.getFixedTel());
@@ -269,6 +329,7 @@ public class UserServiceImpl implements UserService {
         result.setJoinPartyDate(StringUtils.isEmpty(tbUsers.getJoinPartyDate()) ? "" : tbUsers.getJoinPartyDate());
         result.setTurnPositiveDate(StringUtils.isEmpty(tbUsers.getTurnPositiveDate()) ? "" : tbUsers.getTurnPositiveDate());
         result.setMonthlySalary(tbUsers.getMonthlySalary());
+        result.setUserImg(StringUtils.isEmpty(tbUsers.getUserImg())?"":tbUsers.getUserImg());
         return result;
     }
 }

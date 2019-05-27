@@ -32,6 +32,7 @@
         select exam_subject_id
         from  <include refid="TableName"/>
         where exam_paper_num = #{examPaperNum}
+        limit #{startIndex},#{pageSize}
     </select>
 
     <delete id="deleteExamPaperSubject">

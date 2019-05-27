@@ -108,7 +108,7 @@ public class TbColumnInfoServiceImpl implements TbColumnInfoService {
         ManageColumnInfoVo result = new ManageColumnInfoVo();
         result.setAuthor(tbColumnInfo.getAuthor());
         result.setBelongColumn(tbColumnInfo.getBelongColumn());
-        TbColumnManage columnManage = tbColumnManageDao.getColumnInfoById(tbColumnInfo.getBelongColumn().toString());
+        TbColumnManage columnManage = tbColumnManageDao.getColumnInfoById(tbColumnInfo.getBelongColumn());
         result.setBelongColumnName(columnManage.getColumnName());
         result.setCreateUser(tbColumnInfo.getCreateUser());
         TbUsers userInfo = tbUsersDao.getUserInfoByAccount(tbColumnInfo.getCreateUser());
@@ -139,7 +139,7 @@ public class TbColumnInfoServiceImpl implements TbColumnInfoService {
         if (belongColumn != null){
             belongColumnId = tbColumnInfo.getBelongColumn();
         }
-        TbColumnManage columnManage = tbColumnManageDao.getColumnInfoById(String.valueOf(belongColumnId));
+        TbColumnManage columnManage = tbColumnManageDao.getColumnInfoById(belongColumnId);
         result.setBelongColumnName(columnManage==null?"":columnManage.getColumnName());
         result.setInformationStatus(tbColumnInfo.getInformationStatus());
         result.setTittle(tbColumnInfo.getTittle());

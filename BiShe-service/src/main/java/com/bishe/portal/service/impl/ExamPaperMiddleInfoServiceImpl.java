@@ -76,7 +76,7 @@ public class ExamPaperMiddleInfoServiceImpl implements ExamPaperMiddleInfoServic
     }
 
     @Override
-    public ExamPaperMiddleInfoVo getExamPaperInfo(String examPaperNum) {
+    public ExamPaperMiddleInfoVo getExamPaperInfo(String examPaperNum,int page,int pageSize) {
         ExamPaperMiddleInfoVo examPaperVo = new ExamPaperMiddleInfoVo();
         examPaperVo.setExamPaperNumber(examPaperNum);
         TbExamPaper examPaper = tbExamPaperDao.getExamPaperByNumber(examPaperNum);
@@ -95,7 +95,8 @@ public class ExamPaperMiddleInfoServiceImpl implements ExamPaperMiddleInfoServic
             examPaperVo.setExamPaperScore(examPaper.getExamJudgeScore() + examPaper.getExamSelectScore());
             List<ExamSelectInfoVo> selectInfoVos = new ArrayList<>();
             List<ExamJudgeInfoVo> examJudgeInfoVos = new ArrayList<>();
-            List<String> subjectIdList = tbExamPaperMiddleDao.getSubjectIdByExamPaperNum(examPaperNum);
+            int startIndex = (page-1)*pageSize;
+            List<String> subjectIdList = tbExamPaperMiddleDao.getSubjectIdByExamPaperNum(examPaperNum, startIndex, pageSize);
             if (subjectIdList!=null&&subjectIdList.size()>0) {
                 List<TbExamJudge> examJudgeList = tbExamJudgeDao.getExamJudgeByNumbers(subjectIdList);
                 if (examJudgeList != null && examJudgeList.size() > 0) {

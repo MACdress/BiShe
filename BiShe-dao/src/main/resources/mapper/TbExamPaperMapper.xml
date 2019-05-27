@@ -89,39 +89,42 @@
                 exam_paper_img = #{examPaper.examPaperImg}
             </if>
         </set>
-        where  exam_paper_num = #{examPaper.examPaperNum}
+        where  exam_paper_num = #{examPaper.examPaperNum} and is_delete = 0;
     </update>
 
-    <delete id="deleteExamPaper">
-        DELETE from <include refid="TableName"/>  where exam_paper_num = #{examPaperNum}
-    </delete>
+    <update id="deleteExamPaper">
+        update <include refid="TableName"/>  set  is_delete = 1 where exam_paper_num = #{examPaperNum}
+    </update>
 
     <select id="selectExamPaper" resultMap="TbExamPaperMap">
         select <include refid="Fields"/>,update_at from <include refid="TableName"/>
         <where>
             <if test="examPaper.examPaperName != null ">
-                exam_paper_name = #{examPaper.examPaperName}
+                and exam_paper_name = #{examPaper.examPaperName}
             </if>
             <if test="examPaper.invalidBeginTime != null">
-                invalid_time &gt; #{examPaper.invalidBeginTime}
+                and invalid_time &gt; #{examPaper.invalidBeginTime}
             </if>
             <if test="examPaper.invalidEndTime != null ">
-                invalid_time &lt; #{examPaper.invalidEndTime}
+                and invalid_time &lt; #{examPaper.invalidEndTime}
             </if>
             <if test="examPaper.createUnit != null ">
-                create_unit = #{examPaper.createUnit}
+                and create_unit = #{examPaper.createUnit}
             </if>
             <if test="examPaper.responsible != null ">
-                responsible = #{examPaper.responsible}
+                and responsible = #{examPaper.responsible}
             </if>
             <if test="examPaper.status != null ">
-                status = #{examPaper.status}
+                and status = #{examPaper.status}
             </if>
             <if test="examPaper.examPaperNum != null">
-                exam_paper_num = #{examPaper.examPaperNum}
+                and exam_paper_num = #{examPaper.examPaperNum}
             </if>
             <if test="examPaper.examPaperType != null">
-                exam_paper_type = #{examPaper.examPaperType}
+                and exam_paper_type = #{examPaper.examPaperType}
+            </if>
+            <if test="1==1">
+                and is_delete = 0
             </if>
         </where>
         <if test="examPaper.startIndex !=  null and examPaper.pageSize!= null">
@@ -131,23 +134,23 @@
 
     <select id="getExamPaperByNumber" resultMap="TbExamPaperMap">
         select <include refid="Fields"/> from <include refid="TableName"/>
-        where exam_paper_num = #{examPaperNum}
+        where exam_paper_num = #{examPaperNum} and is_delete = 0
     </select>
 
     <select id="getExamPaperByType" resultMap="TbExamPaperMap">
         select <include refid="Fields"/> from <include refid="TableName"/>
-        where exam_paper_type = #{examPaperType} LIMIT #{startIndex},#{pageSize}
+        where exam_paper_type = #{examPaperType} and is_delete = 0 LIMIT #{startIndex},#{pageSize}
     </select>
 
     <update id="updateExamStatus">
         update <include refid="TableName"/>
         set status = 2,update_at = NOW()
-        where exam_paper_num = #{examPaperNum}
+        where exam_paper_num = #{examPaperNum} and is_delete = 0
     </update>
 
     <select id="getReleaseExamPaper" resultMap="TbExamPaperMap">
         select <include refid="Fields"/>
         from <include refid="TableName"/>
-        where status = 1
+        where status = 1 and is_delete = 0
     </select>
 </mapper>

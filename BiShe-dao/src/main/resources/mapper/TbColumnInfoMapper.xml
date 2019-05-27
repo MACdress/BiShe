@@ -132,30 +132,31 @@
         from   <include refid="TableName"/>
         <where>
             <if test="columnInfoParam.tittle != null ">
-                tittle = #{columnInfoParam.tittle}
+                and tittle = #{columnInfoParam.tittle}
             </if>
             <if test="columnInfoParam.belongColumn != null ">
-                belong_column = #{columnInfoParam.belongColumn}
+                and belong_column = #{columnInfoParam.belongColumn}
             </if>
             <if test="columnInfoParam.createBeginTime != null ">
-                create_at &gt; #{columnInfoParam.createBeginTim}
+                and create_at &gt; #{columnInfoParam.createBeginTim}
             </if>
             <if test="columnInfoParam.createEndTime != null ">
-                create_at &lt; #{columnInfoParam.createEndTime}
+                and create_at &lt; #{columnInfoParam.createEndTime}
             </if>
             <if test="columnInfoParam.informationStatus != null ">
-                information_status = #{columnInfoParam.informationStatus}
+                and information_status = #{columnInfoParam.informationStatus}
             </if>
             <if test="columnInfoParam.createUser != null ">
-                create_user = #{columnInfoParam.createUser}
+                and create_user = #{columnInfoParam.createUser}
             </if>
         </where>
+        order by create_at
     </select>
 
     <select id="getColumnInfoByBelongColumn" resultMap="TbColumnInfoMap">
         select <include refid="Fields"/>,id,create_at
         from   <include refid="TableName"/>
-        where  belong_column = #{belongColumn}
+        where  belong_column = #{belongColumn} order by create_at
     </select>
 
     <select id="getColumnListByColumnId" resultMap="TbColumnInfoMap">
@@ -165,5 +166,6 @@
         <foreach collection="columnManageIdList" separator="," close=")" open="(" item="belongColumn">
             #{belongColumn}
         </foreach>
+        order by create_at
     </select>
 </mapper>

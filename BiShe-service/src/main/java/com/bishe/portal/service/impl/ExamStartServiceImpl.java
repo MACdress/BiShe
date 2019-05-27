@@ -4,19 +4,16 @@ import com.bishe.portal.dao.*;
 import com.bishe.portal.model.mo.*;
 import com.bishe.portal.model.vo.*;
 import com.bishe.portal.service.ExamStartService;
+import com.bishe.portal.service.enums.ExamMiddleTypeEnum;
 import com.bishe.portal.service.utils.UUIDUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import sun.swing.StringUIClientPropertyKey;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ExamStartServiceImpl implements ExamStartService {
@@ -38,19 +35,26 @@ public class ExamStartServiceImpl implements ExamStartService {
     TbExamPaperMiddleDao tbExamPaperMiddleDao;
     @Resource
     TbExamSelectOptionDao tbExamSelectOptionDao;
+    @Resource
+    TbExamChooseDao tbExamChooseDao;
+    @Resource
+    TbUserEventDao tbUserEventDao;
     private static final Logger logger = LoggerFactory.getLogger(ExamStartServiceImpl.class);
 
 
     @Override
-    public ExamPaperStartMiddleInfoVo startExam(String examPaperNum, String account) {
+    public ExamPaperStartMiddleInfoVo startExam(String examPaperNum, String account, Integer page, Integer pageSize, String examStartNum) {
         ExamPaperStartMiddleInfoVo end = new ExamPaperStartMiddleInfoVo();
-        TbExamStart examStart = new TbExamStart();
-        examStart.setExaminee(account);
-        examStart.setExamPaperNum(examPaperNum);
-        examStart.setExamStartNum(UUIDUtils.getUUID(8));
-        examStart.setScore(0);
-        examStartDao.insertExamStart(examStart);
-        TbExamStart tbExamStart = examStartDao.getExamStartByNum(examStart.getExamStartNum());
+       if(StringUtils.isEmpty(examStartNum)) {
+           TbExamStart examStart = new TbExamStart();
+           examStart.setExaminee(account);
+           examStart.setExamPaperNum(examPaperNum);
+           examStartNum = UUIDUtils.getUUID(8);
+           examStart.setExamStartNum(examStartNum);
+           examStart.setScore(0);
+           examStartDao.insertExamStart(examStart);
+       }
+        TbExamStart tbExamStart = examStartDao.getExamStartByNum(examStartNum);
         if (tbExamStart != null) {
             ExamStartVo result = getExamStartVo(tbExamStart);
             end.setAllScore(result.getAllScore());
@@ -68,14 +72,15 @@ public class ExamStartServiceImpl implements ExamStartService {
                 end.setExamStartNum(result.getExamStartNum());
                 end.setExamPaperType(examPaper.getExamPaperType());
                 end.setExamTime(examPaper.getExamTime());
-                TbColumnManage columnInfo = tbColumnManageDao.getColumnInfoById(String.valueOf(examPaper.getExamPaperType()));
+                TbColumnManage columnInfo = tbColumnManageDao.getColumnInfoById(examPaper.getExamPaperType());
                 if (columnInfo != null) {
                     end.setExamPaperTypeName(columnInfo.getColumnName());
                     end.setAllScore(examPaper.getExamJudgeScore() + examPaper.getExamSelectScore());
                     end.setExamPaperName(examPaper.getExamPaperName());
                     end.setExamPaperCount(examPaper.getExamPaperCount());
                 }
-                List<String> subjectList = tbExamPaperMiddleDao.getSubjectIdByExamPaperNum(end.getExamPaperNumber());
+                int startIndex = (page-1)*pageSize;
+                List<String> subjectList = tbExamPaperMiddleDao.getSubjectIdByExamPaperNum(end.getExamPaperNumber(),startIndex,pageSize);
                 if((subjectList!=null)&&(subjectList.size()>0)) {
                     List<TbExamSelect> selectList = tbExamSelectDao.getExamSelectByNumbers(subjectList);
                     List<TbExamJudge> judgeList = tbExamJudgeDao.getExamJudgeByNumbers(subjectList);
@@ -84,6 +89,10 @@ public class ExamStartServiceImpl implements ExamStartService {
                     if (judgeList!=null&&judgeList.size()>0) {
                         for (TbExamJudge tbExamJudge : judgeList) {
                             ExamJudgeInfoVo examJudgeInfoVo = getExamJudgeInfoVo(tbExamJudge);
+                            TbExamChoose examChoose = tbExamChooseDao.getExamChooseByNum(tbExamJudge.getSubjectId(), examStartNum);
+                           if(examChoose != null) {
+                               examJudgeInfoVo.setMyAnswer(examChoose.getAnswer());
+                           }
                             judgeVoList.add(examJudgeInfoVo);
                         }
                     }
@@ -99,6 +108,10 @@ public class ExamStartServiceImpl implements ExamStartService {
                                 }
                             }
                             examSelectInfoVo.setSelectOptionInfos(selectOptionInfoVos);
+                            TbExamChoose examChoose = tbExamChooseDao.getExamChooseByNum(examSelectInfoVo.getSubjectId(), examStartNum);
+                            if(examChoose != null) {
+                                examSelectInfoVo.setMyAnswer(examChoose.getAnswer());
+                            }
                             selectVoList.add(examSelectInfoVo);
                         }
                     }
@@ -107,6 +120,12 @@ public class ExamStartServiceImpl implements ExamStartService {
                 }
             }
         }
+        TbUserEvent event = new TbUserEvent();
+        event.setEventDate(new Date());
+        event.setAccount(account);
+        TbUsers userInfo = tbUsersDao.getUserInfoByAccount(account);
+        event.setEvent(userInfo.getName()+"用户参加"+end.getExamPaperName()+"考试");
+        tbUserEventDao.insertEvent(event);
         return end;
 
     }
@@ -125,6 +144,8 @@ public class ExamStartServiceImpl implements ExamStartService {
         examSelectInfoVo.setScore(tbExamSelect.getScore());
         examSelectInfoVo.setSubjectId(tbExamSelect.getSubjectId());
         examSelectInfoVo.setExamSubjectType(1);
+        examSelectInfoVo.setExamMiddleType(tbExamSelect.getExamMiddleType());
+        examSelectInfoVo.setExamMiddleTypeName(ExamMiddleTypeEnum.getTypeNameStatus(examSelectInfoVo.getExamMiddleType()));
         return examSelectInfoVo;
     }
     private ExamJudgeInfoVo getExamJudgeInfoVo(TbExamJudge tbExamJudge) {
@@ -134,6 +155,8 @@ public class ExamStartServiceImpl implements ExamStartService {
         examJudgeInfoVo.setScore(tbExamJudge.getScore());
         examJudgeInfoVo.setSubjectId(tbExamJudge.getSubjectId());
         examJudgeInfoVo.setExamSubjectType(2);
+        examJudgeInfoVo.setExamMiddleType(tbExamJudge.getExamMiddleType());
+        examJudgeInfoVo.setExamMiddleTypeName(ExamMiddleTypeEnum.getTypeNameStatus(examJudgeInfoVo.getExamMiddleType()));
         return examJudgeInfoVo;
     }
     private ExamStartVo getExamStartVo(TbExamStart tbExamStart) {
@@ -157,11 +180,11 @@ public class ExamStartServiceImpl implements ExamStartService {
         int score = tbExamStart.getScore();
         if(chooseList != null &&chooseList.size()>0) {
             for (TbExamChoose tbExamChoose : chooseList) {
-                if (tbExamChoose.getExamSubjectType() == 1) {
+                if(tbExamChoose.getExamSubjectType()==1) {
                     TbExamSelect examSelectBySubject = tbExamSelectDao.getExamSelectBySubject(tbExamChoose.getSubjectId());
                     score += examSelectBySubject.getScore();
                 }
-                if (tbExamChoose.getExamSubjectType() == 2) {
+                if(tbExamChoose.getExamSubjectType()==2) {
                     TbExamJudge examJudge = tbExamJudgeDao.getExamJudgeBySubject(tbExamChoose.getSubjectId());
                     score += examJudge.getScore();
                 }
@@ -188,7 +211,7 @@ public class ExamStartServiceImpl implements ExamStartService {
     }
 
     @Override
-    public void ChooseExamSubjectList(List<ExamChooseVo> examChooseList, String examStartNum) {
+    public void chooseExamSubjectList(List<ExamChooseVo> examChooseList, String examStartNum) {
         List<TbExamChoose> chooseList = examChooseDao.getChooseByStartNum(examStartNum);
         Map<String,TbExamChoose> chooseMap = getChooseMap(chooseList);
         List<TbExamChoose> insertChooseList = new ArrayList<>();
@@ -218,6 +241,17 @@ public class ExamStartServiceImpl implements ExamStartService {
         List<ExamStartVo> result = new ArrayList<>();
         for (TbExamStart tbExamStart : examStartList){
             result.add(getExamStartVo(tbExamStart));
+        }
+        return result;
+    }
+
+    @Override
+    public List<ExamStartVo> getUserExamHistory(Integer page, Integer pageSize, String account) {
+        List<TbExamStart> examStartByExaminee = examStartDao.getFinishExamStartByExaminee(account);
+        List<ExamStartVo> result = new ArrayList<>();
+        for (TbExamStart tbExamStart : examStartByExaminee){
+            ExamStartVo examStartVo = getExamStartVo(tbExamStart);
+            result.add(examStartVo);
         }
         return result;
     }

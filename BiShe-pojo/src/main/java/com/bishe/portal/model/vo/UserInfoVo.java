@@ -17,10 +17,12 @@ public class UserInfoVo implements Serializable {
      * 人员类别:O代表预备党员，1代表正式党员
      */
     private Integer identity;
+    private String identityValue;
     /**
      * 用戶權限：0代表普通用戶，1代管理员;
      * */
     private Integer permission;
+    private String permissionValue;
     /**
      * 账号
      */
@@ -57,5 +59,5 @@ public class UserInfoVo implements Serializable {
      */
     private String turnPositiveDate;
     private String monthlySalary;
-
+    private String userImg;
 }

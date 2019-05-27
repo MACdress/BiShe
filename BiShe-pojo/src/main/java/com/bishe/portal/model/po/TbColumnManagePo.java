@@ -10,7 +10,7 @@ import java.util.Date;
 @Data
 public class TbColumnManagePo {
     private int id;
-    private String  parentId;
+    private Integer  parentId;
     private String columnName;
     private int isReview;
     private String parent;

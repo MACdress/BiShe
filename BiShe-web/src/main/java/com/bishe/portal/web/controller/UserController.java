@@ -4,6 +4,7 @@ import com.alibaba.druid.util.StringUtils;
 import com.bishe.portal.model.po.TbUsersPo;
 import com.bishe.portal.model.vo.RegisterUserVo;
 import com.bishe.portal.model.vo.SelectUserParamVo;
+import com.bishe.portal.model.vo.UserEventVo;
 import com.bishe.portal.model.vo.UserInfoVo;
 import com.bishe.portal.service.UserService;
 import com.bishe.portal.service.utils.ReturnInfo;
@@ -83,10 +84,19 @@ public class UserController {
         tbUserPo.setBirthDay(StringUtils.isEmpty(registerUserVo.getBirthDay()) ? "" : registerUserVo.getBirthDay());
         tbUserPo.setEmail(StringUtils.isEmpty(registerUserVo.getEmail()) ? "" : registerUserVo.getEmail());
         tbUserPo.setName(StringUtils.isEmpty(registerUserVo.getName()) ? "" : registerUserVo.getName());
-        tbUserPo.setSex(registerUserVo.getSex());
-        tbUserPo.setPwd(StringUtils.isEmpty(registerUserVo.getPassword())?"":registerUserVo.getPassword());
+        tbUserPo.setSex(registerUserVo.getSex()==null?0:registerUserVo.getSex());
+        tbUserPo.setPwd(StringUtils.isEmpty(registerUserVo.getPassword())?"1234":registerUserVo.getPassword());
         tbUserPo.setTel(StringUtils.isEmpty(registerUserVo.getTel()) ? "" : registerUserVo.getTel());
-        tbUserPo.setPermission(registerUserVo.getPermission());
+        tbUserPo.setPermission(registerUserVo.getPermission()==null?0:registerUserVo.getPermission());
+        tbUserPo.setNationality(StringUtils.isEmpty(registerUserVo.getNationality())?"":registerUserVo.getNationality());
+        tbUserPo.setFixedTel(StringUtils.isEmpty(registerUserVo.getFixedTel())?"":registerUserVo.getFixedTel());
+        tbUserPo.setBranch(StringUtils.isEmpty(registerUserVo.getBranch())?"":registerUserVo.getBranch());
+        tbUserPo.setJob(StringUtils.isEmpty(registerUserVo.getJob())?"":registerUserVo.getJob());
+        tbUserPo.setJoinPartyDate(StringUtils.isEmpty(registerUserVo.getJoinPartyDate())?"":registerUserVo.getJoinPartyDate());
+        tbUserPo.setTurnPositiveDate(StringUtils.isEmpty(registerUserVo.getTurnPositiveDate())?"":registerUserVo.getTurnPositiveDate());
+        tbUserPo.setAddress(StringUtils.isEmpty(registerUserVo.getAddress())?"":registerUserVo.getAddress());
+        tbUserPo.setIdCard(StringUtils.isEmpty(registerUserVo.getIdCard())?"":registerUserVo.getIdCard());
+        tbUserPo.setIdentity(registerUserVo.getIdentity()==null?0:registerUserVo.getIdentity());
         return tbUserPo;
     }
 
@@ -204,10 +214,21 @@ public class UserController {
     @ResponseBody
     public String updateUserInfo(@RequestBody RegisterUserVo registerUserVo,HttpSession session){
         UserInfoVo tbUsersPo  = (UserInfoVo) session.getAttribute("user");
-        if((tbUsersPo!=null)&&(tbUsersPo.getTel().equals(registerUserVo.getTel()))){
-            return JsonView.render(301,"is login");
+        if ((tbUsersPo == null)){
+            return JsonView.render(404,"user is not admin");
         }
         userService.updateUserInfo(getUserPo(registerUserVo),tbUsersPo.getAccount());
         return JsonView.render(200,"更新成功");
+    }
+
+    @RequestMapping(value = "getUserHistory",method = RequestMethod.GET)
+    @ResponseBody
+    public String getUserHistory(HttpSession session){
+        UserInfoVo tbUsersPo  = (UserInfoVo) session.getAttribute("user");
+        if (tbUsersPo == null){
+            return JsonView.render(404,"user is not admin");
+        }
+        List<UserEventVo> result = userService.getUserHistory(tbUsersPo.getAccount());
+        return JsonView.render(200,"查询成功",result);
     }
 }

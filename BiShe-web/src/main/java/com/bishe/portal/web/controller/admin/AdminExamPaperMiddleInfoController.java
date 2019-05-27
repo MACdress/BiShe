@@ -44,8 +44,14 @@ public class AdminExamPaperMiddleInfoController {
 
     @RequestMapping(value = "getExamPaperInfo",method = RequestMethod.GET)
     @ResponseBody
-    public String getExamPaperInfo(String examPaperNum){
-        ExamPaperMiddleInfoVo examPaperVo = examPaperMiddleInfoService.getExamPaperInfo(examPaperNum);
+    public String getExamPaperInfo(@RequestParam("examPaperNum") String examPaperNum,@RequestParam("page") Integer page, @RequestParam("pageSize")Integer pageSize){
+        if((page == null)||(page == 0)){
+            page = 1;
+        }
+        if ((pageSize==null)||(pageSize == 0)){
+            pageSize = 20;
+        }
+        ExamPaperMiddleInfoVo examPaperVo = examPaperMiddleInfoService.getExamPaperInfo(examPaperNum,page,pageSize);
         return JsonView.render(200,"查询成功",examPaperVo);
     }
 
