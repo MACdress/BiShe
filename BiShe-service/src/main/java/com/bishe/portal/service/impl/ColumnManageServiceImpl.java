@@ -12,8 +12,13 @@ import com.bishe.portal.model.vo.ColumnInfoSimpleVo;
 import com.bishe.portal.model.vo.ColumnInfoVo;
 import com.bishe.portal.model.vo.ShowColumnInfoVo;
 import com.bishe.portal.service.ColumnManageService;
+import com.bishe.portal.service.utils.QiniuWrapper;
+import com.bishe.portal.service.utils.RedisCacheUtil;
 import com.bishe.portal.service.utils.UUIDUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
@@ -35,20 +40,27 @@ public class ColumnManageServiceImpl implements ColumnManageService {
 
     @Resource
     private TbColumnInfoDao tbColumnInfoDao;
+    @Resource
+    private RedisCacheUtil redisCacheUtil;
+    private static final Logger logger = LoggerFactory.getLogger(ColumnManageServiceImpl.class);
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void addColumnManage(ParamColumnInfoPo paramColumnInfoPo) {
         TbColumnManage tbColumnManage = getTbColumnManage(paramColumnInfoPo);
         tbColumnManageDao.insertColumnMange(tbColumnManage);
+        logger.info("插入成功");
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateColumnManage(ParamColumnInfoPo paramColumnInfoPo) {
         TbColumnManage tbColumnManage = getTbColumnManage(paramColumnInfoPo);
         tbColumnManageDao.updateColumnMange(tbColumnManage);
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deleteColumnInfo(int id) {
         tbColumnManageDao.deleteColumnInfo(id);
     }
@@ -86,6 +98,7 @@ public class ColumnManageServiceImpl implements ColumnManageService {
                 columnManageIdList.add(tbColumnManagePo.getId());
             }
             if(columnManageIdList.size()<=0){
+                logger.info("栏目返回值为空");
                 return result;
             }
             List<TbColumnInfo> columnInfoList = tbColumnInfoDao.getColumnListByColumnId(columnManageIdList);

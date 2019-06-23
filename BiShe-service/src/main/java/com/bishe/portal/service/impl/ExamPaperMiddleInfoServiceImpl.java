@@ -7,7 +7,10 @@ import com.bishe.portal.model.vo.*;
 import com.bishe.portal.service.ExamPaperMiddleInfoService;
 import com.bishe.portal.service.enums.ExamMiddleTypeEnum;
 import com.bishe.portal.service.utils.UUIDUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -25,11 +28,14 @@ public class ExamPaperMiddleInfoServiceImpl implements ExamPaperMiddleInfoServic
     TbExamSelectOptionDao tbExamSelectOptionDao;
     @Resource
     TbExamPaperMiddleDao tbExamPaperMiddleDao;
+    private static final Logger logger = LoggerFactory.getLogger(ExamPaperMiddleInfoServiceImpl.class);
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void addQuestionInExamPaper(AddExamPaperMiddleVo addExamPaperMiddleVo) {
         String examPaperNum = addExamPaperMiddleVo.getExamPaperNum();
         if (StringUtils.isEmpty(examPaperNum)){
+            logger.info("examPaperNum为空");
             return;
         }
         TbExamPaper examPaper = tbExamPaperDao.getExamPaperByNumber(examPaperNum);
@@ -39,10 +45,12 @@ public class ExamPaperMiddleInfoServiceImpl implements ExamPaperMiddleInfoServic
         List <TbExamPaperMiddle> examQuestionList = new ArrayList<>();
         List<SimpleSubjectVo> subjectList = addExamPaperMiddleVo.getSubjectList();
         if (subjectList.size()==0){
+            logger.info(examPaperNum+"没有试题");
             return;
         }
         for (SimpleSubjectVo simpleSubjectVo : subjectList){
             if(StringUtils.isEmpty(simpleSubjectVo.getSubjectId())){
+                logger.info("获取试题ID失败");
                 continue;
             }
             if((simpleSubjectVo.getExamSubjectType()!=null)&&(simpleSubjectVo.getExamSubjectType()==1)){
@@ -113,9 +121,6 @@ public class ExamPaperMiddleInfoServiceImpl implements ExamPaperMiddleInfoServic
                         List<ExamSelectOptionInfoVo> selectOptionInfoVos = new ArrayList<>();
                         if(selectOptionList!=null&&selectOptionList.size()>0) {
                             for (TbExamSelectOption tbExamSelectOption : selectOptionList) {
-                                if(tbExamSelectOption.getExamSelect().equals("8120")) {
-                                System.out.println();
-                                }
                                 ExamSelectOptionInfoVo examSelectOptionInfoVo = getExamSelectOptionVo(tbExamSelectOption);
                                 selectOptionInfoVos.add(examSelectOptionInfoVo);
                             }
@@ -127,11 +132,14 @@ public class ExamPaperMiddleInfoServiceImpl implements ExamPaperMiddleInfoServic
             }
             examPaperVo.setExamSelectInfoVos(selectInfoVos);
             examPaperVo.setExamJudgeInfoVos(examJudgeInfoVos);
+        }else{
+            logger.info("试卷信息为空");
         }
         return examPaperVo;
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void removeExamPaperSubject(String examPaperNum, List<SimpleSubjectVo> subjectId) {
         List<String> subjectList = new ArrayList<>();
         for (SimpleSubjectVo simpleSubjectVo:subjectId){
@@ -141,6 +149,7 @@ public class ExamPaperMiddleInfoServiceImpl implements ExamPaperMiddleInfoServic
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ExamSelectInfoVo addParamSelect(ExamSelectInfoVo selectInfoVo) {
         TbExamSelect tbExamSelect = getTbExamSelect(selectInfoVo);
         tbExamSelect.setSubjectId(UUIDUtils.getUUID(4));
@@ -158,13 +167,13 @@ public class ExamPaperMiddleInfoServiceImpl implements ExamPaperMiddleInfoServic
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ExamJudgeInfoVo addParamJudge(ExamJudgeInfoVo judgeInfoVo) {
         TbExamJudge tbExamJudge = getTbExamJudge(judgeInfoVo);
         tbExamJudge.setSubjectId(UUIDUtils.getUUID(4));
         tbExamJudgeDao.insertExamJudgeInfo(tbExamJudge);
         TbExamJudge examJudgeBySubject = tbExamJudgeDao.getExamJudgeBySubject(tbExamJudge.getSubjectId());
         return getExamJudgeInfoVo(examJudgeBySubject);
-
     }
 
     @Override

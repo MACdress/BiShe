@@ -7,7 +7,10 @@ import com.bishe.portal.model.vo.QuestionnairePaperVo;
 import com.bishe.portal.model.vo.QuestionnaireSelectVo;
 import com.bishe.portal.service.AdminQuestionnaireService;
 import com.bishe.portal.service.utils.UUIDUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
@@ -30,8 +33,10 @@ public class AdminQuestionnaireServiceImpl implements AdminQuestionnaireService 
     TbUsersDao tbUsersDao;
     @Resource
     TbUserEventDao tbUserEventDao;
+    private static final Logger logger = LoggerFactory.getLogger(AdminQuestionnaireServiceImpl.class);
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public QuestionnairePaperVo addQuestionnaire(String questionnaireName) {
         TbQuestionnaire tbQuestionnaire = new TbQuestionnaire();
         tbQuestionnaire.setQuestionnaireName(questionnaireName);
@@ -52,6 +57,7 @@ public class AdminQuestionnaireServiceImpl implements AdminQuestionnaireService 
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public QuestionnaireSelectVo addQuestion(QuestionnaireSelectVo questionnaireSelectVo) {
         TbQuestionnaireSelect tbQuestionnaireSelect = getTbQuestionnaireSelect(questionnaireSelectVo);
         tbQuestionnaireSelect.setQuestionId(UUIDUtils.getUUID(4));
@@ -88,6 +94,7 @@ public class AdminQuestionnaireServiceImpl implements AdminQuestionnaireService 
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void removeQuestion(List<QuestionnaireSelectVo> questionnaireList) {
         List <String> questionIdList = new ArrayList<>();
         for (QuestionnaireSelectVo questionnaireSelectVo:questionnaireList){
@@ -97,6 +104,7 @@ public class AdminQuestionnaireServiceImpl implements AdminQuestionnaireService 
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deleteQuestionnaire(String questionnaireNum) {
         tbQuestionnaireDao.deleteQuestionnaire(questionnaireNum);
         tbQuestionnaireSelectDao.deleteQuestionByNum(questionnaireNum);
@@ -128,6 +136,8 @@ public class AdminQuestionnaireServiceImpl implements AdminQuestionnaireService 
                 }
                 questionnaireSelectList.add(selectVo);
             }
+        }else {
+            logger.info("获取选择题列表失败");
         }
         result.setSelectList(questionnaireSelectList);
         return result;
@@ -175,6 +185,8 @@ public class AdminQuestionnaireServiceImpl implements AdminQuestionnaireService 
                 if (answer != null) {
                     QuestionnairePaperVo paperVo = getQuestionnairePaperVo(tbQuestionnaire);
                     result.add(paperVo);
+                }else {
+                    logger.info("答案为空");
                 }
             }
         }

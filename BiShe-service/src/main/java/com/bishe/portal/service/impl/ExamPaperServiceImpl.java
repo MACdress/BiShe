@@ -10,9 +10,13 @@ import com.bishe.portal.model.vo.FindExamPaperVo;
 import com.bishe.portal.service.ExamPaperService;
 import com.bishe.portal.service.enums.ExamPaperStatusEnum;
 import com.bishe.portal.service.utils.COSClientUtil;
+import com.bishe.portal.service.utils.RedisCacheUtil;
 import com.bishe.portal.service.utils.UUIDUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.text.ParseException;
@@ -28,7 +32,12 @@ public class ExamPaperServiceImpl implements ExamPaperService {
     TbExamPaperDao tbExamPaperDao;
     @Resource
     TbExamStartDao tbExamStartDao;
+    @Resource
+    RedisCacheUtil redisCacheUtil;
+    private static final Logger logger = LoggerFactory.getLogger(ExamPaperServiceImpl.class);
+
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ExamPaperVo addExamPaper(ExamPaperVo examPaperVo) {
         ExamPaperVo examPaperVo1 = new ExamPaperVo();
         try {
@@ -58,6 +67,7 @@ public class ExamPaperServiceImpl implements ExamPaperService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateExamPaper(ExamPaperVo examPaperVo) {
         try {
             String imgUrl = "";
@@ -70,11 +80,12 @@ public class ExamPaperServiceImpl implements ExamPaperService {
             examPaper.setExamPaperImg(imgUrl);
             tbExamPaperDao.updateExamPaper(examPaper);
         }catch (Exception e){
-
+            logger.info("更新试卷信息异常");
         }
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deleteExamPaper(String examPaperNum) {
         tbExamPaperDao.deleteExamPaper(examPaperNum);
     }

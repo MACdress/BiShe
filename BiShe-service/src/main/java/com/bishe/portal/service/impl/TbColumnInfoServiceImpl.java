@@ -12,7 +12,10 @@ import com.bishe.portal.model.vo.ManageColumnInfoSimpleVo;
 import com.bishe.portal.model.vo.ManageColumnInfoVo;
 import com.bishe.portal.service.TbColumnInfoService;
 import com.bishe.portal.service.utils.COSClientUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
@@ -32,8 +35,11 @@ public class TbColumnInfoServiceImpl implements TbColumnInfoService {
     TbUsersDao tbUsersDao;
     @Resource
     TbColumnManageDao tbColumnManageDao;
+    private static final Logger logger = LoggerFactory.getLogger(TbColumnInfoServiceImpl.class);
+
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void addInformationInfo(ManageColumnInfoParamVo manageInformationParamVo) {
         try {
             String imgUrl = "";
@@ -46,11 +52,13 @@ public class TbColumnInfoServiceImpl implements TbColumnInfoService {
             tbManageInformation.setInfoImg(imgUrl);
             tbColumnInfoDao.insertInformationInfo(tbManageInformation);
         }catch (Exception e){
+            logger.info("添加栏目信息异常");
             e.printStackTrace();
         }
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void setIsTop(Integer id) {
         TbColumnInfo columnInfo = tbColumnInfoDao.getColumnInfoById(id);
         tbColumnInfoDao.setAllIsUnTop(columnInfo.getBelongColumn());
@@ -58,11 +66,13 @@ public class TbColumnInfoServiceImpl implements TbColumnInfoService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deleteColumnInfo(Integer id) {
         tbColumnInfoDao.deleteColumnInfo(id);
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateColumnInfo(ManageColumnInfoParamVo manageInformationParamVo) {
         try {
             String imgUrl = "";

@@ -1,6 +1,7 @@
 package com.bishe.portal.service.impl;
 
 import com.alibaba.druid.util.StringUtils;
+import com.alibaba.fastjson.JSONObject;
 import com.bishe.portal.dao.TbUserEventDao;
 import com.bishe.portal.dao.TbUsersDao;
 import com.bishe.portal.model.mo.TbUserEvent;
@@ -13,7 +14,10 @@ import com.bishe.portal.service.UserService;
 import com.bishe.portal.service.utils.*;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.jdom.JDOMException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -32,6 +36,9 @@ public class UserServiceImpl implements UserService {
     TbUsersDao tbUsersDao;
     @Resource
     TbUserEventDao tbUserEventDao;
+    @Resource
+    RedisCacheUtil redisCacheUtil;
+    private static final Logger logger = LoggerFactory.getLogger(ExamPaperMiddleInfoServiceImpl.class);
 
     @Override
     public ReturnInfo login(TbUsersPo user) {
@@ -44,15 +51,15 @@ public class UserServiceImpl implements UserService {
                 returnInfo.setSuccess(true);
                 returnInfo.setMessage("login success");
                 userInfo.setSale("");
-                System.out.println(userInfo);
-                returnInfo.setData(getUserInfoVo(userInfo));
+                UserInfoVo tbUserPo = getUserInfoVo(userInfo);
+                returnInfo.setData(tbUserPo);
             } else {
-                System.out.println("password error");
+                logger.info("登录失败");
                 returnInfo.setSuccess(false);
                 returnInfo.setMessage("password error");
             }
         } else {
-            System.out.println("account not exist");
+            logger.info("账号不存在");
             returnInfo.setSuccess(false);
             returnInfo.setMessage("account not exist");
         }
@@ -60,6 +67,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public UserInfoVo enroll(TbUsersPo tbUsersPo) {
         String newPwd = "";
         String sale = "";
@@ -71,14 +79,14 @@ public class UserServiceImpl implements UserService {
         tbUsersPo.setPwd(newPwd);
         tbUsersPo.setSale(sale);
         TbUsers tbUsers = getTbUsers(tbUsersPo);
-        tbUsers.setPwd(tbUsersPo.getPwd()==null?"":tbUsersPo.getPwd());
+        tbUsers.setPwd(tbUsersPo.getPwd() == null ? "" : tbUsersPo.getPwd());
         tbUsers.setSale(tbUsersPo.getSale());
         tbUsers.setAccount(UUIDUtils.getUUID(8));
         tbUsersDao.insert(tbUsers);
         TbUserEvent event = new TbUserEvent();
         event.setEventDate(new Date());
         event.setAccount(tbUsers.getAccount());
-        event.setEvent(tbUsers.getName()+"用户注册账号");
+        event.setEvent(tbUsers.getName() + "用户注册账号");
         tbUserEventDao.insertEvent(event);
         return getUserInfoVo(tbUsersDao.getUserInfoByAccount(tbUsers.getAccount()));
     }
@@ -98,16 +106,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserInfoVo> getAllUserInfo(SelectUserParamVo paramVo) {
         int page;
-        if (paramVo.getPage()<1){
+        if (paramVo.getPage() < 1) {
             page = 1;
-        }else{
+        } else {
             page = paramVo.getPage();
         }
-        page = (page-1)*paramVo.getPageSize();
+        page = (page - 1) * paramVo.getPageSize();
         paramVo.setPage(page);
         List<TbUsers> userInfo = tbUsersDao.getAllUserInfo(paramVo);
-        List<UserInfoVo> result  = new ArrayList<>();
-        for (TbUsers tbUsers:userInfo){
+        List<UserInfoVo> result = new ArrayList<>();
+        for (TbUsers tbUsers : userInfo) {
             result.add(getUserInfoVo(tbUsers));
         }
         return result;
@@ -116,14 +124,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public String readExcelFile(MultipartFile file) {
         ExcelUtils excelUtils = new ExcelUtils();
-        List <TbUsers> insertParam ;
+        List<TbUsers> insertParam;
         try {
             insertParam = excelUtils.getExcelInfo(file);
-        }catch (Exception e){
-            System.out.println("导入Excel文件出现错误");
-            return  "导入失败";
+        } catch (Exception e) {
+            logger.info("导入Excel文件出现错误");
+            return "导入失败";
         }
-        if (insertParam!=null && insertParam.size()>0){
+        if (insertParam != null && insertParam.size() > 0) {
             for (TbUsers tbUsers : insertParam) {
                 tbUsersDao.insert(tbUsers);
             }
@@ -145,9 +153,9 @@ public class UserServiceImpl implements UserService {
             COSClientUtil cosClientUtil = new COSClientUtil();
             String name = cosClientUtil.uploadFile2Cos(file);
             String imgUrl = cosClientUtil.getImgUrl(name);
-            tbUsersDao.updateUserImg(imgUrl,account);
+            tbUsersDao.updateUserImg(imgUrl, account);
             split = imgUrl.split("\\?");
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return split;
@@ -174,7 +182,7 @@ public class UserServiceImpl implements UserService {
         String notify_url = AlipayConfig.NOTIFY_URL;
         String trade_type = "NATIVE";
 
-        SortedMap<Object,Object> packageParams = new TreeMap<Object,Object>();
+        SortedMap<Object, Object> packageParams = new TreeMap<Object, Object>();
         packageParams.put("appid", appid);
         packageParams.put("mch_id", mch_id);
         packageParams.put("nonce_str", nonce_str);
@@ -185,11 +193,10 @@ public class UserServiceImpl implements UserService {
         packageParams.put("notify_url", notify_url);
         packageParams.put("trade_type", trade_type);
 
-        String sign = PayToolUtil.createSign("UTF-8", packageParams,key);
+        String sign = PayToolUtil.createSign("UTF-8", packageParams, key);
         packageParams.put("sign", sign);
 
         String requestXML = PayToolUtil.getRequestXml(packageParams);
-        System.out.println(requestXML);
         String resXml = HttpUtil.postData(AlipayConfig.UFDODER_URL, requestXML);
 
         Map map = null;
@@ -215,7 +222,7 @@ public class UserServiceImpl implements UserService {
         TbUserEvent event = new TbUserEvent();
         event.setEventDate(new Date());
         event.setAccount(account);
-        event.setEvent(tbUsers.getName()+"用户更新用户信息");
+        event.setEvent(tbUsers.getName() + "用户更新用户信息");
         tbUserEventDao.insertEvent(event);
     }
 
@@ -223,7 +230,7 @@ public class UserServiceImpl implements UserService {
     public List<UserEventVo> getUserHistory(String account) {
         List<TbUserEvent> tbUserEvents = tbUserEventDao.selectEventByUser(account);
         List<UserEventVo> result = new ArrayList<>();
-        if(tbUserEvents!=null&&tbUserEvents.size()>0) {
+        if (tbUserEvents != null && tbUserEvents.size() > 0) {
             for (TbUserEvent tbUserEvent : tbUserEvents) {
                 result.add(getUserEventVo(tbUserEvent));
             }
@@ -240,9 +247,9 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
-    private TbUsersPo getTbUserPo (TbUsers tbUsers){
+    private TbUsersPo getTbUserPo(TbUsers tbUsers) {
         TbUsersPo tbUserPo = new TbUsersPo();
-        if (tbUsers == null){
+        if (tbUsers == null) {
             return tbUserPo;
         }
         tbUserPo.setBirthDay(StringUtils.isEmpty(tbUsers.getBirthDay()) ? "" : tbUsers.getBirthDay());
@@ -263,9 +270,10 @@ public class UserServiceImpl implements UserService {
         tbUserPo.setAddress(StringUtils.isEmpty(tbUsers.getAddress()) ? "" : tbUsers.getAddress());
         return tbUserPo;
     }
+
     private TbUsers getTbUsers(TbUsersPo tbUsersPo) {
         TbUsers tbUsers = new TbUsers();
-        if (tbUsersPo == null){
+        if (tbUsersPo == null) {
             return tbUsers;
         }
         tbUsers.setBirthDay(StringUtils.isEmpty(tbUsersPo.getBirthDay()) ? "" : tbUsersPo.getBirthDay());
@@ -278,12 +286,12 @@ public class UserServiceImpl implements UserService {
         tbUsers.setJob(StringUtils.isEmpty(tbUsersPo.getJob()) ? "" : tbUsersPo.getJob());
         tbUsers.setFixedTel(StringUtils.isEmpty(tbUsersPo.getFixedTel()) ? "" : tbUsersPo.getFixedTel());
         tbUsers.setName(StringUtils.isEmpty(tbUsersPo.getName()) ? "" : tbUsersPo.getName());
-        tbUsers.setIdentity(tbUsersPo.getIdentity()==null?0:tbUsersPo.getIdentity());
+        tbUsers.setIdentity(tbUsersPo.getIdentity() == null ? 0 : tbUsersPo.getIdentity());
         tbUsers.setTurnPositiveDate(StringUtils.isEmpty(tbUsersPo.getTurnPositiveDate()) ? "" : tbUsersPo.getTurnPositiveDate());
         tbUsers.setNationality(StringUtils.isEmpty(tbUsersPo.getNationality()) ? "" : tbUsersPo.getNationality());
         tbUsers.setBranch(StringUtils.isEmpty(tbUsersPo.getBranch()) ? "" : tbUsersPo.getBranch());
         int basePay = 1;
-        if (tbUsers.getIdentity()==1){
+        if (tbUsers.getIdentity() == 1) {
             basePay = 2;
         }
         tbUsers.setBasePay(basePay);
@@ -293,9 +301,9 @@ public class UserServiceImpl implements UserService {
         return tbUsers;
     }
 
-    private UserInfoVo getUserInfoVo (TbUsers tbUsers){
+    private UserInfoVo getUserInfoVo(TbUsers tbUsers) {
         UserInfoVo result = new UserInfoVo();
-        if(tbUsers == null){
+        if (tbUsers == null) {
             return null;
         }
         result.setBirthDay(StringUtils.isEmpty(tbUsers.getBirthDay()) ? "" : tbUsers.getBirthDay());
@@ -303,9 +311,9 @@ public class UserServiceImpl implements UserService {
         result.setTel(StringUtils.isEmpty(tbUsers.getTel()) ? "" : tbUsers.getTel());
         result.setPermission(tbUsers.getPermission());
         String permissionValue = "";
-        if (tbUsers.getPermission()==1) {
+        if (tbUsers.getPermission() == 1) {
             permissionValue = "管理员";
-        }else{
+        } else {
             permissionValue = "普通用户";
         }
         result.setPermissionValue(permissionValue);
@@ -315,9 +323,9 @@ public class UserServiceImpl implements UserService {
         result.setIdCard(StringUtils.isEmpty(tbUsers.getIdCard()) ? "" : tbUsers.getIdCard());
         result.setIdentity(tbUsers.getIdentity());
         String identityValue = "";
-        if (tbUsers.getIdentity()==1){
+        if (tbUsers.getIdentity() == 1) {
             identityValue = "正是党员";
-        }else{
+        } else {
             identityValue = "预备党员";
         }
         result.setIdentityValue(identityValue);
@@ -329,7 +337,7 @@ public class UserServiceImpl implements UserService {
         result.setJoinPartyDate(StringUtils.isEmpty(tbUsers.getJoinPartyDate()) ? "" : tbUsers.getJoinPartyDate());
         result.setTurnPositiveDate(StringUtils.isEmpty(tbUsers.getTurnPositiveDate()) ? "" : tbUsers.getTurnPositiveDate());
         result.setMonthlySalary(tbUsers.getMonthlySalary());
-        result.setUserImg(StringUtils.isEmpty(tbUsers.getUserImg())?"":tbUsers.getUserImg());
+        result.setUserImg(StringUtils.isEmpty(tbUsers.getUserImg()) ? "" : tbUsers.getUserImg());
         return result;
     }
 }

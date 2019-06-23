@@ -18,7 +18,6 @@
         <!-- 开启驼峰命名转换：Table(create_time) -> Entity(createTime) -->
         <setting name="mapUnderscoreToCamelCase" value="true"/>
         <!-- 对于批量更新操作缓存SQL以提高性能  -->
-
         <!--<setting name="defaultExecutorType" value="BATCH" />执行器类型-->
     </settings>
 
