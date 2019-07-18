@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
+    <script type="text/javascript">
+        var data = {"tel":"12321","password":"12321"}
+        $.ajax({
+            type:"POST",
+            url:'http://localhost:8090/BiShe_web_war_exploded/userCenter/login',
+            data:JSON.stringify(data),
+            dataType:'json',
+            xhrFields:{
+                withCredentials:true
+            },
+            crossDomain:true,
+            success:function (data) {
+                console.log(data)
+                window.location= 'http://localhost:63342/BiShe/BiShe-web/src/main/webapp/test.html'
+            }
+        })
+    </script>
+</head>
+
+<body>
+</body>
+</html>

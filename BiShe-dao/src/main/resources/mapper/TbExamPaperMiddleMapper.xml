@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bishe.portal.dao.TbExamPaperMiddleDao">
+    <resultMap id="TbExamPaperMap" type="com.bishe.portal.model.mo.TbExamPaperMiddle">
+        <id column="id" property="id"/>
+        <result column="exam_paper_num" property="examPaperNum"/>
+        <result column="exam_subject_id" property="examSubjectId"/>
+    </resultMap>
+
+    <sql id="TableName">
+        tb_exam_paper_middle
+    </sql>
+
+    <sql id="Fields">
+        exam_paper_num,exam_subject_id
+    </sql>
+
+    <insert id="insertTbExamPaperMiddle">
+        insert INTO <include refid="TableName"/> (
+        <include refid="Fields"/>,
+        create_at,
+        update_at)
+        values(
+        #{tbExamPaperMiddle.examPaperNum},
+        #{tbExamPaperMiddle.examSubjectId},
+        NOW(),
+        NOW()
+        )
+    </insert>
+
+    <select id="getSubjectIdByExamPaperNum" resultType="String">
+        select exam_subject_id
+        from  <include refid="TableName"/>
+        where exam_paper_num = #{examPaperNum}
+        limit #{startIndex},#{pageSize}
+    </select>
+
+    <delete id="deleteExamPaperSubject">
+        DELETE from <include refid="TableName"/>  where exam_paper_num = #{examPaperNum} and exam_subject_id in
+        <foreach collection="subjectIdList" item="subjectId" open="(" close=")" separator=",">
+            #{subjectId}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+    <!--扫描注解-->
+    <context:component-scan base-package="com.bishe.portal.web.controller"/>
+    <!--解析器及映射器-->
+    <mvc:annotation-driven/>
+    <mvc:default-servlet-handler/>
+    <!--json解析器-->
+    <mvc:annotation-driven>
+        <mvc:message-converters register-defaults="true">
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                <property name="supportedMediaTypes" value="text/plain;charset=UTF-8" />
+            </bean>
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                <property name="objectMapper" ref="jacksonObjectMapper"/>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <bean class="com.bishe.portal.web.filter.CodeFilter"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+<!--    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">-->
+<!--        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>-->
+<!--    </bean>-->
+    <bean id="jacksonObjectMapper" class="com.bishe.portal.web.utils.CustomMapper"/>
+
+    <!--<mvc:annotation-driven>-->
+        <!--<mvc:message-converters>-->
+            <!--<bean class="com.bishe.portal.web.utils.HttpMessageConverter"/>-->
+        <!--</mvc:message-converters>-->
+    <!--</mvc:annotation-driven>-->
+
+    <!-- 配置MultipartResolver 用于文件上传 使用spring的CommonsMultipartResolver -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="defaultEncoding" value="utf-8"></property>
+        <property name="maxUploadSize" value="10485760000"></property>
+        <property name="maxInMemorySize" value="40960"></property>
+    </bean>
+    <!-- 启动定时任务 -->
+    <task:annotation-driven/>
+
+    <!-- 静态资源处理 -->
+    <mvc:default-servlet-handler/>
+
+<!--    <mvc:cors>-->
+<!--        <mvc:mapping path="/**"-->
+<!--            allow-credentials="true" allowed-origins="http://120.79.14.244:8090/BiShe-web" allowed-methods="GET, POST, PUT, DELETE"-->
+<!--        />-->
+<!--    </mvc:cors>-->
+    <!--<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"-->
+          <!--depends-on="lifecycleBeanPostProcessor"/>-->
+    <!--<bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">-->
+        <!--<property name="securityManager" ref="securityManager"/>-->
+    <!--</bean>-->
+    <!--<import resource="classpath:shiro.xml"/>-->
+
+</beans>

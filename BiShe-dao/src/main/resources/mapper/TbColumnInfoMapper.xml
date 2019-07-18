@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bishe.portal.dao.TbColumnInfoDao">
+    <resultMap id="TbColumnInfoMap" type="com.bishe.portal.model.mo.TbColumnInfo">
+        <id column="id" property="id"/>
+        <result column="tittle" property="tittle"/>
+        <result column="author" property="author"/>
+        <result column="origin" property="origin"/>
+        <result column="origin_url" property="originUrl"/>
+        <result column="belong_column" property="belongColumn"/>
+        <result column="information_status" property="informationStatus"/>
+        <result column="down_time" property="downTime"/>
+        <result column="is_comment" property="isComment"/>
+        <result column="comment_begin_time" property="commentBeginTime"/>
+        <result column="comment_end_time" property="commentEndTime"/>
+        <result column="summary" property="summary"/>
+        <result column="text" property="text"/>
+        <result column="create_user" property="createUser"/>
+        <result column="is_top" property="isTop"/>
+        <result column="create_at" property="createAt"/>
+        <result column="info_img" property="infoImg"/>
+    </resultMap>
+    <sql id="TableName">
+        tb_column_info
+    </sql>
+    <sql id="Fields">
+        tittle,author,origin,origin_url,belong_column,information_status,down_time,is_comment,comment_begin_time,comment_end_time,summary,text,create_user,is_top,info_img
+    </sql>
+
+    <insert id="insertInformationInfo">
+        insert INTO <include refid="TableName"/> (
+          <include refid="Fields"/>,
+          create_at,
+          update_at)
+        values(
+          #{tbColumnInfo.tittle},
+          #{tbColumnInfo.author},
+          #{tbColumnInfo.origin},
+          #{tbColumnInfo.originUrl},
+          #{tbColumnInfo.belongColumn},
+          #{tbColumnInfo.informationStatus},
+          #{tbColumnInfo.downTime},
+          #{tbColumnInfo.isComment},
+          #{tbColumnInfo.commentBeginTime},
+          #{tbColumnInfo.commentEndTime},
+          #{tbColumnInfo.summary},
+          #{tbColumnInfo.text},
+          #{tbColumnInfo.createUser},
+          #{tbColumnInfo.isTop},
+          #{tbColumnInfo.infoImg},
+          NOW(),
+          NOW()
+        )
+    </insert>
+
+    <update id="setAllIsUnTop">
+        update <include refid="TableName"/>
+        set is_top = 0
+        where belong_column = #{belongColumn}
+    </update>
+
+    <update id="setIsTop">
+        update <include refid="TableName"/>
+        set is_top = 1
+        where id = #{id}
+    </update>
+
+    <delete id="deleteColumnInfo">
+        DELETE from <include refid="TableName"/>  where id = #{id}
+    </delete>
+
+    <update id="updateColumnInfo">
+        UPDATE <include refid="TableName"/>
+        <set>
+            <if test="columnInfo.tittle != null">
+                tittle = #{columnInfo.tittle},
+            </if>
+            <if test="columnInfo.author != null">
+                author = #{columnInfo.author},
+            </if>
+            <if test="columnInfo.origin != null">
+                origin = #{columnInfo.origin},
+            </if>
+            <if test="columnInfo.originUrl != null">
+                origin_url = #{columnInfo.originUrl},
+            </if>
+            <if test="columnInfo.belongColumn != null">
+                belong_column =  #{columnInfo.belongColumn},
+            </if>
+            <if test="columnInfo.informationStatus !=null">
+                information_status =  #{columnInfo.informationStatus},
+            </if>
+            <if test="columnInfo.downTime !=null ">
+                down_time = #{columnInfo.downTime},
+            </if>
+            <if test="columnInfo.isComment != null">
+                is_comment = #{columnInfo.isComment},
+            </if>
+            <if test="columnInfo.commentBeginTime != null">
+                comment_begin_time = #{columnInfo.commentBeginTime},
+            </if>
+            <if test="columnInfo.commentEndTime != null">
+                comment_end_time = #{columnInfo.commentEndTime},
+            </if>
+            <if test="columnInfo.summary != null">
+                summary = #{columnInfo.summary},
+            </if>
+            <if test="columnInfo.text != null">
+                text = #{columnInfo.text},
+            </if>
+            <if test="columnInfo.createUser != null">
+                create_user = #{columnInfo.createUser},
+            </if>
+            <if test = "columnInfo.infoImg != null">
+                info_img = #{columnInfo.infoImg},
+            </if>
+            <if test="true">
+                update_at = NOW(),
+            </if>
+        </set>
+        where  id = #{columnInfo.id}
+    </update>
+
+    <select id="getColumnInfoById" resultMap="TbColumnInfoMap">
+        select <include refid="Fields"/>,id,create_at
+        from   <include refid="TableName"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectColumnInfoList" resultMap="TbColumnInfoMap">
+        select <include refid="Fields"/>,id,create_at
+        from   <include refid="TableName"/>
+        <where>
+            <if test="columnInfoParam.tittle != null ">
+                and tittle = #{columnInfoParam.tittle}
+            </if>
+            <if test="columnInfoParam.belongColumn != null ">
+                and belong_column = #{columnInfoParam.belongColumn}
+            </if>
+            <if test="columnInfoParam.createBeginTime != null ">
+                and create_at &gt; #{columnInfoParam.createBeginTim}
+            </if>
+            <if test="columnInfoParam.createEndTime != null ">
+                and create_at &lt; #{columnInfoParam.createEndTime}
+            </if>
+            <if test="columnInfoParam.informationStatus != null ">
+                and information_status = #{columnInfoParam.informationStatus}
+            </if>
+            <if test="columnInfoParam.createUser != null ">
+                and create_user = #{columnInfoParam.createUser}
+            </if>
+        </where>
+        order by create_at
+    </select>
+
+    <select id="getColumnInfoByBelongColumn" resultMap="TbColumnInfoMap">
+        select <include refid="Fields"/>,id,create_at
+        from   <include refid="TableName"/>
+        where  belong_column = #{belongColumn} order by create_at
+    </select>
+
+    <select id="getColumnListByColumnId" resultMap="TbColumnInfoMap">
+        select <include refid="Fields"/>,id
+        from   <include refid="TableName"/>
+        where belong_column in
+        <foreach collection="columnManageIdList" separator="," close=")" open="(" item="belongColumn">
+            #{belongColumn}
+        </foreach>
+        order by create_at
+    </select>
+</mapper>

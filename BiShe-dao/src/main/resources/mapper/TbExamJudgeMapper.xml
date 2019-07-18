@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bishe.portal.dao.TbExamJudgeDao">
+    <resultMap id="TbExamJudgeMap" type="com.bishe.portal.model.mo.TbExamJudge">
+        <id column="id" property="id"/>
+        <result column="exam_tittle" property="examTittle"/>
+        <result column="exam_answer" property="examAnswer"/>
+        <result column="score" property="score"/>
+        <result column="subject_id" property="subjectId"/>
+        <result column="exam_middle_type" property="examMiddleType"/>
+    </resultMap>
+
+    <sql id="TableName">
+        tb_exam_judge
+    </sql>
+
+    <sql id="Fields">
+        exam_tittle,exam_answer,score,subject_id,exam_middle_type
+    </sql>
+
+    <insert id="insertExamJudgeInfo">
+        insert INTO <include refid="TableName"/> (
+        <include refid="Fields"/>,
+        create_at,
+        update_at)
+        values(
+        #{tbExamJudge.examTittle},
+        #{tbExamJudge.examAnswer},
+        #{tbExamJudge.score},
+        #{tbExamJudge.subjectId},
+        #{tbExamJudge.examMiddleType},
+        NOW(),
+        NOW()
+        )
+    </insert>
+
+    <select id="getExamJudgeByNumbers" resultMap="TbExamJudgeMap">
+        select <include refid="Fields"/>
+        from  <include refid="TableName"/>
+        where subject_id in
+        <foreach collection="subjectIdList" item="subjectId" open="(" close=")" separator=",">
+            #{subjectId}
+        </foreach>
+    </select>
+
+    <select id="getExamJudgeBySubject" resultMap="TbExamJudgeMap">
+        select <include refid="Fields"/>
+        from  <include refid="TableName"/>
+        where subject_id = #{subjectId}
+    </select>
+
+    <select id="getAllJudgeSubject" resultMap="TbExamJudgeMap">
+        select <include refid="Fields"/>
+        from  <include refid="TableName"/>
+        LIMIT #{startIndex},#{pageSize}
+    </select>
+
+    <select id="getCorrectChoose" resultMap="TbExamJudgeMap">
+        select <include refid="Fields"/>
+        from <include refid="TableName"/>
+        where exam_start_num = #{examStartNum} and is_correct = 1
+    </select>
+
+</mapper>

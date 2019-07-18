@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bishe.portal.dao.TbUsersDao">
+    <resultMap id="TbUsersMap" type="com.bishe.portal.model.mo.TbUsers">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="pwd" property="pwd"/>
+        <result column="email" property="email"/>
+        <result column="permission" property="permission"/>
+        <result column="tel" property="tel"/>
+        <result column="birthday" property="birthDay"/>
+        <result column="sex" property="sex"/>
+        <result column="sale" property="sale"/>
+        <result column="identity" property="identity"/>
+        <result column="nationality" property="nationality"/>
+        <result column="branch" property="branch"/>
+        <result column="fixed_tel" property="fixedTel"/>
+        <result column="address" property="address"/>
+        <result column="job" property="job"/>
+        <result column="join_party_date" property="joinPartyDate"/>
+        <result column="turn_positive_date" property="turnPositiveDate"/>
+        <result column="id_card" property="idCard"/>
+        <result column="user_img" property="userImg"/>
+        <result column="monthly_salary" property="monthlySalary"/>
+        <result column="base_pay" property="basePay"/>
+    </resultMap>
+    <resultMap id="SimpleTbUsersMap" type="com.bishe.portal.model.po.SimpleUserInfo">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="permission" property="permission"/>
+    </resultMap>
+    <sql id="TableName">
+        tb_user
+    </sql>
+    <sql id="Fields">
+        name,pwd,email,permission,tel,birthday,sex,sale,account,identity,nationality,
+        branch,fixed_tel,address,job,join_party_date,turn_positive_date,id_card,user_img,monthly_salary,base_pay
+    </sql>
+    <insert id="insert">
+        INSERT INTO <include refid="TableName"/> (
+                <include refid="Fields"/>,
+                create_at,
+                update_at)
+        VALUES (#{tbUsers.name},
+                #{tbUsers.pwd},
+                #{tbUsers.email},
+                #{tbUsers.permission},
+                #{tbUsers.tel},
+                #{tbUsers.birthDay},
+                #{tbUsers.sex},
+                #{tbUsers.sale},
+                #{tbUsers.account},
+                #{tbUsers.identity},
+                #{tbUsers.nationality},
+                #{tbUsers.branch},
+                #{tbUsers.fixedTel},
+                #{tbUsers.address},
+                #{tbUsers.job},
+                #{tbUsers.joinPartyDate},
+                #{tbUsers.turnPositiveDate},
+                #{tbUsers.idCard},
+                #{tbUsers.userImg},
+                #{tbUsers.monthlySalary},
+                #{tbUsers.basePay},
+                NOW(),
+                NOW())
+    </insert>
+
+    <select id="getAllAdminUserInfo" resultMap="SimpleTbUsersMap">
+        SELECT tb_user.id,tb_user.name FROM tb_user WHERE tb_user.id = tb_user_role.u_id and tb_user_role.r_id = tb_role.id and tb_role.id = 2;
+    </select>
+
+    <select id="getUserInfoByAccount" resultMap="TbUsersMap">
+        SELECT
+            <include refid="Fields"/>
+        FROM <include refid="TableName"/>
+        WHERE account = #{account} and is_deleate = 1
+        LIMIT 1;
+    </select>
+
+    <select id="getUserInfoByTel" resultMap="TbUsersMap">
+        SELECT
+            <include refid="Fields"/>
+        FROM <include refid="TableName"/>
+        WHERE tel = #{tel} and is_deleate = 1
+        LIMIT 1;
+    </select>
+
+    <select id="getAllUserInfo" resultMap="TbUsersMap">
+        select
+            <include refid="Fields"/>
+        from <include refid="TableName"/>
+        <where>
+            <if test="selectParam.identity != null ">
+                and  identity = #{selectParam.identity}
+            </if>
+            <if test="selectParam.name != null">
+                and name =  #{selectParam.name}
+            </if>
+            <if test="selectParam.sex != null">
+                and sex = #{selectParam.sex}
+            </if>
+            <if test="selectParam.idCard != null">
+               and idCard = #{selectParam.idCard}
+            </if>
+            <if test="selectParam.joinPartyDate != null">
+               and join_party_date = #{selectParam.joinPartyDate}
+            </if>
+            <if test="selectParam.branch != null">
+                and branch = #{selectParam.branch}
+            </if>
+            <if test="1 == 1">
+                and is_deleate = 1
+            </if>
+        </where>
+        order by id desc LIMIT #{selectParam.page},#{selectParam.pageSize}
+    </select>
+
+    <select id="getAllUserInfoNoPage" resultMap="TbUsersMap">
+        select
+        <include refid="Fields"/>
+        from <include refid="TableName"/>
+        where is_deleate = 1
+    </select>
+
+    <update id="updateUserImg">
+        update <include refid="TableName"/>
+        set user_img = #{userImg} , update_at = NOW()
+        where account = #{account}
+    </update>
+
+    <update id="updateUserInfo" >
+        update  <include refid="TableName"/>
+        <set>
+            <if test="tbUser.pwd != null">
+                pwd = #{tbUser.pwd},
+            </if>
+            <if test="tbUser.email != null">
+                email = #{tbUser.email},
+            </if>
+            <if test="tbUser.name != null">
+                name = #{tbUser.name},
+            </if>
+            <if test="tbUser.idCard != null">
+                id_card = #{tbUser.idCard},
+            </if>
+            <if test="tbUser.identity != null">
+                identity = #{tbUser.identity},
+            </if>
+            <if test="tbUser.tel != null">
+                tel = #{tbUser.tel},
+            </if>
+            <if test="tbUser.sex != null">
+                sex = #{tbUser.sex},
+            </if>
+            <if test="tbUser.nationality != null">
+                nationality = #{tbUser.nationality},
+            </if>
+            <if test="tbUser.branch != null">
+                branch = #{tbUser.branch},
+            </if>
+            <if test="tbUser.fixedTel != null">
+                fixed_tel = #{tbUser.fixedTel},
+            </if>
+            <if test="tbUser.address != null">
+                address = #{tbUser.address},
+            </if>
+            <if test="tbUser.job != null">
+                job = #{tbUser.job},
+            </if>
+            <if test="tbUser.joinPartyDate != null">
+                join_party_date = #{tbUser.joinPartyDate},
+            </if>
+            <if test="tbUser.turnPositiveDate != null">
+                turn_positive_date = #{tbUser.turnPositiveDate},
+            </if>
+        </set>
+        where account = #{tbUser.account};
+    </update>
+</mapper>
+
+
+
+
+
+
+
+

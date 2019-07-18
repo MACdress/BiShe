@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bishe.portal.dao.TbUserEventDao">
+    <resultMap id="TbUserEventMap" type="com.bishe.portal.model.mo.TbUserEvent">
+        <id column="id" property="id"/>
+        <result column="event_date" property="eventDate"/>
+        <result column="event" property="event"/>
+        <result column="account" property="account"/>
+    </resultMap>
+
+    <sql id="TableName">
+        tb_user_event
+    </sql>
+
+    <sql id="Fields">
+        event_date,event,account
+    </sql>
+
+    <insert id="insertEvent">
+        insert into <include refid="TableName"/>(
+        <include refid="Fields"/>,
+        create_at,
+        update_at)
+        values (
+        NOW(),
+        #{event.event},
+        #{event.account},
+        NOW(),
+        NOW()
+        )
+    </insert>
+
+    <select id="selectEventByUser" resultMap="TbUserEventMap">
+        select <include refid="Fields"/>,create_at,update_at
+        from <include refid="TableName"/>
+        where account = #{account}
+    </select>
+
+</mapper>

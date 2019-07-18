@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bishe.portal.dao.TbQuestionnaireDao">
+    <resultMap id="TbQuestionnaireMap" type="com.bishe.portal.model.mo.TbQuestionnaire">
+        <id column="id" property="id"/>
+        <result column="questionnaire_name" property="questionnaireName"/>
+        <result column="questionnaire_num" property="questionnaireNum"/>
+        <result column="create_at" property="createAt"/>
+    </resultMap>
+
+    <sql id="TableName">
+        tb_questionnaire
+    </sql>
+
+    <sql id="Fields">
+        questionnaire_name,questionnaire_num
+    </sql>
+
+    <insert id="insertQuestionnaire">
+        insert into <include refid="TableName"/>(
+        <include refid="Fields"/>,
+        create_at,
+        update_at)
+        values (
+        #{tbQuestionnaire.questionnaireName},
+        #{tbQuestionnaire.questionnaireNum},
+        NOW(),
+        NOW()
+        )
+    </insert>
+
+    <select id="selectQuestionnaireByNum" resultMap="TbQuestionnaireMap">
+        select <include refid="Fields"/>,create_at
+        from <include refid="TableName"/>
+        where questionnaire_num = #{questionnaireNum} and is_deleate = 0
+    </select>
+
+    <select id="getAllQuestionnaire" resultMap="TbQuestionnaireMap">
+        select <include refid="Fields"/>,create_at
+        from <include refid="TableName"/>
+        where is_deleate = 0
+    </select>
+
+    <update id="deleteQuestionnaire">
+        update <include refid="TableName"/>
+        set  is_deleate  =1
+        where  questionnaire_num = #{questionnaireNum}
+    </update>
+</mapper>

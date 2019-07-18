@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bishe.portal.dao.TbQuestionnaireAnswerDao">
+    <resultMap id="TbQuestionnaireAnswerMap" type="com.bishe.portal.model.mo.TbQuestionnaireAnswer">
+        <id column="id" property="id"/>
+        <result column="questionnaire_num" property="questionnaireNum"/>
+        <result column="questionnaire_id" property="questionnaireId"/>
+        <result column="questionnaire_answer" property="questionnaireAnswer"/>
+        <result column="account" property="account"/>
+    </resultMap>
+
+    <sql id="TableName">
+        tb_questionnaire_answer
+    </sql>
+
+    <sql id="Fields">
+        questionnaire_num,questionnaire_id,questionnaire_answer,account
+    </sql>
+
+    <insert id="insertAnswer">
+        insert into <include refid="TableName"/>(
+        <include refid="Fields"/>,
+        create_at,
+        update_at)
+        values (
+        #{tbQuestionnaireAnswer.questionnaireNum},
+        #{tbQuestionnaireAnswer.questionnaireId},
+        #{tbQuestionnaireAnswer.questionnaireAnswer},
+        #{tbQuestionnaireAnswer.account},
+        NOW(),
+        NOW()
+        )
+    </insert>
+
+    <select id="selectAnswerById" resultMap="TbQuestionnaireAnswerMap">
+        select <include refid="Fields"/>,create_at,update_at
+        from <include refid="TableName"/>
+        where questionnaire_id = #{questionnaireId} and account = #{account}
+    </select>
+
+    <select id="selectAnswerByNum" resultMap="TbQuestionnaireAnswerMap">
+        select <include refid="Fields"/>,create_at,update_at
+        from <include refid="TableName"/>
+        where questionnaire_num = #{questionnaireNum} and account = #{account}
+    </select>
+
+</mapper>
